@@ -38,14 +38,41 @@ Use this path while Hostinger remains the authoritative DNS provider for `neocom
 dig neocom.cloud +short -t NS
 ```
 
-### 1.1 Preflight checks
+- This repository includes `public/CNAME`, but for a GitHub Actions publishing flow the repository setting is still the source of truth for the custom domain.
+- GitHub recommends verifying the custom domain before or while configuring the repository to reduce takeover risk.
+- Do not select `Deploy from a branch` in GitHub Pages. The workflow uploads the built `dist` directory as a Pages artifact.
+- GitHub Pages does not require the default branch to deploy. This repository publishes production only when `deploy` changes.
+- The repository does not need to be named `neocom-cloud.github.io`. That name identifies an organization root Pages repository; this project repository can serve `neocom.cloud` through the Pages custom-domain setting.
+
+### 1.1 Branch promotion and production deployment
+
+Use the following branch path for changes intended for production:
+
+```text
+develop -> Q.A -> main -> deploy
+```
+
+- `develop` is the integration branch.
+- `Q.A` is the validation branch.
+- `main` is the repository default and release branch.
+- `deploy` is the production publishing branch. A successful push to `deploy` starts the Pages deployment workflow.
+
+Recommended repository rules:
+
+1. Require pull requests and passing CI before merges into `main` and `deploy`.
+2. Restrict direct pushes to `deploy`.
+3. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
+
+The deployment workflow also supports manual dispatch, but it only publishes when dispatched from `deploy`.
+
+### 1.2 Preflight checks
 
 1. Confirm that no other GitHub Pages repository serves `neocom.cloud`. Organization or enterprise domain verification proves ownership; it does not route this child repository's site.
 2. Confirm the production branch contains a successful `deploy-pages.yml` run. Pushes to `develop` do not publish a Pages site unless `develop` is explicitly listed under `on.push.branches` in the active workflow.
 3. In this repository, open `Settings -> Pages` and keep `Source` set to `GitHub Actions`.
 4. Do not use the suggested Jekyll or Static HTML templates. This repository already has a custom Vite build and Pages deployment workflow.
 
-### 1.2 Configure the GitHub Pages custom domain
+### 1.3 Configure the GitHub Pages custom domain
 
 1. In `Settings -> Pages`, enter `neocom.cloud` in `Custom domain` and save it.
 2. Leave the setting in place while DNS propagates. Use `Check again` only after the records below resolve publicly.
@@ -57,7 +84,7 @@ Important:
 - Keep any GitHub Pages domain-verification TXT record created for the organization or Pages account. Verification protects the domain from takeover; it does not replace the DNS records below.
 - Do not use wildcard DNS records such as `*.neocom.cloud` for Pages.
 
-### 1.3 Apply the required Hostinger DNS records
+### 1.4 Apply the required Hostinger DNS records
 
 In Hostinger hPanel, open `Domains -> neocom.cloud -> DNS / Nameservers -> DNS Zone Editor`.
 
@@ -89,7 +116,7 @@ Optional IPv6 records:
 
 The four IPv4 A records are the required minimum. Add the IPv6 records after the IPv4 configuration is working if IPv6 support is desired.
 
-### 1.4 Verify DNS, Pages, and HTTPS in order
+### 1.5 Verify DNS, Pages, and HTTPS in order
 
 Wait for DNS propagation, then run:
 
@@ -226,7 +253,7 @@ The failure pattern is:
 - `neocom.cloud` returns no A or AAAA records
 - `www.neocom.cloud` resolves to `neocom.cloud` instead of `neocom-cloud.github.io`
 
-Fix the records in [Apply the required Hostinger DNS records](#13-apply-the-required-hostinger-dns-records), wait for propagation, and then click `Check again` in GitHub Pages.
+Fix the records in [Apply the required Hostinger DNS records](#14-apply-the-required-hostinger-dns-records), wait for propagation, and then click `Check again` in GitHub Pages.
 
 Also check:
 
