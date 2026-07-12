@@ -43,6 +43,33 @@ Notes:
 
 - This repository includes `public/CNAME`, but for a GitHub Actions publishing flow the repository setting is still the source of truth for the custom domain.
 - GitHub recommends verifying the custom domain before or while configuring the repository to reduce takeover risk.
+- Do not select `Deploy from a branch` in GitHub Pages. The workflow uploads the built `dist` directory as a Pages artifact.
+- GitHub Pages does not require the default branch to deploy. This repository publishes production only when `deploy` changes.
+
+### 1.1 Branch promotion and production deployment
+
+Use the following branch path for changes intended for production:
+
+```text
+develop -> Q.A -> main -> deploy
+```
+
+- `develop` is the integration branch.
+- `Q.A` is the validation branch.
+- `main` is the repository default and release branch.
+- `deploy` is the production publishing branch. A successful push to `deploy` starts the Pages deployment workflow.
+
+Recommended repository rules:
+
+1. Add a branch ruleset for `develop`, `Q.A`, `main`, and `deploy` that requires pull requests, requires branches to be up to date, blocks force pushes and deletions, and does not allow bypasses.
+2. Require these checks before merging, with no human approval requirement:
+   - `Validate GitHub Actions workflows`
+   - `Validate promotion path`
+   - `Test and build`
+3. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
+4. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
+
+The deployment workflow supports manual dispatch, but it only publishes when dispatched from `deploy`. It reruns typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.
 
 ## 2. Option A: Direct Hostinger DNS -> GitHub Pages
 

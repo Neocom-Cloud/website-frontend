@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ci": "vitest run"
+    "test:ci": "vitest run",
+    "test:build-output": "vitest run --config vitest.build.config.ts",
+    "verify:promotion": "node scripts/verify-promotion.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",
