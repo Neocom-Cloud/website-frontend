@@ -27,6 +27,7 @@ pnpm typecheck
 pnpm test
 pnpm test:watch
 pnpm build
+pnpm test:build-output
 pnpm preview
 ```
 
@@ -73,6 +74,7 @@ This keeps one shared landing template, one shared standard project template, an
 
 - Deployment workflow: [deploy-pages.yml](./.github/workflows/deploy-pages.yml)
 - DNS and custom-domain guide: [docs/deployment.md](./docs/deployment.md)
+- Production publishes only from the `deploy` branch; `main` remains the default branch.
 
 ## Testing
 
