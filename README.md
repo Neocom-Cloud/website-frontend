@@ -28,6 +28,7 @@ pnpm test
 pnpm test:watch
 pnpm build
 pnpm test:build-output
+BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
 pnpm preview
 ```
 

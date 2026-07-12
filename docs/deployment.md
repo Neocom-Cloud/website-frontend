@@ -59,11 +59,15 @@ develop -> Q.A -> main -> deploy
 
 Recommended repository rules:
 
-1. Require pull requests and passing CI before merges into `main` and `deploy`.
-2. Restrict direct pushes to `deploy`.
-3. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
+1. Add a branch ruleset for `develop`, `Q.A`, `main`, and `deploy` that requires pull requests, requires branches to be up to date, blocks force pushes and deletions, and does not allow bypasses.
+2. Require these checks before merging, with no human approval requirement:
+   - `Validate GitHub Actions workflows`
+   - `Validate promotion path`
+   - `Test and build`
+3. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
+4. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
 
-The deployment workflow also supports manual dispatch, but it only publishes when dispatched from `deploy`.
+The deployment workflow supports manual dispatch, but it only publishes when dispatched from `deploy`. It reruns typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.
 
 ### 1.2 Preflight checks
 
