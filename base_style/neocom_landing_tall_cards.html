@@ -1,0 +1,594 @@
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+.page{
+  --bg:#f3f6fb;
+  --surface:#ffffff;
+  --surface-soft:#f9fbfe;
+  --text:#18212b;
+  --title:#0f1720;
+  --subtle:rgba(24,33,43,0.6);
+  --muted:rgba(24,33,43,0.44);
+  --line:rgba(3,116,148,0.12);
+  --divider:rgba(3,116,148,0.18);
+  --chip-bg:#ffffff;
+  --chip-border:rgba(3,116,148,0.16);
+  --chip-text:rgba(24,33,43,0.66);
+  --accent:#037494;
+  --accent-muted:rgba(3,116,148,0.64);
+  --accent-faint:rgba(3,116,148,0.52);
+  --accent-soft:rgba(3,116,148,0.06);
+  --accent-soft-hover:rgba(3,116,148,0.12);
+  --accent-border:rgba(3,116,148,0.34);
+  --accent-border-hover:rgba(3,116,148,0.62);
+  --hero-glow:radial-gradient(circle at center, rgba(0,240,243,0.12) 0%, rgba(0,240,243,0.03) 38%, transparent 72%);
+  --project-panel:#ffffff;
+  --project-border:rgba(24,33,43,0.08);
+  --project-shadow:0 16px 42px rgba(8,36,54,0.08);
+  --project-shadow-hover:0 28px 70px rgba(8,36,54,0.16);
+  --mission-bg:#ffffff;
+  --mission-border:rgba(3,116,148,0.1);
+  --footer-border:rgba(24,33,43,0.07);
+  --footer-text:rgba(24,33,43,0.3);
+  --footer-accent:rgba(3,116,148,0.6);
+  --toggle-bg:#ffffff;
+  --toggle-border:rgba(3,116,148,0.14);
+  --toggle-text:rgba(24,33,43,0.64);
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-sans);
+  width:100%;
+  min-height:100vh;
+  transition:background 0.25s ease,color 0.25s ease;
+}
+
+.page[data-theme="dark"]{
+  --bg:#060a10;
+  --surface:transparent;
+  --surface-soft:rgba(255,255,255,0.02);
+  --text:#e8eaf0;
+  --title:#f3f7fd;
+  --subtle:rgba(232,234,240,0.68);
+  --muted:rgba(232,234,240,0.42);
+  --line:rgba(6,207,227,0.12);
+  --divider:rgba(6,207,227,0.18);
+  --chip-bg:rgba(6,207,227,0.04);
+  --chip-border:rgba(6,207,227,0.16);
+  --chip-text:rgba(232,234,240,0.68);
+  --accent:#06cfe3;
+  --accent-muted:rgba(6,207,227,0.68);
+  --accent-faint:rgba(6,207,227,0.52);
+  --accent-soft:rgba(6,207,227,0.07);
+  --accent-soft-hover:rgba(6,207,227,0.14);
+  --accent-border:rgba(6,207,227,0.34);
+  --accent-border-hover:rgba(6,207,227,0.62);
+  --hero-glow:radial-gradient(circle at center, rgba(6,207,227,0.14) 0%, rgba(6,207,227,0.04) 42%, transparent 74%);
+  --project-panel:rgba(255,255,255,0.03);
+  --project-border:rgba(255,255,255,0.08);
+  --project-shadow:0 18px 48px rgba(0,0,0,0.28);
+  --project-shadow-hover:0 30px 90px rgba(0,0,0,0.44);
+  --mission-bg:rgba(6,207,227,0.03);
+  --mission-border:rgba(6,207,227,0.1);
+  --footer-border:rgba(255,255,255,0.05);
+  --footer-text:rgba(232,234,240,0.22);
+  --footer-accent:rgba(6,207,227,0.46);
+  --toggle-bg:rgba(255,255,255,0.03);
+  --toggle-border:rgba(6,207,227,0.14);
+  --toggle-text:rgba(232,234,240,0.7);
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding:1.25rem 3rem;
+  border-bottom:0.5px solid var(--line);
+  background:var(--surface);
+}
+
+.nav-logo{font-size:1.05rem;font-weight:600;color:var(--accent);letter-spacing:0.08em;}
+.nav-links{display:flex;align-items:center;gap:2.4rem;}
+
+.nav-links a{
+  font-size:0.9rem;
+  color:var(--subtle);
+  text-decoration:none;
+  cursor:pointer;
+  transition:color 0.2s ease;
+}
+
+.nav-links a:hover{color:var(--accent);}
+
+.theme-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:0.6rem;
+  border:0.5px solid var(--toggle-border);
+  background:var(--toggle-bg);
+  color:var(--toggle-text);
+  border-radius:999px;
+  padding:0.55rem 0.92rem;
+  font-size:0.82rem;
+  cursor:pointer;
+  transition:all 0.22s ease;
+}
+
+.theme-toggle:hover{
+  color:var(--accent);
+  border-color:var(--accent-border);
+  background:var(--accent-soft);
+}
+
+.theme-toggle i{font-size:0.95rem;color:var(--accent);}
+
+.hero{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  padding:5.75rem 2rem 3rem;
+  background:var(--surface);
+  overflow:hidden;
+}
+
+.hero-glow{
+  position:absolute;
+  inset:1.5rem auto auto 50%;
+  transform:translateX(-50%);
+  width:760px;
+  height:460px;
+  background:var(--hero-glow);
+  pointer-events:none;
+}
+
+.hero-mark{
+  width:220px;
+  max-width:62vw;
+  margin:0 auto 2.8rem;
+  display:block;
+  animation:float 4s ease-in-out infinite;
+  filter:drop-shadow(0 24px 46px rgba(3,116,148,0.12));
+}
+
+.page[data-theme="dark"] .hero-mark{
+  filter:drop-shadow(0 28px 54px rgba(6,207,227,0.16));
+}
+
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-16px);}}
+
+.hero-eyebrow{font-size:0.74rem;letter-spacing:0.26em;text-transform:uppercase;color:var(--accent-muted);margin-bottom:1rem;}
+.hero-title{font-size:3.55rem;font-weight:600;line-height:1.04;color:var(--title);margin-bottom:0.65rem;}
+.morph-wrap{display:block;color:var(--accent);min-height:1.14em;}
+.cursor{display:inline-block;width:2px;height:0.9em;background:var(--accent);margin-left:3px;vertical-align:middle;animation:blink 0.75s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.hero-sub{font-size:1.08rem;color:var(--subtle);max-width:620px;margin:1.35rem auto 2.25rem;line-height:1.8;}
+
+.hero-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:0.55rem;
+  border:0.5px solid var(--accent-border);
+  color:var(--accent);
+  background:var(--accent-soft);
+  padding:0.82rem 1.65rem;
+  border-radius:999px;
+  font-size:0.92rem;
+  cursor:pointer;
+  transition:all 0.22s ease;
+}
+
+.hero-btn:hover{background:var(--accent-soft-hover);border-color:var(--accent-border-hover);transform:translateY(-2px);}
+
+.divider{width:100%;height:0.5px;background:linear-gradient(90deg,transparent,var(--divider),transparent);}
+.page[data-theme="dark"] .divider{margin:0.8rem 0;}
+
+.section{padding:3.2rem 2rem;background:var(--bg);}
+.section-inner{max-width:1120px;margin:0 auto;}
+.sec-label{font-size:0.74rem;letter-spacing:0.26em;text-transform:uppercase;color:var(--accent-faint);text-align:center;margin-bottom:0.45rem;}
+.sec-title{font-size:1.9rem;font-weight:600;color:var(--title);text-align:center;margin-bottom:0.45rem;}
+.sec-sub{font-size:1rem;color:var(--muted);text-align:center;margin-bottom:2.35rem;}
+
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:0.75rem;margin-bottom:3rem;}
+
+.chip{
+  display:flex;
+  align-items:center;
+  gap:0.45rem;
+  background:var(--chip-bg);
+  border:0.5px solid var(--chip-border);
+  border-radius:999px;
+  padding:0.55rem 1rem;
+  font-size:0.86rem;
+  color:var(--chip-text);
+}
+
+.chip i{font-size:0.92rem;color:var(--accent);}
+
+.projects{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1.2rem;
+}
+
+.project-tile{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  min-height:410px;
+  padding:1.2rem;
+  border-radius:26px;
+  border:1px solid var(--project-border);
+  background:var(--project-panel);
+  box-shadow:var(--project-shadow);
+  text-align:left;
+  cursor:pointer;
+  overflow:hidden;
+  isolation:isolate;
+  transition:transform 0.28s ease,box-shadow 0.28s ease,border-color 0.28s ease,background 0.28s ease;
+}
+
+.project-tile::before{
+  content:"";
+  position:absolute;
+  inset:auto -18% 54% auto;
+  width:220px;
+  height:220px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(255,255,255,0.44) 0%, rgba(255,255,255,0) 72%);
+  opacity:0.55;
+  transition:transform 0.32s ease,opacity 0.32s ease;
+  z-index:-1;
+}
+
+.page[data-theme="dark"] .project-tile::before{
+  background:radial-gradient(circle, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 74%);
+  opacity:0.82;
+}
+
+.project-tile:hover{
+  transform:translateY(-10px);
+  box-shadow:var(--project-shadow-hover);
+}
+
+.project-tile:hover::before{
+  transform:translate(-14px,-12px) scale(1.08);
+  opacity:0.9;
+}
+
+.project-tile.green:hover{border-color:rgba(34,160,74,0.32);}
+.project-tile.cyan:hover{border-color:rgba(3,116,148,0.28);}
+.project-tile.amber:hover{border-color:rgba(180,120,0,0.26);}
+.page[data-theme="dark"] .project-tile.green:hover{border-color:rgba(68,208,102,0.34);}
+.page[data-theme="dark"] .project-tile.cyan:hover{border-color:rgba(6,207,227,0.32);}
+.page[data-theme="dark"] .project-tile.amber:hover{border-color:rgba(232,160,32,0.3);}
+
+.tile-topline{
+  position:absolute;
+  top:0;
+  left:10%;
+  right:10%;
+  height:1px;
+  opacity:0.75;
+  transition:opacity 0.26s ease,transform 0.26s ease;
+}
+
+.project-tile:hover .tile-topline{
+  opacity:1;
+  transform:scaleX(1.03);
+}
+
+.tile-topline.green{background:linear-gradient(90deg,transparent,rgba(40,160,70,0.54),transparent);}
+.tile-topline.cyan{background:linear-gradient(90deg,transparent,rgba(3,116,148,0.54),transparent);}
+.tile-topline.amber{background:linear-gradient(90deg,transparent,rgba(180,120,0,0.5),transparent);}
+.page[data-theme="dark"] .tile-topline.green{background:linear-gradient(90deg,transparent,rgba(68,208,102,0.58),transparent);}
+.page[data-theme="dark"] .tile-topline.cyan{background:linear-gradient(90deg,transparent,rgba(6,207,227,0.6),transparent);}
+.page[data-theme="dark"] .tile-topline.amber{background:linear-gradient(90deg,transparent,rgba(232,160,32,0.56),transparent);}
+
+.project-badge{
+  position:absolute;
+  top:1rem;
+  right:1rem;
+  font-size:0.7rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  border-radius:999px;
+  padding:0.38rem 0.72rem;
+  background:rgba(180,120,0,0.08);
+  color:#a06c00;
+  border:0.5px solid rgba(180,120,0,0.2);
+}
+
+.page[data-theme="dark"] .project-badge{
+  background:rgba(220,150,0,0.12);
+  color:#e8a020;
+  border-color:rgba(220,150,0,0.26);
+}
+
+.project-media{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:180px;
+  border-radius:20px;
+  margin-bottom:1.15rem;
+  overflow:hidden;
+  transition:transform 0.3s ease;
+}
+
+.project-tile:hover .project-media{transform:translateY(-4px);}
+
+.project-media::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 100%);
+  opacity:0.75;
+  pointer-events:none;
+}
+
+.page[data-theme="dark"] .project-media::after{
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%, rgba(255,255,255,0.04) 100%);
+}
+
+.project-media.green{background:linear-gradient(145deg, rgba(34,160,74,0.14), rgba(255,255,255,0.98));}
+.project-media.cyan{background:linear-gradient(145deg, rgba(3,116,148,0.14), rgba(255,255,255,0.98));}
+.project-media.amber{background:linear-gradient(145deg, rgba(180,120,0,0.14), rgba(255,255,255,0.98));}
+.page[data-theme="dark"] .project-media.green{background:linear-gradient(145deg, rgba(68,208,102,0.14), rgba(255,255,255,0.03));}
+.page[data-theme="dark"] .project-media.cyan{background:linear-gradient(145deg, rgba(6,207,227,0.14), rgba(255,255,255,0.03));}
+.page[data-theme="dark"] .project-media.amber{background:linear-gradient(145deg, rgba(232,160,32,0.14), rgba(255,255,255,0.03));}
+
+.project-art{
+  position:relative;
+  z-index:1;
+  width:72%;
+  max-height:148px;
+  object-fit:contain;
+  transition:transform 0.34s ease,filter 0.34s ease;
+}
+
+.project-art.square{
+  width:62%;
+  max-height:154px;
+}
+
+.project-tile:hover .project-art{
+  transform:translateY(-7px) scale(1.05);
+  filter:drop-shadow(0 20px 28px rgba(0,0,0,0.12));
+}
+
+.page[data-theme="dark"] .project-tile:hover .project-art{
+  filter:drop-shadow(0 22px 32px rgba(0,0,0,0.28));
+}
+
+.project-copy{display:flex;flex-direction:column;gap:0.82rem;}
+
+.project-cat{
+  font-size:0.7rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  font-weight:700;
+}
+
+.project-cat.green{color:#22a04a;}
+.project-cat.cyan{color:#037494;}
+.project-cat.amber{color:#a06c00;}
+.page[data-theme="dark"] .project-cat.green{color:#44d066;}
+.page[data-theme="dark"] .project-cat.cyan{color:#06cfe3;}
+.page[data-theme="dark"] .project-cat.amber{color:#e8a020;}
+
+.project-name{font-size:1.45rem;font-weight:600;color:var(--title);line-height:1.08;}
+.project-desc{font-size:0.96rem;line-height:1.72;color:var(--subtle);}
+.project-meta{
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  font-size:0.84rem;
+  font-weight:700;
+  color:var(--accent);
+}
+
+.project-meta i{font-size:1rem;}
+
+.mission-block{
+  max-width:700px;
+  margin:0 auto;
+  padding:2rem 2.2rem;
+  background:var(--mission-bg);
+  border:0.5px solid var(--mission-border);
+  border-radius:18px;
+  text-align:center;
+}
+
+.mission-block p{font-size:1rem;color:var(--subtle);line-height:1.9;}
+
+.footer{
+  padding:1.7rem 2rem;
+  text-align:center;
+  border-top:0.5px solid var(--footer-border);
+  background:var(--surface);
+}
+
+.footer p{font-size:0.82rem;color:var(--footer-text);}
+.footer span{color:var(--footer-accent);}
+
+@media (max-width:900px){
+  .nav{padding:1rem 1.2rem;flex-wrap:wrap;}
+  .nav-links{width:100%;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+  .theme-toggle{margin-left:auto;}
+  .hero{padding:4.5rem 1.2rem 2.5rem;}
+  .hero-title{font-size:2.95rem;}
+  .hero-sub{font-size:1rem;max-width:560px;}
+  .section{padding:2.6rem 1.2rem;}
+}
+
+@media (max-width:640px){
+  .nav-links a{font-size:0.8rem;}
+  .hero-glow{width:100%;max-width:520px;height:380px;}
+  .hero-title{font-size:2.35rem;}
+  .sec-title{font-size:1.6rem;}
+  .projects{grid-template-columns:1fr;gap:1rem;}
+  .project-tile{min-height:380px;padding:1rem;}
+  .project-media{min-height:160px;}
+}
+</style>
+
+<div class="page" data-theme="light" id="page">
+  <nav class="nav">
+    <div class="nav-logo">NeoCom</div>
+    <div class="nav-links">
+      <a>Projetos</a>
+      <a>Missao</a>
+      <a>Blog</a>
+      <a>Contato</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+      <i class="ti ti-moon-stars" aria-hidden="true"></i>
+      <span id="themeLabel">Modo escuro</span>
+    </button>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <img class="hero-mark" src="../assets/NeoCom_Icon_Final_v2.svg" alt="NeoCom">
+    <div class="hero-eyebrow">neocom.cloud</div>
+    <h1 class="hero-title">
+      Inovacao em<br>
+      <span class="morph-wrap"><span id="morph">comunicacoes</span><span class="cursor"></span></span>
+    </h1>
+    <p class="hero-sub">Tecnologia com proposito. Conexao com responsabilidade. Privacidade como fundamento.</p>
+    <div class="hero-btn"><i class="ti ti-arrow-right" aria-hidden="true"></i> Conheca nossos projetos</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="sec-label">Nossos valores</div>
+      <div class="sec-title">O que nos move</div>
+      <div class="sec-sub">Os principios por tras de cada decisao</div>
+      <div class="chips">
+        <div class="chip"><i class="ti ti-lock" aria-hidden="true"></i> Privacidade</div>
+        <div class="chip"><i class="ti ti-shield-check" aria-hidden="true"></i> Seguranca</div>
+        <div class="chip"><i class="ti ti-award" aria-hidden="true"></i> Confiabilidade</div>
+        <div class="chip"><i class="ti ti-certificate" aria-hidden="true"></i> Comprovabilidade</div>
+        <div class="chip"><i class="ti ti-users" aria-hidden="true"></i> Comunidade</div>
+      </div>
+
+      <div class="sec-label">Projetos</div>
+      <div class="sec-title">O que estamos construindo</div>
+      <div class="sec-sub">Solucoes reais para problemas que importam</div>
+
+      <div class="projects">
+        <button class="project-tile green" type="button" onclick="handleProjectPrompt('Me fale mais sobre o NeoRecicla')">
+          <div class="tile-topline green"></div>
+          <div class="project-media green">
+            <img class="project-art" src="../assets/NeoRecicla_Icon.svg" alt="Icone do NeoRecicla">
+          </div>
+          <div class="project-copy">
+            <div class="project-cat green">Sustentabilidade · Blockchain</div>
+            <div class="project-name">NeoRecicla</div>
+            <div class="project-desc">Coleta automatizada de residuos em universidades com pontos de reciclagem verificados em blockchain.</div>
+            <div class="project-meta"><i class="ti ti-arrow-up-right" aria-hidden="true"></i> Explorar projeto</div>
+          </div>
+        </button>
+
+        <button class="project-tile cyan" type="button" onclick="handleProjectPrompt('Me fale mais sobre o DevRecord')">
+          <div class="tile-topline cyan"></div>
+          <div class="project-media cyan">
+            <img class="project-art square" src="../assets/NeoCom_Icon_App.svg" alt="Icone temporario do DevRecord">
+          </div>
+          <div class="project-copy">
+            <div class="project-cat cyan">Tecnologia · Identidade</div>
+            <div class="project-name">DevRecord</div>
+            <div class="project-desc">Um ponto de verdade imutavel para o historico de producao de desenvolvedores, livre de plataformas centralizadas.</div>
+            <div class="project-meta"><i class="ti ti-arrow-up-right" aria-hidden="true"></i> Ver conceito</div>
+          </div>
+        </button>
+
+        <button class="project-tile amber" type="button" onclick="handleProjectPrompt('Me fale mais sobre o Neo Health')">
+          <div class="project-badge">Conceito</div>
+          <div class="tile-topline amber"></div>
+          <div class="project-media amber">
+            <img class="project-art square" src="../assets/Icon_NeoHealth_Concept.png" alt="Icone do Neo Health">
+          </div>
+          <div class="project-copy">
+            <div class="project-cat amber">Saude Pessoal · Rastreamento</div>
+            <div class="project-name">Neo Health</div>
+            <div class="project-desc">Rastreador pessoal de informacoes de saude para centralizar historico, metricas e dados importantes sob controle do usuario.</div>
+            <div class="project-meta"><i class="ti ti-arrow-up-right" aria-hidden="true"></i> Abrir visao geral</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="sec-label">Missao</div>
+      <div class="sec-title" style="margin-bottom:1.45rem;">Por que existimos</div>
+      <div class="mission-block">
+        <p>A NeoCom nasceu da crenca de que tecnologia so tem valor quando serve as pessoas com transparencia, etica e respeito a privacidade. Cada projeto e uma resposta direta a um problema real, construida com a comunidade, para a comunidade.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 <span>NeoCom</span> · neocom.cloud</p>
+  </footer>
+</div>
+
+<script>
+const page=document.getElementById('page');
+const themeToggle=document.getElementById('themeToggle');
+const themeLabel=document.getElementById('themeLabel');
+const toggleIcon=themeToggle.querySelector('i');
+
+function syncThemeControls(){
+  const dark=page.dataset.theme==="dark";
+  themeLabel.textContent=dark?"Modo claro":"Modo escuro";
+  toggleIcon.className=dark?"ti ti-sun":"ti ti-moon-stars";
+}
+
+themeToggle.addEventListener('click',()=>{
+  page.dataset.theme=page.dataset.theme==="dark"?"light":"dark";
+  syncThemeControls();
+});
+
+syncThemeControls();
+
+const phrases=["comunicacoes","privacidade","sustentabilidade","comunidade","tecnologia etica","confianca digital"];
+let pi=0,ci=0,del=false,pause=false;
+const el=document.getElementById('morph');
+
+function type(){
+  if(pause){pause=false;setTimeout(type,1500);return;}
+  const w=phrases[pi];
+  if(!del){
+    el.textContent=w.slice(0,ci+1);
+    ci++;
+    if(ci===w.length){del=true;pause=true;setTimeout(type,80);return;}
+  }else{
+    el.textContent=w.slice(0,ci-1);
+    ci--;
+    if(ci===0){del=false;pi=(pi+1)%phrases.length;}
+  }
+  setTimeout(type,del?50:88);
+}
+
+window.handleProjectPrompt=(message)=>{
+  if(typeof window.sendPrompt==="function"){
+    window.sendPrompt(message);
+    return;
+  }
+  console.info(message);
+};
+
+setTimeout(type,1000);
+</script>
