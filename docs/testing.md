@@ -15,6 +15,7 @@ Unit tests cover pure helpers and content-generation logic:
 - localized mailto generation
 - static page manifest generation
 - generated SEO metadata and sitemap output
+- permitted and rejected branch promotion paths
 
 ### Integration tests
 
@@ -45,6 +46,7 @@ pnpm test
 pnpm test:watch
 pnpm build
 pnpm test:build-output
+BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
 ```
 
 `pnpm build` also regenerates the localized HTML files through the Vite config before producing the final static output.
@@ -59,9 +61,10 @@ docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12
 
 The CI workflow runs on pull requests and pushes to `develop`, `Q.A`, `main`, and `deploy`.
 
-It has two jobs:
+It has three jobs:
 
 - workflow linting with `actionlint`
+- promotion-path validation for pull requests into `Q.A`, `main`, and `deploy`
 - application validation:
 
 ```bash
@@ -71,10 +74,12 @@ pnpm build
 pnpm test:build-output
 ```
 
+For pull requests and pushes to `Q.A`, CI uploads the validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`. Download it from the workflow run to inspect the exact static site without creating a public QA deployment.
+
 This keeps deployment and test enforcement separate:
 
 - `ci.yml` is the quality gate
-- `deploy-pages.yml` is the deployment pipeline
+- `deploy-pages.yml` reruns the full validation suite before publishing the production artifact
 
 ## Current gaps
 
