@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 interface StaticSiteModule {
@@ -20,11 +20,7 @@ export default defineConfig(async () => {
     test: {
       environment: "jsdom",
       globals: true,
-      exclude: [
-        "**/node_modules/**",
-        "**/dist/**",
-        "tests/build-output.test.mjs"
-      ],
+      exclude: [...configDefaults.exclude, "tests/build-output.test.mjs"],
       setupFiles: ["./src/test/setup.ts"]
     },
     build: {

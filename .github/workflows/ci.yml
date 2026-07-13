@@ -32,6 +32,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
       - name: Verify pull request source branch
         env:
           BASE_REF: ${{ github.base_ref }}

@@ -28,12 +28,17 @@ pnpm dev
 pnpm generate:pages
 pnpm typecheck
 pnpm test
-pnpm test:watch
 pnpm build
 pnpm test:build-output
 BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
 pnpm verify:repository
 pnpm preview
+```
+
+Run the following separately when interactive test watching is needed:
+
+```bash
+pnpm test:watch
 ```
 
 `pnpm generate:pages` regenerates the localized HTML entry points and `public/sitemap.xml` from the centralized content catalog.
