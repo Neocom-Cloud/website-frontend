@@ -17,7 +17,11 @@ jobs:
       contents: read
     steps:
       - name: Checkout
+<<<<<<< HEAD
         uses: actions/checkout@v7
+=======
+        uses: actions/checkout@v4
+>>>>>>> 55bf4330cfc9f2228dcb775a0bc63051813b9806
 
       - name: Lint workflow definitions
         uses: docker://rhysd/actionlint:1.7.12
@@ -30,7 +34,11 @@ jobs:
       contents: read
     steps:
       - name: Checkout
+<<<<<<< HEAD
         uses: actions/checkout@v7
+=======
+        uses: actions/checkout@v4
+>>>>>>> 55bf4330cfc9f2228dcb775a0bc63051813b9806
 
       - name: Verify pull request source branch
         env:
@@ -71,7 +79,11 @@ jobs:
 
       - name: Upload QA build artifact
         if: github.event_name == 'pull_request' || github.ref == 'refs/heads/Q.A'
+<<<<<<< HEAD
         uses: actions/upload-artifact@v7
+=======
+        uses: actions/upload-artifact@v4
+>>>>>>> 55bf4330cfc9f2228dcb775a0bc63051813b9806
         with:
           name: neocom-site-${{ github.sha }}
           path: ./dist
