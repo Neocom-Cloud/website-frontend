@@ -5,6 +5,7 @@ This project deploys a static site to GitHub Pages and serves it on `neocom.clou
 ## Current hosting model
 
 - Build system: Vite static output
+- Build runtime: Node.js 24 with pnpm 11.3.0
 - Deploy target: GitHub Pages
 - Canonical domain: `https://neocom.cloud`
 - Alternate host: `https://www.neocom.cloud`

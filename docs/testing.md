@@ -2,6 +2,8 @@
 
 This repository uses Vitest for unit tests and jsdom-based integration tests.
 
+Use Node.js 24 before running the commands below. The repository includes `.nvmrc`, so `nvm use` selects the required runtime.
+
 ## Test categories
 
 ### Unit tests
