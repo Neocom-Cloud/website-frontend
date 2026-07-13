@@ -17,7 +17,8 @@
     "test:watch": "vitest",
     "test:ci": "vitest run",
     "test:build-output": "vitest run --config vitest.build.config.ts",
-    "verify:promotion": "node scripts/verify-promotion.mjs"
+    "verify:promotion": "node scripts/verify-promotion.mjs",
+    "verify:repository": "node scripts/verify-repository-integrity.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",

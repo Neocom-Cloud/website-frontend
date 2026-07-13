@@ -18,6 +18,7 @@ Unit tests cover pure helpers and content-generation logic:
 - static page manifest generation
 - generated SEO metadata and sitemap output
 - permitted and rejected branch promotion paths
+- tracked-file conflict-marker detection
 
 ### Integration tests
 
@@ -49,6 +50,7 @@ pnpm test:watch
 pnpm build
 pnpm test:build-output
 BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
+pnpm verify:repository
 ```
 
 `pnpm build` also regenerates the localized HTML files through the Vite config before producing the final static output.
@@ -71,6 +73,7 @@ It has three jobs:
 
 ```bash
 pnpm typecheck
+pnpm verify:repository
 pnpm test:ci
 pnpm build
 pnpm test:build-output

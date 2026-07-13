@@ -32,6 +32,7 @@ pnpm test:watch
 pnpm build
 pnpm test:build-output
 BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
+pnpm verify:repository
 pnpm preview
 ```
 
@@ -77,17 +78,14 @@ This keeps one shared landing template, one shared standard project template, an
 ## Deployment and DNS
 
 - Deployment workflow: [deploy-pages.yml](./.github/workflows/deploy-pages.yml)
-<<<<<<< HEAD
 - DNS and custom-domain runbook: [docs/deployment.md](./docs/deployment.md)
 - Hostinger must provide the four apex A records and `www -> neocom-cloud.github.io` before GitHub Pages can validate `neocom.cloud`.
-=======
-- DNS and custom-domain guide: [docs/deployment.md](./docs/deployment.md)
->>>>>>> 55bf4330cfc9f2228dcb775a0bc63051813b9806
 - Production publishes only from the `deploy` branch; `main` remains the default branch.
 
 ## Testing
 
 - Test guide: [docs/testing.md](./docs/testing.md)
+- Code review guide: [docs/code-review.md](./docs/code-review.md)
 - CI workflow: [ci.yml](./.github/workflows/ci.yml)
 
 ## Notes
