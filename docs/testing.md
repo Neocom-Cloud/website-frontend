@@ -2,7 +2,7 @@
 
 This repository uses Vitest for unit tests and jsdom-based integration tests.
 
-Use Node.js 24 before running the commands below. The repository includes `.nvmrc`, so `nvm use` selects the required runtime.
+Use Node.js 24 or later before running the commands below. The repository includes `.nvmrc`, so `nvm use` selects the Node 24 baseline.
 
 ## Test categories
 
@@ -74,7 +74,7 @@ It has three jobs:
 
 - workflow linting with `actionlint`
 - promotion-path validation for pull requests into `Q.A`, `main`, and `deploy`
-- application validation:
+- application validation on Node 24 and the current latest Node release:
 
 ```bash
 pnpm typecheck
@@ -84,7 +84,7 @@ pnpm build
 pnpm test:build-output
 ```
 
-For pull requests and pushes to `Q.A`, CI uploads the validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`. Download it from the workflow run to inspect the exact static site without creating a public QA deployment.
+For pull requests and pushes to `Q.A`, the Node 24 validation run uploads the validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`. Download it from the workflow run to inspect the exact static site without creating a public QA deployment.
 
 This keeps deployment and test enforcement separate:
 

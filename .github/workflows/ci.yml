@@ -44,8 +44,12 @@ jobs:
         run: node scripts/verify-promotion.mjs
 
   test-and-build:
-    name: Test and build
+    name: Test and build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["24", "latest"]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -56,7 +60,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ matrix.node-version }}
           cache: pnpm
 
       - name: Install dependencies
@@ -78,7 +82,7 @@ jobs:
         run: pnpm test:build-output
 
       - name: Upload QA build artifact
-        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/Q.A'
+        if: matrix.node-version == '24' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/Q.A')
         uses: actions/upload-artifact@v7
         with:
           name: neocom-site-${{ github.sha }}

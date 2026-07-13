@@ -5,7 +5,7 @@ This project deploys a static site to GitHub Pages and serves it on `neocom.clou
 ## Current hosting model
 
 - Build system: Vite static output
-- Build runtime: Node.js 24 with pnpm 11.3.0
+- Build runtime: Node.js 24 baseline with pnpm 11.3.0; CI also validates the current latest Node release
 - Deploy target: GitHub Pages
 - Canonical domain: `https://neocom.cloud`
 - Alternate host: `https://www.neocom.cloud`
@@ -64,11 +64,12 @@ Recommended repository rules:
 2. Require these checks before merging, with no human approval requirement:
    - `Validate GitHub Actions workflows`
    - `Validate promotion path`
-   - `Test and build`
+   - `Test and build (Node 24)`
+   - `Test and build (Node latest)`
 3. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
 4. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
 
-The deployment workflow supports manual dispatch, but it only publishes when dispatched from `deploy`. It reruns typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.
+The deployment workflow supports manual dispatch, but it only publishes when dispatched from `deploy`. It uses the Node 24 baseline and reruns typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.
 
 ### 1.2 Preflight checks
 

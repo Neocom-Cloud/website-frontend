@@ -4,7 +4,7 @@ Static multi-page marketing site for `neocom.cloud`, built with Vite and React a
 
 This repository is `pnpm`-first. Use `pnpm` for install, development, testing, and build commands.
 
-Node.js 24 is required. With `nvm`, run `nvm use` before installing dependencies.
+Node.js 24 or later is supported. With `nvm`, run `nvm use` to select the Node 24 baseline before installing dependencies.
 
 ## Stack
 

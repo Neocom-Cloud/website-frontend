@@ -34,9 +34,10 @@ reviews:
         promotion-policy behavior. Flag assertions that only mirror implementation details.
     - path: '.github/**'
       instructions: >-
-        Treat workflow changes as production changes. Preserve Node 24 and pnpm, least-
-        privilege permissions, the develop -> Q.A -> main -> deploy promotion path, and
-        the rule that only deploy publishes GitHub Pages.
+        Treat workflow changes as production changes. Preserve Node 24+ support, the Node 24
+        deployment baseline, latest-Node CI coverage, pnpm, least-privilege permissions, the
+        develop -> Q.A -> main -> deploy promotion path, and the rule that only deploy
+        publishes GitHub Pages.
     - path: 'docs/**'
       instructions: >-
         Check operational accuracy. DNS, GitHub Pages, Cloudflare, and branch-policy
