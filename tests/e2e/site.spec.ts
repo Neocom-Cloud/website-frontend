@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { E2E_BASE_URL } from "./constants";
 
 const locales = ["pt-br", "en"] as const;
 const projectSlugs = ["neorecicla", "devrecord", "neo-health"] as const;
@@ -48,7 +49,10 @@ test.describe("published static site", () => {
     await page.goto("/");
     await expect(page).toHaveURL(/\/pt-br\/$/);
 
-    const browserLocaleContext = await browser.newContext({ locale: "en-US" });
+    const browserLocaleContext = await browser.newContext({
+      baseURL: E2E_BASE_URL,
+      locale: "en-US"
+    });
     const browserLocalePage = await browserLocaleContext.newPage();
     await browserLocalePage.goto("/");
     await expect(browserLocalePage).toHaveURL(/\/en\/$/);
