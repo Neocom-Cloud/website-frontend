@@ -78,7 +78,7 @@ docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12
 
 The CI workflow runs on pull requests and pushes to `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy`.
 
-It has three jobs:
+It has four jobs:
 
 - workflow linting with `actionlint`
 - promotion-path validation for pull requests into `Q.A`, `main`, `Q.A.E2E`, and `deploy`
@@ -91,6 +91,7 @@ pnpm test:ci
 pnpm build
 pnpm test:build-output
 ```
+- browser end-to-end validation on Playwright's Chromium, Firefox, WebKit, and Chromium mobile projects for pull requests into `Q.A.E2E` and `deploy`
 
 For pull requests and pushes to `Q.A` or `Q.A.E2E`, the Node 24 validation run uploads the validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`. Pull requests into `Q.A.E2E` and `deploy` also run Playwright on Chromium, Firefox, WebKit, and Chromium mobile, retaining its report and failure traces for 14 days. Download the artifacts from the workflow run to inspect the exact static site without creating a public QA deployment.
 
@@ -101,6 +102,6 @@ This keeps deployment and test enforcement separate:
 
 ## Current gaps
 
-- Browser end-to-end coverage is intentionally deferred to the next testing phase
+- No browser visual-regression coverage yet
 - No visual regression tests yet
 - No Lighthouse or accessibility CI checks yet
