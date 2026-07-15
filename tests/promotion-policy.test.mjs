@@ -70,6 +70,14 @@ describe("promotion policy", () => {
     expect(result.stderr).toBe("");
   });
 
+  it("accepts the Q.A.E2E promotion through the CLI entry point", () => {
+    const result = runPromotionCli({ BASE_REF: "Q.A.E2E", HEAD_REF: "main" });
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("Promotion path accepted: main -> Q.A.E2E.");
+    expect(result.stderr).toBe("");
+  });
+
   it.each([
     [
       { BASE_REF: "main", HEAD_REF: "develop" },
