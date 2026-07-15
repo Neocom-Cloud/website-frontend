@@ -15,6 +15,7 @@ export default defineConfig({
   webServer: {
     command: `pnpm build && pnpm exec vite preview --host ${E2E_HOST} --port ${E2E_PORT}`,
     url: E2E_BASE_URL,
+    timeout: 120_000,
     reuseExistingServer: !process.env.CI
   },
   projects: [

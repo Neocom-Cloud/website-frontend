@@ -1,22 +1,65 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { getStaticPageDefinitions } from "../scripts/static-site.mjs";
 import { projectRegistry } from "../src/content/site.js";
 
 const projectRoot = process.cwd();
 const distDir = resolve(projectRoot, "dist");
-
-function getPageOutputPath(page) {
-  if (page.pageKind === "landing") {
-    return `${page.locale}/index.html`;
+const staticPageContract = [
+  { locale: "pt-br", htmlLang: "pt-BR", outputPath: "pt-br/index.html", pathname: "/pt-br/" },
+  { locale: "en", htmlLang: "en", outputPath: "en/index.html", pathname: "/en/" },
+  {
+    locale: "pt-br",
+    htmlLang: "pt-BR",
+    outputPath: "pt-br/projects/neorecicla/index.html",
+    pathname: "/pt-br/projects/neorecicla/"
+  },
+  {
+    locale: "pt-br",
+    htmlLang: "pt-BR",
+    outputPath: "pt-br/projects/devrecord/index.html",
+    pathname: "/pt-br/projects/devrecord/"
+  },
+  {
+    locale: "pt-br",
+    htmlLang: "pt-BR",
+    outputPath: "pt-br/projects/neo-health/index.html",
+    pathname: "/pt-br/projects/neo-health/"
+  },
+  {
+    locale: "en",
+    htmlLang: "en",
+    outputPath: "en/projects/neorecicla/index.html",
+    pathname: "/en/projects/neorecicla/"
+  },
+  {
+    locale: "en",
+    htmlLang: "en",
+    outputPath: "en/projects/devrecord/index.html",
+    pathname: "/en/projects/devrecord/"
+  },
+  {
+    locale: "en",
+    htmlLang: "en",
+    outputPath: "en/projects/neo-health/index.html",
+    pathname: "/en/projects/neo-health/"
   }
-
-  return `${page.locale}/projects/${page.projectSlug}/index.html`;
-}
+];
+const canonicalOrigin = "https://neocom.cloud";
 
 function readDistFile(relativePath) {
   return readFileSync(resolve(distDir, relativePath), "utf8");
+}
+
+function getCanonicalUrl(pathname) {
+  return new URL(pathname, `${canonicalOrigin}/`).toString();
+}
+
+function getAssetReferences(html) {
+  return Array.from(
+    html.matchAll(/(?:src|href)="(\/assets\/[^\"]+)"/g),
+    ([, assetPath]) => assetPath
+  );
 }
 
 describe("production build output", () => {
@@ -31,7 +74,7 @@ describe("production build output", () => {
       "robots.txt",
       "site.webmanifest",
       "sitemap.xml",
-      ...getStaticPageDefinitions().map(getPageOutputPath)
+      ...staticPageContract.map((page) => page.outputPath)
     ];
 
     for (const relativePath of requiredFiles) {
@@ -49,14 +92,34 @@ describe("production build output", () => {
   });
 
   it("rewrites localized pages to built assets while preserving metadata", () => {
-    for (const page of getStaticPageDefinitions()) {
-      const html = readDistFile(getPageOutputPath(page));
+    for (const page of staticPageContract) {
+      const html = readDistFile(page.outputPath);
+      const assetReferences = getAssetReferences(html);
 
       expect(html).not.toContain("/src/page-entry.tsx");
       expect(html).toContain(`data-locale="${page.locale}"`);
-      expect(html).toContain('rel="canonical" href="https://neocom.cloud/');
-      expect(html).toMatch(/src="\/assets\/page-entry-[^"]+\.js"/);
-      expect(html).toMatch(/href="\/assets\/global-[^"]+\.css"/);
+      expect(html).toContain(`lang="${page.htmlLang}"`);
+      expect(html).toContain(
+        `rel="canonical" href="${getCanonicalUrl(page.pathname)}"`
+      );
+      expect(assetReferences.some((assetPath) => assetPath.endsWith(".js"))).toBe(true);
+      expect(assetReferences.some((assetPath) => assetPath.endsWith(".css"))).toBe(true);
+
+      for (const assetPath of assetReferences) {
+        expect(existsSync(resolve(distDir, assetPath.slice(1))), assetPath).toBe(true);
+      }
+    }
+  });
+
+  it("publishes every required canonical URL in the sitemap", () => {
+    const sitemap = readDistFile("sitemap.xml");
+    const requiredCanonicalUrls = [
+      `${canonicalOrigin}/`,
+      ...staticPageContract.map((page) => getCanonicalUrl(page.pathname))
+    ];
+
+    for (const canonicalUrl of requiredCanonicalUrls) {
+      expect(sitemap).toContain(`<loc>${canonicalUrl}</loc>`);
     }
   });
 
