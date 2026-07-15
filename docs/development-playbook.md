@@ -15,7 +15,7 @@ Use it for a feature, maintenance change, release hardening, or infrastructure a
 
 ## Architecture pattern
 
-### One page model, many static pages
+### One-page model, many static pages
 
 The site uses a single React landing-page model and a shared project-page model. Static generation emits each localized route and its SEO metadata from that shared code.
 
@@ -136,7 +136,7 @@ PR bodies should state:
 - deployment, DNS, locale, or generated-output impact
 - known limits or deliberate exclusions
 
-Wait for CI and CodeRabbit. Inspect thread-level state, not only a check badge. An actionable finding must be handled by one of these paths:
+Wait for the repository's mandatory CI checks. When CodeRabbit is available and completes a review, inspect its thread-level state rather than only its check badge. An actionable finding must be handled by one of these paths:
 
 | Finding result | Required action |
 | --- | --- |
@@ -145,7 +145,7 @@ Wait for CI and CodeRabbit. Inspect thread-level state, not only a check badge. 
 | Incorrect or no longer applicable | Explain why in the thread and resolve only after verifying the current code |
 | Stylistic or over-engineering | Preserve the accepted behavior unless there is a clear maintenance or reliability gain |
 
-CodeRabbit must not replace human accountability. Its role is an additional source of review evidence; required GitHub checks and human branch ownership remain the merge gates. See [Code Review And CodeRabbit](./code-review.md) for the repository configuration.
+CodeRabbit must not replace human accountability. Its role is advisory review evidence; required GitHub checks and human branch ownership remain the merge gates. Its unavailability must not block a promotion, but any findings it returns must be triaged before merging. See [Code Review And CodeRabbit](./code-review.md) for the repository configuration.
 
 ### 6. Promote with one PR per boundary
 
@@ -157,13 +157,47 @@ develop -> Q.A -> main -> Q.A.E2E -> deploy
 
 For each boundary:
 
-1. Fetch the remote branches and ensure there is no duplicate open promotion PR.
-2. Run the exact local promotion-policy command.
-3. Open a PR with the source and target matching one allowed edge.
-4. Wait for every required CI check and CodeRabbit review to complete.
-5. Inspect unresolved review threads and mergeability state.
-6. Merge only if the PR is clean and all valid review work is complete.
-7. Fetch again, then begin the next boundary.
+1. Fetch the remote branches and designate one promotion owner for the source-to-target edge. Coordinate concurrent release operators through the team's release record or change ticket; an API lookup alone cannot provide a lock.
+2. Set `BASE_REF` to the target branch and `HEAD_REF` to the source branch, then check for a duplicate open promotion PR with a fail-closed command:
+
+   ```bash
+   set -euo pipefail
+   open_promotions="$(gh pr list --state open --base "$BASE_REF" --head "$HEAD_REF" --json number --jq 'length')"
+   test "$open_promotions" -eq 0
+   ```
+
+   Continue only when the command succeeds and returns zero. A `gh` error or a nonzero count aborts the promotion.
+3. Run the exact local promotion-policy command.
+4. Open a PR with the source and target matching one allowed edge. Retain its GitHub number as `created_pr_number`; with the GitHub CLI, capture it from the created PR URL:
+
+   ```bash
+   created_pr_url="$(gh pr create \
+     --base "$BASE_REF" \
+     --head "$HEAD_REF" \
+     --title "<promotion title>" \
+     --body "<promotion summary>")"
+   created_pr_number="${created_pr_url##*/}"
+   test "$created_pr_number" -gt 0
+   ```
+
+5. Immediately confirm the newly created PR is the only matching promotion and has the expected identity:
+
+   ```bash
+   set -euo pipefail
+   matching_pr_number="$(gh pr list \
+     --state open \
+     --base "$BASE_REF" \
+     --head "$HEAD_REF" \
+     --json number \
+     --jq 'if length == 1 then .[0].number else "" end')"
+   test "$matching_pr_number" = "$created_pr_number"
+   ```
+
+   Continue only if the command succeeds, exactly one matching PR exists, and its number matches the newly created PR. Otherwise, stop and coordinate with the other operator.
+6. Wait for every required CI check. When CodeRabbit completes, triage any findings; its unavailability alone is not a merge gate.
+7. Inspect all unresolved review threads and mergeability state.
+8. Merge only if the PR is clean and all valid review work is complete.
+9. Fetch again, then begin the next boundary.
 
 The browser E2E gate is intentionally required for `main -> Q.A.E2E` and `Q.A.E2E -> deploy`. `Q.A.E2E` is the manual acceptance boundary; leave the PR open there until a human explicitly accepts it. Only `deploy` can publish GitHub Pages.
 
@@ -174,7 +208,7 @@ Before declaring a milestone stable, verify:
 - the intended PR base, head, and open/merged state
 - `MERGEABLE` and `CLEAN` status when manual review remains
 - completed required CI checks, including the relevant browser suite
-- completed CodeRabbit review and no unresolved actionable threads
+- completed CodeRabbit review, when available, and no unresolved actionable threads
 - branch heads, confirming that later stages were not changed early
 - clean local worktree
 
@@ -208,7 +242,7 @@ Use this checklist when repeating the pattern:
 - [ ] Run complete local validation and `git diff --check`.
 - [ ] Commit with a specific conventional subject and push only the intended branch.
 - [ ] Create a focused PR with accurate validation evidence.
-- [ ] Wait for required CI and CodeRabbit; inspect all review threads.
+- [ ] Wait for required CI; inspect all review threads, and triage CodeRabbit findings when its review completes.
 - [ ] Apply valid fixes without expanding scope; revalidate after each change.
 - [ ] Promote only through the approved branch edge, one PR at a time.
 - [ ] Stop at `Q.A.E2E` for human acceptance; do not merge or deploy by assumption.
