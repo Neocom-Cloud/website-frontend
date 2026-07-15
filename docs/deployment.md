@@ -69,7 +69,7 @@ Recommended repository rules:
    - `Test and build (Node latest)`
 3. Require the `Browser end-to-end` check for `Q.A.E2E` and `deploy` promotion PRs. It runs Playwright on Chromium, Firefox, WebKit, and Chromium mobile.
 4. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> Q.A.E2E -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
-4. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
+5. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
 
 A push to `deploy` publishes production. A manual dispatch also publishes only when run from `deploy`; both paths use the Node 24 baseline and rerun typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.
 

@@ -1,6 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
-
-const baseURL = "http://127.0.0.1:4173";
+import { E2E_BASE_URL, E2E_HOST, E2E_PORT } from "./tests/e2e/constants";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -9,13 +8,13 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: [["html", { open: "never" }], ["list"]],
   use: {
-    baseURL,
+    baseURL: E2E_BASE_URL,
     screenshot: "only-on-failure",
     trace: "retain-on-failure"
   },
   webServer: {
-    command: "pnpm build && pnpm preview -- --host 127.0.0.1 --port 4173",
-    url: baseURL,
+    command: `pnpm build && pnpm preview -- --host ${E2E_HOST} --port ${E2E_PORT}`,
+    url: E2E_BASE_URL,
     reuseExistingServer: !process.env.CI
   },
   projects: [
