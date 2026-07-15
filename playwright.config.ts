@@ -13,7 +13,7 @@ export default defineConfig({
     trace: "retain-on-failure"
   },
   webServer: {
-    command: `pnpm build && pnpm preview -- --host ${E2E_HOST} --port ${E2E_PORT}`,
+    command: `pnpm build && pnpm exec vite preview --host ${E2E_HOST} --port ${E2E_PORT}`,
     url: E2E_BASE_URL,
     reuseExistingServer: !process.env.CI
   },
