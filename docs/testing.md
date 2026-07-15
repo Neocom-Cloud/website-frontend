@@ -103,5 +103,4 @@ This keeps deployment and test enforcement separate:
 ## Current gaps
 
 - No browser visual-regression coverage yet
-- No visual regression tests yet
 - No Lighthouse or accessibility CI checks yet
