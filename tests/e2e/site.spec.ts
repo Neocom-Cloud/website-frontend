@@ -42,10 +42,10 @@ test.describe("published static site", () => {
     browser,
     page
   }) => {
+    await page.addInitScript(() => window.localStorage.setItem("neocom-locale", "pt-br"));
     await page.goto("/?lang=en");
     await expect(page).toHaveURL(/\/en\/$/);
 
-    await page.addInitScript(() => window.localStorage.setItem("neocom-locale", "pt-br"));
     await page.goto("/");
     await expect(page).toHaveURL(/\/pt-br\/$/);
 
@@ -54,9 +54,21 @@ test.describe("published static site", () => {
       locale: "en-US"
     });
     const browserLocalePage = await browserLocaleContext.newPage();
+    await browserLocalePage.addInitScript(() =>
+      window.localStorage.setItem("neocom-locale", "pt-br")
+    );
     await browserLocalePage.goto("/");
-    await expect(browserLocalePage).toHaveURL(/\/en\/$/);
+    await expect(browserLocalePage).toHaveURL(/\/pt-br\/$/);
     await browserLocaleContext.close();
+
+    const browserOnlyContext = await browser.newContext({
+      baseURL: E2E_BASE_URL,
+      locale: "en-US"
+    });
+    const browserOnlyPage = await browserOnlyContext.newPage();
+    await browserOnlyPage.goto("/");
+    await expect(browserOnlyPage).toHaveURL(/\/en\/$/);
+    await browserOnlyContext.close();
   });
 
   test("persists the selected theme after reload", async ({ page }) => {
