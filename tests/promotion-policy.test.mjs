@@ -1,4 +1,6 @@
 import { spawnSync } from "node:child_process";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   REQUIRED_SOURCE_BRANCHES,
@@ -6,7 +8,15 @@ import {
 } from "../scripts/verify-promotion.mjs";
 
 function runPromotionCli(environment) {
-  return spawnSync(process.execPath, ["scripts/verify-promotion.mjs"], {
+  const testFilePath = import.meta.url.startsWith("file:")
+    ? fileURLToPath(import.meta.url)
+    : import.meta.url;
+  const scriptPath = resolve(
+    dirname(testFilePath),
+    "../scripts/verify-promotion.mjs"
+  );
+
+  return spawnSync(process.execPath, [scriptPath], {
     cwd: process.cwd(),
     encoding: "utf8",
     env: { ...process.env, ...environment }
