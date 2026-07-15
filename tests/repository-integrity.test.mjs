@@ -16,7 +16,13 @@ describe("repository integrity", () => {
     expect(findConflictMarkers(contents)).toEqual([2, 4, 6]);
   });
 
-  it("does not flag ordinary content", () => {
-    expect(findConflictMarkers("const value = 7;\n=======value")).toEqual([]);
+  it("does not flag ordinary content or isolated conflict marker lines", () => {
+    expect(findConflictMarkers("const value = 7;\n=======value\n=======")).toEqual([]);
+  });
+
+  it("does not flag incomplete conflict marker sequences", () => {
+    const contents = ["<<<<<<< HEAD", "local", "=======", "remote"].join("\n");
+
+    expect(findConflictMarkers(contents)).toEqual([]);
   });
 });
