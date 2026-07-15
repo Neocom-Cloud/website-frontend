@@ -42,6 +42,18 @@ describe("repository integrity", () => {
     expect(findConflictMarkers(contents)).toEqual([1, 3, 5]);
   });
 
+  it("ignores conflict blocks with mismatched marker widths", () => {
+    const contents = [
+      "<<<<<<< HEAD",
+      "local",
+      "=======",
+      "remote",
+      ">>>>>>>> branch"
+    ].join("\n");
+
+    expect(findConflictMarkers(contents)).toEqual([]);
+  });
+
   it("scans tracked text files and skips binary files", async () => {
     const files = new Map([
       ["clean.txt", Buffer.from("const value = 7;\n")],
