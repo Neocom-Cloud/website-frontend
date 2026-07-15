@@ -204,7 +204,7 @@ For each boundary:
 6. Wait for every required CI check. When CodeRabbit completes, triage any findings; its unavailability alone is not a merge gate.
 7. Inspect all unresolved review threads and mergeability state.
 8. Merge only if the PR is clean and all valid review work is complete.
-9. At the start of the next boundary, run `git fetch --prune origin` again, inspect its refreshed `origin/$BASE_REF` and `origin/$HEAD_REF` heads, then run its separate promotion-policy validation.
+9. After merging, restart at step 1 for the next boundary; steps 1-3 fetch, set, inspect, and validate that boundary's refs.
 
 The browser E2E gate is intentionally required for `main -> Q.A.E2E` and `Q.A.E2E -> deploy`. `Q.A.E2E` is the manual acceptance boundary; leave the PR open there until a human explicitly accepts it. Only `deploy` can publish GitHub Pages.
 
