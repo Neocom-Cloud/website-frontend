@@ -93,7 +93,7 @@ pnpm test:build-output
 ```
 - browser end-to-end validation on Playwright's Chromium, Firefox, WebKit, and Chromium mobile projects for pull requests into `Q.A.E2E` and `deploy`
 
-Every pull request uploads the Node 24 validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`; push-triggered uploads are limited to `Q.A` and `Q.A.E2E`. Pull requests into `Q.A.E2E` and `deploy` also run Playwright on Chromium, Firefox, WebKit, and Chromium mobile, retaining its report and failure traces for 14 days. Download the artifacts from the workflow run to inspect the exact static site without creating a public QA deployment.
+Every pull request uploads the Node 24-validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`; push-triggered uploads are limited to `Q.A` and `Q.A.E2E`. Pull requests into `Q.A.E2E` and `deploy` also run Playwright on Chromium, Firefox, WebKit, and Chromium mobile, retaining its report and failure traces for 14 days. Download the artifacts from the workflow run to inspect the exact static site without creating a public QA deployment.
 
 This keeps deployment and test enforcement separate:
 
