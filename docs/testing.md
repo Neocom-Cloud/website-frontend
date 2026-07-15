@@ -48,8 +48,15 @@ pnpm generate:pages
 pnpm test
 pnpm build
 pnpm test:build-output
-BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
 pnpm verify:repository
+```
+
+To validate a promotion locally, use `BASE_REF=<target-branch> HEAD_REF=<source-branch> pnpm verify:promotion`, replacing both placeholders with one of the valid promotion pairs:
+
+```bash
+BASE_REF=Q.A HEAD_REF=develop pnpm verify:promotion
+BASE_REF=main HEAD_REF=Q.A pnpm verify:promotion
+BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
 ```
 
 Run the following separately when interactive test watching is needed:
