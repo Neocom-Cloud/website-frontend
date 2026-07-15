@@ -56,7 +56,8 @@ To validate a promotion locally, use `BASE_REF=<target-branch> HEAD_REF=<source-
 ```bash
 BASE_REF=Q.A HEAD_REF=develop pnpm verify:promotion
 BASE_REF=main HEAD_REF=Q.A pnpm verify:promotion
-BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
+BASE_REF=Q.A.E2E HEAD_REF=main pnpm verify:promotion
+BASE_REF=deploy HEAD_REF=Q.A.E2E pnpm verify:promotion
 ```
 
 Run the following separately when interactive test watching is needed:
@@ -75,12 +76,12 @@ docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12
 
 ## CI behavior
 
-The CI workflow runs on pull requests and pushes to `develop`, `Q.A`, `main`, and `deploy`.
+The CI workflow runs on pull requests and pushes to `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy`.
 
 It has three jobs:
 
 - workflow linting with `actionlint`
-- promotion-path validation for pull requests into `Q.A`, `main`, and `deploy`
+- promotion-path validation for pull requests into `Q.A`, `main`, `Q.A.E2E`, and `deploy`
 - application validation on Node 24 and the current latest Node release:
 
 ```bash
@@ -91,7 +92,7 @@ pnpm build
 pnpm test:build-output
 ```
 
-For pull requests and pushes to `Q.A`, the Node 24 validation run uploads the validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`. Download it from the workflow run to inspect the exact static site without creating a public QA deployment.
+For pull requests and pushes to `Q.A` or `Q.A.E2E`, the Node 24 validation run uploads the validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`. Pull requests into `Q.A.E2E` and `deploy` also run Playwright on Chromium, Firefox, WebKit, and Chromium mobile, retaining its report and failure traces for 14 days. Download the artifacts from the workflow run to inspect the exact static site without creating a public QA deployment.
 
 This keeps deployment and test enforcement separate:
 

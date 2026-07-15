@@ -9,7 +9,7 @@
 - [ ] `pnpm build`
 - [ ] `pnpm test:build-output`
 - [ ] `pnpm verify:repository`
-- [ ] For promotion PRs, record `BASE_REF` and `HEAD_REF` plus the executed `pnpm verify:promotion` command in the summary
+- [ ] Promotion PR: run and record `BASE_REF=<target> HEAD_REF=<source> pnpm verify:promotion`
 
 ## Product Impact
 

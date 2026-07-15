@@ -5,7 +5,7 @@
 Use the production promotion path:
 
 ```text
-develop -> Q.A -> main -> deploy
+develop -> Q.A -> main -> Q.A.E2E -> deploy
 ```
 
 `Q.A` is the valid Git branch name for the QA stage. `Q.A.` is not valid because Git branch names cannot end with a period.
@@ -16,7 +16,7 @@ Only `deploy` publishes GitHub Pages. CodeRabbit is advisory: CI and GitHub rule
 
 Use the pull request template and keep changes focused. Include commands actually run, localized-copy impact, and any deployment or DNS effect.
 
-CodeRabbit reviews non-draft pull requests to `develop`, `Q.A`, `main`, and `deploy`, then performs incremental reviews after new commits. Request a fresh review with:
+CodeRabbit reviews non-draft pull requests to `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy`, then performs incremental reviews after new commits. Request a fresh review with:
 
 ```text
 @coderabbitai full review

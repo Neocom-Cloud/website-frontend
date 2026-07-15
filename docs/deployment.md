@@ -50,23 +50,25 @@ dig neocom.cloud +short -t NS
 Use the following branch path for changes intended for production:
 
 ```text
-develop -> Q.A -> main -> deploy
+develop -> Q.A -> main -> Q.A.E2E -> deploy
 ```
 
 - `develop` is the integration branch.
 - `Q.A` is the validation branch.
 - `main` is the repository default and release branch.
+- `Q.A.E2E` is the full-browser validation and manual-acceptance branch.
 - `deploy` is the production publishing branch. A successful push to `deploy` starts the Pages deployment workflow.
 
 Recommended repository rules:
 
-1. Add a branch ruleset for `develop`, `Q.A`, `main`, and `deploy` that requires pull requests, requires branches to be up to date, blocks force pushes and deletions, and does not allow bypasses.
+1. Add a branch ruleset for `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy` that requires pull requests, requires branches to be up to date, blocks force pushes and deletions, and does not allow bypasses.
 2. Require these checks before merging, with no human approval requirement:
    - `Validate GitHub Actions workflows`
    - `Validate promotion path`
    - `Test and build (Node 24)`
    - `Test and build (Node latest)`
-3. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
+3. Require the `Browser end-to-end` check for `Q.A.E2E` and `deploy` promotion PRs. It runs Playwright on Chromium, Firefox, WebKit, and Chromium mobile.
+4. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> Q.A.E2E -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
 4. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
 
 A push to `deploy` publishes production. A manual dispatch also publishes only when run from `deploy`; both paths use the Node 24 baseline and rerun typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.

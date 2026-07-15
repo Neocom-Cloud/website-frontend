@@ -13,6 +13,7 @@ reviews:
       - '^develop$'
       - '^Q\.A$'
       - '^main$'
+      - '^Q\.A\.E2E$'
       - '^deploy$'
   path_filters:
     - '!dist/**'
@@ -36,7 +37,7 @@ reviews:
       instructions: >-
         Treat workflow changes as production changes. Preserve Node 24+ support, the Node 24
         deployment baseline, latest-Node CI coverage, pnpm, least-privilege permissions, the
-        develop -> Q.A -> main -> deploy promotion path, and the rule that only deploy
+        develop -> Q.A -> main -> Q.A.E2E -> deploy promotion path, and the rule that only deploy
         publishes GitHub Pages.
     - path: 'docs/**'
       instructions: >-
