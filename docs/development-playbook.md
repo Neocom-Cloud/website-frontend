@@ -157,7 +157,7 @@ develop -> Q.A -> main -> Q.A.E2E -> deploy
 
 For each boundary:
 
-1. Fetch the remote branches and designate one promotion owner for the source-to-target edge. Coordinate concurrent release operators through the team's release record or change ticket; an API lookup alone cannot provide a lock.
+1. Fetch and prune the remote branches with `git fetch --prune origin`, then designate one promotion owner for the source-to-target edge. Coordinate concurrent release operators through the team's release record or change ticket; an API lookup alone cannot provide a lock.
 2. Set `BASE_REF` to the target branch and `HEAD_REF` to the source branch, then check for a duplicate open promotion PR with a fail-closed command:
 
    ```bash
@@ -197,7 +197,7 @@ For each boundary:
 6. Wait for every required CI check. When CodeRabbit completes, triage any findings; its unavailability alone is not a merge gate.
 7. Inspect all unresolved review threads and mergeability state.
 8. Merge only if the PR is clean and all valid review work is complete.
-9. Fetch again, then begin the next boundary.
+9. At the start of the next boundary, run `git fetch --prune origin` again before validating its source and target branches.
 
 The browser E2E gate is intentionally required for `main -> Q.A.E2E` and `Q.A.E2E -> deploy`. `Q.A.E2E` is the manual acceptance boundary; leave the PR open there until a human explicitly accepts it. Only `deploy` can publish GitHub Pages.
 
