@@ -17,11 +17,9 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-<<<<<<< HEAD
-        uses: actions/checkout@v7
-=======
-        uses: actions/checkout@v4
->>>>>>> 55bf4330cfc9f2228dcb775a0bc63051813b9806
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
 
       - name: Lint workflow definitions
         uses: docker://rhysd/actionlint:1.7.12
@@ -34,11 +32,14 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-<<<<<<< HEAD
-        uses: actions/checkout@v7
-=======
-        uses: actions/checkout@v4
->>>>>>> 55bf4330cfc9f2228dcb775a0bc63051813b9806
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
 
       - name: Verify pull request source branch
         env:
@@ -47,23 +48,32 @@ jobs:
         run: node scripts/verify-promotion.mjs
 
   test-and-build:
-    name: Test and build
+    name: Test and build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["24", "latest"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: 24
+          node-version: ${{ matrix.node-version }}
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Verify repository integrity
+        run: pnpm verify:repository
 
       - name: Typecheck
         run: pnpm typecheck
@@ -78,12 +88,8 @@ jobs:
         run: pnpm test:build-output
 
       - name: Upload QA build artifact
-        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/Q.A'
-<<<<<<< HEAD
-        uses: actions/upload-artifact@v7
-=======
-        uses: actions/upload-artifact@v4
->>>>>>> 55bf4330cfc9f2228dcb775a0bc63051813b9806
+        if: matrix.node-version == '24' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/Q.A')
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: neocom-site-${{ github.sha }}
           path: ./dist
