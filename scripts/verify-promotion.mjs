@@ -4,7 +4,8 @@ import { resolve } from "node:path";
 export const REQUIRED_SOURCE_BRANCHES = Object.freeze({
   "Q.A": "develop",
   main: "Q.A",
-  deploy: "main"
+  "Q.A.E2E": "main",
+  deploy: "Q.A.E2E"
 });
 
 export function validatePromotion(baseRef, headRef) {

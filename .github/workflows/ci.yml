@@ -6,6 +6,7 @@ on:
       - develop
       - Q.A
       - main
+      - Q.A.E2E
       - deploy
   pull_request:
 
@@ -50,6 +51,8 @@ jobs:
   test-and-build:
     name: Test and build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -87,11 +90,53 @@ jobs:
       - name: Verify deployment output
         run: pnpm test:build-output
 
-      - name: Upload QA build artifact
-        if: matrix.node-version == '24' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/Q.A')
+      - name: Upload validation build artifact
+        if: matrix.node-version == '24' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/Q.A' || github.ref == 'refs/heads/Q.A.E2E')
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: neocom-site-${{ github.sha }}
           path: ./dist
           if-no-files-found: error
+          retention-days: 14
+
+  browser-e2e:
+    name: Browser end-to-end
+    if: github.event_name == 'pull_request' && (github.base_ref == 'Q.A.E2E' || github.base_ref == 'deploy')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Run browser end-to-end tests
+        run: pnpm test:e2e
+
+      - name: Upload browser test evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: neocom-e2e-${{ github.sha }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
           retention-days: 14

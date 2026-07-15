@@ -5,7 +5,7 @@
 Use the production promotion path:
 
 ```text
-develop -> Q.A -> main -> deploy
+develop -> Q.A -> main -> Q.A.E2E -> deploy
 ```
 
 `Q.A` is the valid Git branch name for the QA stage. `Q.A.` is not valid because Git branch names cannot end with a period.
@@ -16,7 +16,7 @@ Only `deploy` publishes GitHub Pages. CodeRabbit is advisory: CI and GitHub rule
 
 Use the pull request template and keep changes focused. Include commands actually run, localized-copy impact, and any deployment or DNS effect.
 
-CodeRabbit reviews non-draft pull requests to `develop`, `Q.A`, `main`, and `deploy`, then performs incremental reviews after new commits. Request a fresh review with:
+CodeRabbit reviews non-draft pull requests to `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy`, then performs incremental reviews after new commits. Request a fresh review with:
 
 ```text
 @coderabbitai full review
@@ -28,7 +28,7 @@ Use `@coderabbitai review` for an incremental review. Treat findings as hypothes
 
 `.coderabbit.yaml` is the version-controlled repository baseline. It uses Portuguese review output, an assertive profile, and instructions for i18n, static generation, tests, workflows, and deployment documentation. Organization or workspace Global Overrides can take precedence and change the effective configuration; use `@coderabbitai configuration` on a pull request to inspect the resolved result.
 
-Generated output, dependencies, and `pnpm-lock.yaml` are excluded from review to keep feedback focused. GitHub Checks context is enabled with a ten-minute timeout so CodeRabbit can account for CI outcomes.
+CodeRabbit excludes only `dist/**`, `node_modules/**`, and `pnpm-lock.yaml`. Generated static HTML, `public/sitemap.xml`, and package manifests such as `package.json` remain in review scope. GitHub Checks context is enabled with a ten-minute timeout so CodeRabbit can account for CI outcomes.
 
 Do not enable automatic approval or make CodeRabbit a required GitHub check until it has completed at least ten representative pull requests without false blocks. At that point, use the exact check name shown in GitHub branch rules.
 

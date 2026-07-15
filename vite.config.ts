@@ -20,7 +20,7 @@ export default defineConfig(async () => {
     test: {
       environment: "jsdom",
       globals: true,
-      exclude: [...configDefaults.exclude, "tests/build-output.test.mjs"],
+      exclude: [...configDefaults.exclude, "tests/build-output.test.mjs", "tests/e2e/**"],
       setupFiles: ["./src/test/setup.ts"]
     },
     build: {
