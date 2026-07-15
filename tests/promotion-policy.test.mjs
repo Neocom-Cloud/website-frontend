@@ -9,14 +9,16 @@ describe("promotion policy", () => {
     expect(REQUIRED_SOURCE_BRANCHES).toEqual({
       "Q.A": "develop",
       main: "Q.A",
-      deploy: "main"
+      "Q.A.E2E": "main",
+      deploy: "Q.A.E2E"
     });
   });
 
   it.each([
     ["develop", "Q.A"],
     ["Q.A", "main"],
-    ["main", "deploy"]
+    ["main", "Q.A.E2E"],
+    ["Q.A.E2E", "deploy"]
   ])("allows the expected promotion from %s to %s", (headRef, baseRef) => {
     expect(validatePromotion(baseRef, headRef)).toMatchObject({ valid: true });
   });
@@ -24,7 +26,8 @@ describe("promotion policy", () => {
   it.each([
     ["feature/new-site", "Q.A"],
     ["develop", "main"],
-    ["Q.A", "deploy"]
+    ["Q.A", "Q.A.E2E"],
+    ["main", "deploy"]
   ])("rejects an out-of-order promotion from %s to %s", (headRef, baseRef) => {
     expect(validatePromotion(baseRef, headRef)).toMatchObject({ valid: false });
   });
