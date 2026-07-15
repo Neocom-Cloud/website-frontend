@@ -2,7 +2,7 @@
 
 This repository uses Vitest for unit tests and jsdom-based integration tests.
 
-Use Node.js 24 before running the commands below. The repository includes `.nvmrc`, so `nvm use` selects the required runtime.
+Use Node.js 24 or later before running the commands below. The repository includes `.nvmrc`, so `nvm use` selects the Node 24 baseline.
 
 ## Test categories
 
@@ -18,6 +18,7 @@ Unit tests cover pure helpers and content-generation logic:
 - static page manifest generation
 - generated SEO metadata and sitemap output
 - permitted and rejected branch promotion paths
+- tracked-file conflict-marker detection
 
 ### Integration tests
 
@@ -45,10 +46,16 @@ Deployment smoke tests inspect the finished `dist` output in a Node environment.
 ```bash
 pnpm generate:pages
 pnpm test
-pnpm test:watch
 pnpm build
 pnpm test:build-output
 BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
+pnpm verify:repository
+```
+
+Run the following separately when interactive test watching is needed:
+
+```bash
+pnpm test:watch
 ```
 
 `pnpm build` also regenerates the localized HTML files through the Vite config before producing the final static output.
@@ -67,21 +74,22 @@ It has three jobs:
 
 - workflow linting with `actionlint`
 - promotion-path validation for pull requests into `Q.A`, `main`, and `deploy`
-- application validation:
+- application validation on Node 24 and the current latest Node release:
 
 ```bash
 pnpm typecheck
+pnpm verify:repository
 pnpm test:ci
 pnpm build
 pnpm test:build-output
 ```
 
-For pull requests and pushes to `Q.A`, CI uploads the validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`. Download it from the workflow run to inspect the exact static site without creating a public QA deployment.
+For pull requests and pushes to `Q.A`, the Node 24 validation run uploads the validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`. Download it from the workflow run to inspect the exact static site without creating a public QA deployment.
 
 This keeps deployment and test enforcement separate:
 
 - `ci.yml` is the quality gate
-- `deploy-pages.yml` reruns the full validation suite before publishing the production artifact
+- `deploy-pages.yml` reruns repository integrity, typechecking, tests, the production build, and build-output checks before publishing the production artifact
 
 ## Current gaps
 

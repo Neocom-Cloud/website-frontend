@@ -4,7 +4,7 @@ Static multi-page marketing site for `neocom.cloud`, built with Vite and React a
 
 This repository is `pnpm`-first. Use `pnpm` for install, development, testing, and build commands.
 
-Node.js 24 is required. With `nvm`, run `nvm use` before installing dependencies.
+Node.js 24 or later is supported. With `nvm`, run `nvm use` to select the Node 24 baseline before installing dependencies.
 
 ## Stack
 
@@ -28,11 +28,17 @@ pnpm dev
 pnpm generate:pages
 pnpm typecheck
 pnpm test
-pnpm test:watch
 pnpm build
 pnpm test:build-output
 BASE_REF=deploy HEAD_REF=main pnpm verify:promotion
+pnpm verify:repository
 pnpm preview
+```
+
+Run the following separately when interactive test watching is needed:
+
+```bash
+pnpm test:watch
 ```
 
 `pnpm generate:pages` regenerates the localized HTML entry points and `public/sitemap.xml` from the centralized content catalog.
@@ -77,17 +83,14 @@ This keeps one shared landing template, one shared standard project template, an
 ## Deployment and DNS
 
 - Deployment workflow: [deploy-pages.yml](./.github/workflows/deploy-pages.yml)
-<<<<<<< HEAD
 - DNS and custom-domain runbook: [docs/deployment.md](./docs/deployment.md)
 - Hostinger must provide the four apex A records and `www -> neocom-cloud.github.io` before GitHub Pages can validate `neocom.cloud`.
-=======
-- DNS and custom-domain guide: [docs/deployment.md](./docs/deployment.md)
->>>>>>> 55bf4330cfc9f2228dcb775a0bc63051813b9806
 - Production publishes only from the `deploy` branch; `main` remains the default branch.
 
 ## Testing
 
 - Test guide: [docs/testing.md](./docs/testing.md)
+- Code review guide: [docs/code-review.md](./docs/code-review.md)
 - CI workflow: [ci.yml](./.github/workflows/ci.yml)
 
 ## Notes
