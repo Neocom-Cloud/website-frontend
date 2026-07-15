@@ -14,6 +14,8 @@
 ## Product Impact
 
 - [ ] No user-facing copy changed (select exactly one copy-impact option)
+- [ ] Localized copy changed only in `pt-br` (select exactly one copy-impact option)
+- [ ] Localized copy changed only in `en` (select exactly one copy-impact option)
 - [ ] Localized copy changed in both `pt-br` and `en` (select exactly one copy-impact option)
 - [ ] Routes, SEO metadata, or sitemap behavior changed
 - [ ] Deployment, DNS, or GitHub Actions behavior changed
