@@ -69,7 +69,7 @@ Recommended repository rules:
 3. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
 4. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
 
-The deployment workflow supports manual dispatch, but it only publishes when dispatched from `deploy`. It uses the Node 24 baseline and reruns typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.
+A push to `deploy` publishes production. A manual dispatch also publishes only when run from `deploy`; both paths use the Node 24 baseline and rerun typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.
 
 ### 1.2 Preflight checks
 
