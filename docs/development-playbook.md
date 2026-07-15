@@ -157,20 +157,30 @@ develop -> Q.A -> main -> Q.A.E2E -> deploy
 
 For each boundary:
 
-1. Fetch the remote branches.
-2. Set `BASE_REF` to the target branch and `HEAD_REF` to the source branch, then check for a duplicate open promotion PR:
+1. Fetch the remote branches and designate one promotion owner for the source-to-target edge. Coordinate concurrent release operators through the team's release record or change ticket; an API lookup alone cannot provide a lock.
+2. Set `BASE_REF` to the target branch and `HEAD_REF` to the source branch, then check for a duplicate open promotion PR with a fail-closed command:
 
    ```bash
-   gh pr list --state open --base "$BASE_REF" --head "$HEAD_REF"
+   set -euo pipefail
+   open_promotions="$(gh pr list --state open --base "$BASE_REF" --head "$HEAD_REF" --json number --jq 'length')"
+   test "$open_promotions" -eq 0
    ```
 
-   Continue only when this returns no PRs.
+   Continue only when the command succeeds and returns zero. A `gh` error or a nonzero count aborts the promotion.
 3. Run the exact local promotion-policy command.
 4. Open a PR with the source and target matching one allowed edge.
-5. Wait for every required CI check. When CodeRabbit completes, triage any findings; its unavailability alone is not a merge gate.
-6. Inspect unresolved review threads and mergeability state.
-7. Merge only if the PR is clean and all valid review work is complete.
-8. Fetch again, then begin the next boundary.
+5. Immediately confirm the newly created PR is the only matching promotion:
+
+   ```bash
+   created_promotions="$(gh pr list --state open --base "$BASE_REF" --head "$HEAD_REF" --json number --jq 'length')"
+   test "$created_promotions" -eq 1
+   ```
+
+   Continue only if the command succeeds, exactly one matching PR exists, and it is the PR just created. Otherwise, stop and coordinate with the other operator.
+6. Wait for every required CI check. When CodeRabbit completes, triage any findings; its unavailability alone is not a merge gate.
+7. Inspect all unresolved review threads and mergeability state.
+8. Merge only if the PR is clean and all valid review work is complete.
+9. Fetch again, then begin the next boundary.
 
 The browser E2E gate is intentionally required for `main -> Q.A.E2E` and `Q.A.E2E -> deploy`. `Q.A.E2E` is the manual acceptance boundary; leave the PR open there until a human explicitly accepts it. Only `deploy` can publish GitHub Pages.
 
@@ -215,7 +225,7 @@ Use this checklist when repeating the pattern:
 - [ ] Run complete local validation and `git diff --check`.
 - [ ] Commit with a specific conventional subject and push only the intended branch.
 - [ ] Create a focused PR with accurate validation evidence.
-- [ ] Wait for required CI; when CodeRabbit completes, inspect all review threads.
+- [ ] Wait for required CI; inspect all review threads, and triage CodeRabbit findings when its review completes.
 - [ ] Apply valid fixes without expanding scope; revalidate after each change.
 - [ ] Promote only through the approved branch edge, one PR at a time.
 - [ ] Stop at `Q.A.E2E` for human acceptance; do not merge or deploy by assumption.
