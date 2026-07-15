@@ -157,8 +157,15 @@ develop -> Q.A -> main -> Q.A.E2E -> deploy
 
 For each boundary:
 
-1. Fetch the remote branches and designate one promotion owner for the source-to-target edge. Coordinate concurrent release operators through the team's release record or change ticket; an API lookup alone cannot provide a lock.
-2. Set `BASE_REF` to the target branch and `HEAD_REF` to the source branch, then check for a duplicate open promotion PR with a fail-closed command:
+1. Fetch and prune the remote branches with `git fetch --prune origin`, then designate one promotion owner for the source-to-target edge. Coordinate concurrent release operators through the team's release record or change ticket; an API lookup alone cannot provide a lock.
+2. Set `BASE_REF` to the target branch and `HEAD_REF` to the source branch. Inspect the freshly fetched remote-tracking heads before continuing:
+
+   ```bash
+   git show -s --format='%H %D' "origin/$BASE_REF"
+   git show -s --format='%H %D' "origin/$HEAD_REF"
+   ```
+
+   These commands verify the current `origin/$BASE_REF` and `origin/$HEAD_REF` refs after the fetch. Then check for a duplicate open promotion PR with a fail-closed command:
 
    ```bash
    set -euo pipefail
@@ -167,7 +174,7 @@ For each boundary:
    ```
 
    Continue only when the command succeeds and returns zero. A `gh` error or a nonzero count aborts the promotion.
-3. Run the exact local promotion-policy command.
+3. Run the exact local promotion-policy command. It validates only that `BASE_REF` and `HEAD_REF` are an allowed pair; it does not validate the remote heads inspected above.
 4. Open a PR with the source and target matching one allowed edge. Retain its GitHub number as `created_pr_number`; with the GitHub CLI, capture it from the created PR URL:
 
    ```bash
@@ -197,7 +204,7 @@ For each boundary:
 6. Wait for every required CI check. When CodeRabbit completes, triage any findings; its unavailability alone is not a merge gate.
 7. Inspect all unresolved review threads and mergeability state.
 8. Merge only if the PR is clean and all valid review work is complete.
-9. Fetch again, then begin the next boundary.
+9. After merging, restart at step 1 for the next boundary; steps 1-3 fetch, set, inspect, and validate that boundary's refs.
 
 The browser E2E gate is intentionally required for `main -> Q.A.E2E` and `Q.A.E2E -> deploy`. `Q.A.E2E` is the manual acceptance boundary; leave the PR open there until a human explicitly accepts it. Only `deploy` can publish GitHub Pages.
 
