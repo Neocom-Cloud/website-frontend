@@ -168,15 +168,32 @@ For each boundary:
 
    Continue only when the command succeeds and returns zero. A `gh` error or a nonzero count aborts the promotion.
 3. Run the exact local promotion-policy command.
-4. Open a PR with the source and target matching one allowed edge.
-5. Immediately confirm the newly created PR is the only matching promotion:
+4. Open a PR with the source and target matching one allowed edge. Retain its GitHub number as `created_pr_number`; with the GitHub CLI, capture it from the created PR URL:
 
    ```bash
-   created_promotions="$(gh pr list --state open --base "$BASE_REF" --head "$HEAD_REF" --json number --jq 'length')"
-   test "$created_promotions" -eq 1
+   created_pr_url="$(gh pr create \
+     --base "$BASE_REF" \
+     --head "$HEAD_REF" \
+     --title "<promotion title>" \
+     --body "<promotion summary>")"
+   created_pr_number="${created_pr_url##*/}"
+   test "$created_pr_number" -gt 0
    ```
 
-   Continue only if the command succeeds, exactly one matching PR exists, and it is the PR just created. Otherwise, stop and coordinate with the other operator.
+5. Immediately confirm the newly created PR is the only matching promotion and has the expected identity:
+
+   ```bash
+   set -euo pipefail
+   matching_pr_number="$(gh pr list \
+     --state open \
+     --base "$BASE_REF" \
+     --head "$HEAD_REF" \
+     --json number \
+     --jq 'if length == 1 then .[0].number else "" end')"
+   test "$matching_pr_number" = "$created_pr_number"
+   ```
+
+   Continue only if the command succeeds, exactly one matching PR exists, and its number matches the newly created PR. Otherwise, stop and coordinate with the other operator.
 6. Wait for every required CI check. When CodeRabbit completes, triage any findings; its unavailability alone is not a merge gate.
 7. Inspect all unresolved review threads and mergeability state.
 8. Merge only if the PR is clean and all valid review work is complete.
