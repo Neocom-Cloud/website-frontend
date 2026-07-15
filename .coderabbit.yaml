@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: pt-BR
+tone_instructions: "Seja objetivo. Priorize bugs, regressoes, seguranca, acessibilidade, SEO e lacunas de teste com acao concreta."
+
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+    base_branches:
+      - '^develop$'
+      - '^Q\.A$'
+      - '^main$'
+      - '^Q\.A\.E2E$'
+      - '^deploy$'
+  path_filters:
+    - '!dist/**'
+    - '!node_modules/**'
+    - '!pnpm-lock.yaml'
+  path_instructions:
+    - path: 'src/**'
+      instructions: >-
+        Preserve the shared page templates and centralized i18n catalog. Flag hardcoded
+        user-facing copy, locale-key drift, broken localized routes, accessibility
+        regressions, and SEO metadata inconsistencies.
+    - path: 'scripts/**'
+      instructions: >-
+        Static generation must remain deterministic, preserve canonical URLs and sitemap
+        coverage, and avoid changing generated output without corresponding tests.
+    - path: 'tests/**'
+      instructions: >-
+        Require behavior-focused coverage for changed routing, locale, content, build, or
+        promotion-policy behavior. Flag assertions that only mirror implementation details.
+    - path: '.github/**'
+      instructions: >-
+        Treat workflow changes as production changes. Preserve Node 24+ support, the Node 24
+        deployment baseline, latest-Node CI coverage, pnpm, least-privilege permissions, the
+        develop -> Q.A -> main -> Q.A.E2E -> deploy promotion path, and the rule that only deploy
+        publishes GitHub Pages.
+    - path: 'docs/**'
+      instructions: >-
+        Check operational accuracy. DNS, GitHub Pages, Cloudflare, and branch-policy
+        instructions must be actionable and must not contradict the active workflows.
+  tools:
+    github-checks:
+      enabled: true
+      timeout_ms: 600000
