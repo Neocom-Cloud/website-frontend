@@ -63,12 +63,14 @@ BASE_REF=deploy HEAD_REF=Q.A.E2E pnpm verify:promotion
 To diagnose GitHub Pages readiness with a GitHub token that can read Pages settings:
 
 ```bash
-read -rsp "GitHub token: " GITHUB_TOKEN
-printf '\n'
-export GITHUB_TOKEN
-export GITHUB_REPOSITORY=Neocom-Cloud/website-frontend
-trap 'unset GITHUB_TOKEN' EXIT
-pnpm verify:pages
+(
+  trap 'unset GITHUB_TOKEN' EXIT
+  read -rsp "GitHub token: " GITHUB_TOKEN
+  printf '\n'
+  export GITHUB_TOKEN
+  export GITHUB_REPOSITORY=Neocom-Cloud/website-frontend
+  pnpm verify:pages
+)
 ```
 
 Run the following separately when interactive test watching is needed:
