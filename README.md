@@ -84,7 +84,7 @@ This keeps one shared landing template, one shared standard project template, an
 
 - Deployment workflow: [deploy-pages.yml](./.github/workflows/deploy-pages.yml)
 - DNS and custom-domain runbook: [docs/deployment.md](./docs/deployment.md)
-- Hostinger must provide the four apex A records and `www -> neocom-cloud.github.io` before GitHub Pages can validate `neocom.cloud`.
+- If Hostinger is the authoritative DNS provider, configure its zone with the four apex A records and `www -> neocom-cloud.github.io` before GitHub Pages can validate `neocom.cloud`. When Cloudflare or another provider is authoritative, configure the equivalent records in that provider's zone.
 - Production publishes only from the `deploy` branch after `develop -> Q.A -> main -> Q.A.E2E -> deploy`; `main` remains the default branch.
 
 ## Testing
