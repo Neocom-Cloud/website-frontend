@@ -90,8 +90,33 @@ describe("deployment gate policy", () => {
     [
       { EVENT_NAME: "pull_request", HEAD_REF: "main" },
       "BASE_REF and HEAD_REF are required for pull requests."
+    ],
+    [
+      { EVENT_NAME: "pull_request", BASE_REF: "", HEAD_REF: "main" },
+      "BASE_REF and HEAD_REF are required for pull requests."
+    ],
+    [
+      { EVENT_NAME: "pull_request", BASE_REF: "deploy", HEAD_REF: "" },
+      "BASE_REF and HEAD_REF are required for pull requests."
     ]
   ])("rejects incomplete workflow context %#", (environment, errorMessage) => {
     return expect(runDeploymentGateResolver(environment)).rejects.toThrow(errorMessage);
+  });
+
+  it("accepts non-pull-request events without branch references", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "neocom-deployment-gates-"));
+    const outputPath = join(directory, "github-output");
+
+    try {
+      await expect(
+        runDeploymentGateResolver({ EVENT_NAME: "push", GITHUB_OUTPUT: outputPath })
+      ).resolves.toEqual({
+        "deploy-status": false,
+        "browser-e2e": false,
+        "pre-deploy-test": false
+      });
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
   });
 });
