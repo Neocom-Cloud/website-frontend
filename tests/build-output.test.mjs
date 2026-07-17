@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
 import { projectRegistry } from "../src/content/site.js";
 
@@ -51,6 +52,10 @@ function readDistFile(relativePath) {
   return readFileSync(resolve(distDir, relativePath), "utf8");
 }
 
+function readDistDocument(relativePath) {
+  return new JSDOM(readDistFile(relativePath)).window.document;
+}
+
 function getCanonicalUrl(pathname) {
   return new URL(pathname, `${canonicalOrigin}/`).toString();
 }
@@ -59,6 +64,12 @@ function getAssetReferences(html) {
   return Array.from(
     html.matchAll(/(?:src|href)="(\/assets\/[^\"]+)"/g),
     ([, assetPath]) => assetPath
+  );
+}
+
+function expectMetaContent(document, selector, expectedContent) {
+  expect(document.querySelector(selector)?.getAttribute("content")).toBe(
+    expectedContent
   );
 }
 
@@ -112,19 +123,59 @@ describe("production build output", () => {
   });
 
   it("preserves accented Portuguese metadata in the published build", () => {
-    const landing = readDistFile("pt-br/index.html");
-    const neoRecicla = readDistFile("pt-br/projects/neorecicla/index.html");
-    const devRecord = readDistFile("pt-br/projects/devrecord/index.html");
-    const neoHealth = readDistFile("pt-br/projects/neo-health/index.html");
+    const pages = [
+      {
+        outputPath: "pt-br/index.html",
+        title: "NeoCom | Inovação em comunicações",
+        description:
+          "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health.",
+        ogDescription:
+          "Tecnologia com propósito, conexão com responsabilidade e privacidade como fundamento.",
+        twitterDescription: "Explore os projetos e a missão da NeoCom."
+      },
+      {
+        outputPath: "pt-br/projects/neorecicla/index.html",
+        title: "NeoRecicla | NeoCom",
+        description:
+          "NeoRecicla é o projeto da NeoCom para coleta automatizada de resíduos em universidades com recompensas verificáveis.",
+        ogDescription: "Sustentabilidade rastreável para ambientes universitários.",
+        twitterDescription:
+          "Coleta automatizada com dados verificáveis para reciclagem."
+      },
+      {
+        outputPath: "pt-br/projects/devrecord/index.html",
+        title: "DevRecord | NeoCom",
+        description:
+          "DevRecord é o conceito da NeoCom para reputação técnica verificável e histórico portável de contribuições.",
+        ogDescription: "Identidade técnica verificável, além de plataformas únicas.",
+        twitterDescription:
+          "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
+      },
+      {
+        outputPath: "pt-br/projects/neo-health/index.html",
+        title: "Neo Health | NeoCom",
+        description:
+          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+        ogDescription: "Dados sensíveis com governança pessoal e contexto claro.",
+        twitterDescription:
+          "Conheça a visão da NeoCom para histórico pessoal de saúde."
+      }
+    ];
 
-    expect(landing).toContain("NeoCom | Inovação em comunicações");
-    expect(landing).toContain("confiança digital");
-    expect(neoRecicla).toContain("coleta automatizada de resíduos");
-    expect(neoRecicla).toContain("Sustentabilidade rastreável para ambientes universitários.");
-    expect(devRecord).toContain("reputação técnica verificável");
-    expect(devRecord).toContain("trilhas de contribuição verificáveis.");
-    expect(neoHealth).toContain("histórico e dados pessoais de saúde");
-    expect(neoHealth).toContain("Conheça a visão da NeoCom");
+    for (const page of pages) {
+      const document = readDistDocument(page.outputPath);
+
+      expect(document.title).toBe(page.title);
+      expectMetaContent(document, 'meta[name="description"]', page.description);
+      expectMetaContent(document, 'meta[property="og:title"]', page.title);
+      expectMetaContent(document, 'meta[property="og:description"]', page.ogDescription);
+      expectMetaContent(document, 'meta[name="twitter:title"]', page.title);
+      expectMetaContent(
+        document,
+        'meta[name="twitter:description"]',
+        page.twitterDescription
+      );
+    }
   });
 
   it("publishes every required canonical URL in the sitemap", () => {
