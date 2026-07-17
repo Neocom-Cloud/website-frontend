@@ -103,15 +103,33 @@ describe("GitHub Pages readiness", () => {
   });
 
   it("checks every public route after a successful deployment", async () => {
-    const result = await verifyPagesStatus({
-      repository,
-      token,
-      fetchImpl: createFetch(createLiveRoutes()),
-      attempts: 1
-    });
+    const routes = createLiveRoutes();
+    let activePublicRequests = 0;
+    let maximumActivePublicRequests = 0;
+    const fetchImpl = async (url) => {
+      const response = routes.get(String(url));
+
+      if (!response) {
+        throw new Error(`Unexpected request: ${url}`);
+      }
+
+      if (String(url) !== getPagesApiUrl(repository)) {
+        activePublicRequests += 1;
+        maximumActivePublicRequests = Math.max(
+          maximumActivePublicRequests,
+          activePublicRequests
+        );
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        activePublicRequests -= 1;
+      }
+
+      return response;
+    };
+    const result = await verifyPagesStatus({ repository, token, fetchImpl, attempts: 1 });
 
     expect(result).toMatchObject({ bootstrap: false });
     expect(result.probes).toEqual(expectedPublicUrls);
+    expect(maximumActivePublicRequests).toBe(1);
   });
 
   it("fails when a published public route is unhealthy", async () => {
