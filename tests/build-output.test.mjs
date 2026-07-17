@@ -113,10 +113,16 @@ describe("production build output", () => {
 
   it("preserves accented Portuguese metadata in the published build", () => {
     const landing = readDistFile("pt-br/index.html");
+    const neoRecicla = readDistFile("pt-br/projects/neorecicla/index.html");
+    const devRecord = readDistFile("pt-br/projects/devrecord/index.html");
     const neoHealth = readDistFile("pt-br/projects/neo-health/index.html");
 
     expect(landing).toContain("NeoCom | Inovação em comunicações");
     expect(landing).toContain("confiança digital");
+    expect(neoRecicla).toContain("coleta automatizada de resíduos");
+    expect(neoRecicla).toContain("Sustentabilidade rastreável para ambientes universitários.");
+    expect(devRecord).toContain("reputação técnica verificável");
+    expect(devRecord).toContain("trilhas de contribuição verificáveis.");
     expect(neoHealth).toContain("histórico e dados pessoais de saúde");
     expect(neoHealth).toContain("Conheça a visão da NeoCom");
   });
