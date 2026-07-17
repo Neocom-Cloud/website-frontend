@@ -13,7 +13,7 @@ export const siteContent = {
 
 const mailCopy = {
   "pt-br": {
-    intro: "Ola NeoCom,\n\nQuero conversar sobre"
+    intro: "Olá NeoCom,\n\nQuero conversar sobre"
   },
   en: {
     intro: "Hello NeoCom,\n\nI want to discuss"

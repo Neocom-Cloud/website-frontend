@@ -30,14 +30,85 @@ describe("static site generation", () => {
       locale: "pt-br",
       pageKind: "landing"
     });
+    const page = new DOMParser().parseFromString(html, "text/html");
 
-    expect(html).toContain('lang="pt-BR"');
-    expect(html).toContain("NeoCom | Inovacao em comunicacoes");
-    expect(html).toContain(
-      "Landing page da NeoCom focada em privacidade, sustentabilidade, confianca digital",
+    expect(page.documentElement.lang).toBe("pt-BR");
+    expect(page.querySelector("meta[charset]")?.getAttribute("charset")).toBe("UTF-8");
+    expect(page.title).toBe("NeoCom | Inovação em comunicações");
+    expect(page.querySelector('meta[name="description"]')?.getAttribute("content")).toBe(
+      "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health."
+    );
+    expect(page.querySelector('meta[property="og:title"]')?.getAttribute("content")).toBe(
+      "NeoCom | Inovação em comunicações"
+    );
+    expect(page.querySelector('meta[property="og:description"]')?.getAttribute("content")).toBe(
+      "Tecnologia com propósito, conexão com responsabilidade e privacidade como fundamento."
+    );
+    expect(page.querySelector('meta[name="twitter:title"]')?.getAttribute("content")).toBe(
+      "NeoCom | Inovação em comunicações"
+    );
+    expect(page.querySelector('meta[name="twitter:description"]')?.getAttribute("content")).toBe(
+      "Explore os projetos e a missão da NeoCom."
     );
     expect(html).toContain("https://neocom.cloud/assets/NeoCom_Icon_Final_v2.svg");
     expect(html).toContain('hreflang="en" href="https://neocom.cloud/en/"');
+  });
+
+  it("renders semantic Portuguese metadata for every project page", () => {
+    const projectMetadata = {
+      devrecord: {
+        description:
+          "DevRecord é o conceito da NeoCom para reputação técnica verificável e histórico portável de contribuições.",
+        ogDescription:
+          "Identidade técnica verificável, além de plataformas únicas.",
+        twitterDescription:
+          "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
+      },
+      "neo-health": {
+        description:
+          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+        ogDescription:
+          "Dados sensíveis com governança pessoal e contexto claro.",
+        twitterDescription:
+          "Conheça a visão da NeoCom para histórico pessoal de saúde."
+      },
+      neorecicla: {
+        description:
+          "NeoRecicla é o projeto da NeoCom para coleta automatizada de resíduos em universidades com recompensas verificáveis.",
+        ogDescription:
+          "Sustentabilidade rastreável para ambientes universitários.",
+        twitterDescription:
+          "Coleta automatizada com dados verificáveis para reciclagem."
+      }
+    };
+    const generatedProjectSlugs = getStaticPageDefinitions()
+      .flatMap((page) =>
+        page.locale === "pt-br" && page.pageKind === "project"
+          ? [page.projectSlug]
+          : [],
+      )
+      .sort();
+
+    expect(Object.keys(projectMetadata).sort()).toEqual(generatedProjectSlugs);
+
+    for (const [projectSlug, metadata] of Object.entries(projectMetadata)) {
+      const html = renderStaticPage({
+        locale: "pt-br",
+        pageKind: "project",
+        projectSlug
+      });
+      const page = new DOMParser().parseFromString(html, "text/html");
+
+      expect(page.querySelector('meta[name="description"]')?.getAttribute("content")).toBe(
+        metadata.description,
+      );
+      expect(page.querySelector('meta[property="og:description"]')?.getAttribute("content")).toBe(
+        metadata.ogDescription,
+      );
+      expect(page.querySelector('meta[name="twitter:description"]')?.getAttribute("content")).toBe(
+        metadata.twitterDescription,
+      );
+    }
   });
 
   it("renders project metadata with the shared template and SVG-first assets", () => {

@@ -4,6 +4,8 @@ Static multi-page marketing site for `neocom.cloud`, built with Vite and React a
 
 This repository is `pnpm`-first. Use `pnpm` for install, development, testing, and build commands.
 
+Node.js 24 or later is supported. With `nvm`, run `nvm use` to select the Node 24 baseline before installing dependencies.
+
 ## Stack
 
 - Vite
@@ -15,6 +17,7 @@ This repository is `pnpm`-first. Use `pnpm` for install, development, testing, a
 ## Local development
 
 ```bash
+nvm use
 pnpm install
 pnpm dev
 ```
@@ -25,9 +28,17 @@ pnpm dev
 pnpm generate:pages
 pnpm typecheck
 pnpm test
-pnpm test:watch
 pnpm build
+pnpm test:build-output
+BASE_REF=deploy HEAD_REF=Q.A.E2E pnpm verify:promotion
+pnpm verify:repository
 pnpm preview
+```
+
+Run the following separately when interactive test watching is needed:
+
+```bash
+pnpm test:watch
 ```
 
 `pnpm generate:pages` regenerates the localized HTML entry points and `public/sitemap.xml` from the centralized content catalog.
@@ -72,11 +83,16 @@ This keeps one shared landing template, one shared standard project template, an
 ## Deployment and DNS
 
 - Deployment workflow: [deploy-pages.yml](./.github/workflows/deploy-pages.yml)
-- DNS and custom-domain guide: [docs/deployment.md](./docs/deployment.md)
+- DNS and custom-domain runbook: [docs/deployment.md](./docs/deployment.md)
+- Configure records in the authoritative DNS provider's zone before GitHub Pages can validate `neocom.cloud`. Hostinger and providers without apex CNAME flattening require GitHub Pages' four apex A records; Cloudflare can use its supported apex CNAME-flattening mechanism. In every case, configure `www -> neocom-cloud.github.io` and follow the provider's supported apex-record method.
+- Production publishes only from the `deploy` branch after `develop -> Q.A -> main -> Q.A.E2E -> deploy`; `main` remains the default branch.
 
 ## Testing
 
 - Test guide: [docs/testing.md](./docs/testing.md)
+- Code review guide: [docs/code-review.md](./docs/code-review.md)
+- Delivery playbook: [docs/development-playbook.md](./docs/development-playbook.md)
+- Generic delivery playbook template: [docs/generic-development-playbook.md](./docs/generic-development-playbook.md)
 - CI workflow: [ci.yml](./.github/workflows/ci.yml)
 
 ## Notes
