@@ -84,7 +84,7 @@ This keeps one shared landing template, one shared standard project template, an
 
 - Deployment workflow: [deploy-pages.yml](./.github/workflows/deploy-pages.yml)
 - DNS and custom-domain runbook: [docs/deployment.md](./docs/deployment.md)
-- Hostinger must provide the four apex A records and `www -> neocom-cloud.github.io` before GitHub Pages can validate `neocom.cloud`.
+- Configure records in the authoritative DNS provider's zone before GitHub Pages can validate `neocom.cloud`. Hostinger and providers without apex CNAME flattening require GitHub Pages' four apex A records; Cloudflare can use its supported apex CNAME-flattening mechanism. In every case, configure `www -> neocom-cloud.github.io` and follow the provider's supported apex-record method.
 - Production publishes only from the `deploy` branch after `develop -> Q.A -> main -> Q.A.E2E -> deploy`; `main` remains the default branch.
 
 ## Testing

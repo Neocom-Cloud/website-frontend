@@ -26,6 +26,17 @@ export function formatDeploymentGateOutputs(gates) {
 }
 
 export async function runDeploymentGateResolver(environment = process.env) {
+  if (!environment.EVENT_NAME) {
+    throw new Error("EVENT_NAME is required.");
+  }
+
+  if (
+    environment.EVENT_NAME === "pull_request" &&
+    (!environment.BASE_REF || !environment.HEAD_REF)
+  ) {
+    throw new Error("BASE_REF and HEAD_REF are required for pull requests.");
+  }
+
   const gates = resolveDeploymentGates(
     environment.EVENT_NAME,
     environment.BASE_REF,
