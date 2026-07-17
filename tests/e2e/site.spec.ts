@@ -36,6 +36,13 @@ test.describe("published static site", () => {
       );
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
+      if (locale === "pt-br") {
+        await expect(page).toHaveTitle("NeoCom | Inovação em comunicações");
+        await expect(
+          page.getByRole("link", { name: "Conheça nossos projetos", exact: true })
+        ).toBeVisible();
+      }
+
       for (const projectSlug of projectSlugs) {
         await expect(
           page.getByRole("link", { name: projectNames[locale][projectSlug] })

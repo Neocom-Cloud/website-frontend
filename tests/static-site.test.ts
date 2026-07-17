@@ -30,11 +30,25 @@ describe("static site generation", () => {
       locale: "pt-br",
       pageKind: "landing"
     });
+    const page = new DOMParser().parseFromString(html, "text/html");
 
-    expect(html).toContain('lang="pt-BR"');
-    expect(html).toContain("NeoCom | Inovacao em comunicacoes");
-    expect(html).toContain(
-      "Landing page da NeoCom focada em privacidade, sustentabilidade, confianca digital",
+    expect(page.documentElement.lang).toBe("pt-BR");
+    expect(page.querySelector("meta[charset]")?.getAttribute("charset")).toBe("UTF-8");
+    expect(page.title).toBe("NeoCom | Inovação em comunicações");
+    expect(page.querySelector('meta[name="description"]')?.getAttribute("content")).toBe(
+      "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health."
+    );
+    expect(page.querySelector('meta[property="og:title"]')?.getAttribute("content")).toBe(
+      "NeoCom | Inovação em comunicações"
+    );
+    expect(page.querySelector('meta[property="og:description"]')?.getAttribute("content")).toBe(
+      "Tecnologia com propósito, conexão com responsabilidade e privacidade como fundamento."
+    );
+    expect(page.querySelector('meta[name="twitter:title"]')?.getAttribute("content")).toBe(
+      "NeoCom | Inovação em comunicações"
+    );
+    expect(page.querySelector('meta[name="twitter:description"]')?.getAttribute("content")).toBe(
+      "Explore os projetos e a missão da NeoCom."
     );
     expect(html).toContain("https://neocom.cloud/assets/NeoCom_Icon_Final_v2.svg");
     expect(html).toContain('hreflang="en" href="https://neocom.cloud/en/"');

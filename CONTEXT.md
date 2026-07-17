@@ -7,7 +7,7 @@ Here's the full context from our conversation, that generated the base_designs:
 ## Startup Identity
 - **Name:** NeoCom
 - **Domain:** neocom.cloud
-- **Tagline concept:** "Inovacao em comunicacoes"
+- **Tagline concept:** "Inovação em comunicações"
 - **Category:** Communications / Tech startup
 
 ## Design Direction
@@ -62,7 +62,7 @@ Cycles through: *comunicações, privacidade, sustentabilidade, comunidade, tecn
 - No login or user area yet
 
 ## Mission Statement (draft)
-> "A NeoCom nasceu da crenca de que tecnologia so tem valor quando serve as pessoas, com transparencia, etica e respeito a privacidade. Cada projeto e uma resposta direta a um problema real, construida com a comunidade, para a comunidade."
+> "A NeoCom nasceu da crença de que tecnologia só tem valor quando serve às pessoas, com transparência, ética e respeito à privacidade. Cada projeto é uma resposta direta a um problema real, construída com a comunidade, para a comunidade."
 
 ## Current Delivery Decisions
 - Vite + React multi-page static build
