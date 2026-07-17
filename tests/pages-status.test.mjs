@@ -131,6 +131,49 @@ describe("GitHub Pages readiness", () => {
     ).rejects.toThrow("https://neocom.cloud/pt-br/ returned HTTP 503.");
   });
 
+  it("recovers when the Pages API is temporarily unavailable", async () => {
+    let calls = 0;
+    const fetchImpl = async () => {
+      calls += 1;
+
+      return calls === 1
+        ? createResponse({ status: 503, body: "temporarily unavailable" })
+        : createResponse({ body: createPages() });
+    };
+
+    await expect(
+      verifyPagesStatus({
+        repository,
+        token,
+        fetchImpl,
+        attempts: 2,
+        retryDelayMs: 0
+      })
+    ).resolves.toMatchObject({ bootstrap: true, probes: [] });
+
+    expect(calls).toBe(2);
+  });
+
+  it("fails after exhausting Pages API retry attempts", async () => {
+    let calls = 0;
+    const fetchImpl = async () => {
+      calls += 1;
+      return createResponse({ status: 503, body: "temporarily unavailable" });
+    };
+
+    await expect(
+      verifyPagesStatus({
+        repository,
+        token,
+        fetchImpl,
+        attempts: 2,
+        retryDelayMs: 0
+      })
+    ).rejects.toThrow(`${getPagesApiUrl(repository)} returned HTTP 503.`);
+
+    expect(calls).toBe(2);
+  });
+
   it("times out an unresponsive Pages request", async () => {
     const fetchImpl = (_url, { signal }) =>
       new Promise((_resolve, reject) => {
