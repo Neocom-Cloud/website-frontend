@@ -60,6 +60,12 @@ BASE_REF=Q.A.E2E HEAD_REF=main pnpm verify:promotion
 BASE_REF=deploy HEAD_REF=Q.A.E2E pnpm verify:promotion
 ```
 
+To diagnose GitHub Pages readiness with a GitHub token that can read Pages settings:
+
+```bash
+GITHUB_REPOSITORY=Neocom-Cloud/website-frontend GITHUB_TOKEN=<token> pnpm verify:pages
+```
+
 Run the following separately when interactive test watching is needed:
 
 ```bash
@@ -78,7 +84,7 @@ docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12
 
 The CI workflow runs on pull requests and pushes to `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy`.
 
-It has four jobs:
+It has six jobs:
 
 - workflow linting with `actionlint`
 - promotion-path validation for pull requests into `Q.A`, `main`, `Q.A.E2E`, and `deploy`
@@ -92,9 +98,13 @@ pnpm build
 pnpm test:build-output
 ```
 
-- browser end-to-end validation on Playwright's Chromium, Firefox, WebKit, and Chromium mobile projects for pull requests into `Q.A.E2E` and `deploy`
+- `Deploy status` for pull requests into `Q.A.E2E`; it validates GitHub Pages readiness, then validates the live HTTPS site after a production deployment exists
+- browser end-to-end validation on Playwright's Chromium, Firefox, WebKit, and Chromium mobile projects for pull requests into `Q.A.E2E`
+- `Pre-deploy test` for pull requests into `deploy`; it downloads the Node 24-validated `dist` artifact and runs the same Playwright matrix against that exact artifact
 
-Every pull request uploads the Node 24-validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`; push-triggered uploads are limited to `Q.A` and `Q.A.E2E`. Pull requests into `Q.A.E2E` and `deploy` also run Playwright on Chromium, Firefox, WebKit, and Chromium mobile, retaining its report and failure traces for 14 days. Download the artifacts from the workflow run to inspect the exact static site without creating a public QA deployment.
+Every pull request uploads the Node 24-validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`; push-triggered uploads are limited to `Q.A` and `Q.A.E2E`. Pull requests into `Q.A.E2E` retain Playwright reports and failure traces as `neocom-e2e-<commit-sha>`, while pull requests into `deploy` retain artifact-based pre-deploy evidence as `neocom-pre-deploy-<commit-sha>`. Download the artifacts from the workflow run to inspect the exact static site without creating a public QA deployment.
+
+`Deploy status` accepts the first release in bootstrap mode when GitHub Pages has no published deployment yet. It still requires workflow-based Pages, `neocom.cloud`, verified domain protection, and an approved certificate. Once Pages has published a release, the check also requires `Enforce HTTPS` and successful HTTPS probes for the root, both localized landing pages, `robots.txt`, and `sitemap.xml`.
 
 This keeps deployment and test enforcement separate:
 
