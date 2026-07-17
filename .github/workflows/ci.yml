@@ -50,6 +50,7 @@ jobs:
 
   deployment-gate-policy:
     name: Resolve deployment gates
+    needs: promotion-policy
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     outputs:
@@ -74,6 +75,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
         run: node scripts/resolve-deployment-gates.mjs
 
   test-and-build:

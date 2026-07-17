@@ -1,6 +1,7 @@
 import { appendFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
+import { validatePromotion } from "./verify-promotion.mjs";
 
 export const DEPLOYMENT_GATE_OUTPUTS = Object.freeze([
   "deploy-status",
@@ -8,14 +9,15 @@ export const DEPLOYMENT_GATE_OUTPUTS = Object.freeze([
   "pre-deploy-test"
 ]);
 
-export function resolveDeploymentGates(eventName, baseRef) {
+export function resolveDeploymentGates(eventName, baseRef, headRef) {
   const isPullRequest = eventName === "pull_request";
-  const isEndToEndPromotion = isPullRequest && baseRef === "Q.A.E2E";
+  const isValidPromotion = isPullRequest && validatePromotion(baseRef, headRef).valid;
+  const isEndToEndPromotion = isValidPromotion && baseRef === "Q.A.E2E";
 
   return {
     "deploy-status": isEndToEndPromotion,
     "browser-e2e": isEndToEndPromotion,
-    "pre-deploy-test": isPullRequest && baseRef === "deploy"
+    "pre-deploy-test": isValidPromotion && baseRef === "deploy"
   };
 }
 
@@ -24,7 +26,11 @@ export function formatDeploymentGateOutputs(gates) {
 }
 
 export async function runDeploymentGateResolver(environment = process.env) {
-  const gates = resolveDeploymentGates(environment.EVENT_NAME, environment.BASE_REF);
+  const gates = resolveDeploymentGates(
+    environment.EVENT_NAME,
+    environment.BASE_REF,
+    environment.HEAD_REF
+  );
   const output = `${formatDeploymentGateOutputs(gates)}\n`;
 
   if (environment.GITHUB_OUTPUT) {
