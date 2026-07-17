@@ -99,9 +99,32 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  deploy-status:
+    name: Deploy status
+    if: github.event_name == 'pull_request' && github.base_ref == 'Q.A.E2E'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+
+      - name: Verify GitHub Pages readiness
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/verify-pages-status.mjs
+
   browser-e2e:
     name: Browser end-to-end
-    if: github.event_name == 'pull_request' && (github.base_ref == 'Q.A.E2E' || github.base_ref == 'deploy')
+    if: github.event_name == 'pull_request' && github.base_ref == 'Q.A.E2E'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -135,6 +158,60 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: neocom-e2e-${{ github.sha }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 14
+
+  pre-deploy-test:
+    name: Pre-deploy test
+    if: github.event_name == 'pull_request' && github.base_ref == 'deploy'
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download Node 24 validation artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: neocom-site-${{ github.sha }}
+          path: ./dist
+
+      - name: Verify downloaded artifact
+        run: test -f dist/index.html
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Run pre-deploy browser tests against validated artifact
+        env:
+          E2E_USE_EXISTING_BUILD: "1"
+        run: pnpm test:e2e
+
+      - name: Upload pre-deploy test evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: neocom-pre-deploy-${{ github.sha }}
           path: |
             playwright-report
             test-results
