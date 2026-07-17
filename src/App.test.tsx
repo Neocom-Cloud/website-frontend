@@ -15,7 +15,11 @@ describe("App integration", () => {
       "href",
       "#projects",
     );
-    expect(screen.getByText("Conheca nossos projetos")).toBeInTheDocument();
+    expect(screen.getByText("Conheça nossos projetos")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Missão" })).toHaveAttribute(
+      "href",
+      "#mission",
+    );
     expect(screen.getByText("NeoRecicla").closest("a")).toHaveAttribute(
       "href",
       "/pt-br/projects/neorecicla/",
