@@ -194,17 +194,20 @@ export async function verifyPagesStatus({
     return { bootstrap: true, pages, probes: [] };
   }
 
-  const probes = await Promise.all(
-    PUBLIC_PAGE_PROBES.map((probe) =>
-      verifyPublicProbe(probe, {
+  const probes = [];
+
+  // Keep external readiness probes predictable and avoid a burst against the custom domain.
+  for (const probe of PUBLIC_PAGE_PROBES) {
+    probes.push(
+      await verifyPublicProbe(probe, {
         attempts,
         attemptTimeoutMs,
         fetchImpl,
         retryDelayMs,
         siteOrigin
       })
-    )
-  );
+    );
+  }
 
   return { bootstrap: false, pages, probes };
 }

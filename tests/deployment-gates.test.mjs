@@ -46,6 +46,14 @@ describe("deployment gate policy", () => {
     });
   });
 
+  it("skips the pre-deploy gate when the pull request bypasses the promotion path", () => {
+    expect(resolveDeploymentGates("pull_request", "deploy", "main")).toEqual({
+      "deploy-status": false,
+      "browser-e2e": false,
+      "pre-deploy-test": false
+    });
+  });
+
   it("serializes GitHub Actions outputs as booleans", () => {
     expect(
       formatDeploymentGateOutputs(resolveDeploymentGates("pull_request", "Q.A.E2E", "main"))
