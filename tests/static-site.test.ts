@@ -81,6 +81,15 @@ describe("static site generation", () => {
           "Coleta automatizada com dados verificáveis para reciclagem."
       }
     };
+    const generatedProjectSlugs = getStaticPageDefinitions()
+      .flatMap((page) =>
+        page.locale === "pt-br" && page.pageKind === "project"
+          ? [page.projectSlug]
+          : [],
+      )
+      .sort();
+
+    expect(Object.keys(projectMetadata).sort()).toEqual(generatedProjectSlugs);
 
     for (const [projectSlug, metadata] of Object.entries(projectMetadata)) {
       const html = renderStaticPage({
