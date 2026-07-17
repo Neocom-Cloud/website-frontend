@@ -48,6 +48,36 @@ jobs:
           HEAD_REF: ${{ github.head_ref }}
         run: node scripts/verify-promotion.mjs
 
+  deployment-gate-policy:
+    name: Resolve deployment gates
+    needs: promotion-policy
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      deploy-status: ${{ steps.gates.outputs.deploy-status }}
+      browser-e2e: ${{ steps.gates.outputs.browser-e2e }}
+      pre-deploy-test: ${{ steps.gates.outputs.pre-deploy-test }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+
+      - name: Resolve promotion gates
+        id: gates
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: node scripts/resolve-deployment-gates.mjs
+
   test-and-build:
     name: Test and build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
@@ -101,8 +131,10 @@ jobs:
 
   deploy-status:
     name: Deploy status
-    if: github.event_name == 'pull_request' && github.base_ref == 'Q.A.E2E'
+    if: needs.deployment-gate-policy.outputs.deploy-status == 'true'
+    needs: deployment-gate-policy
     runs-on: ubuntu-latest
+    # The readiness check only reads repository files and GitHub Pages configuration.
     permissions:
       contents: read
       pages: read
@@ -124,8 +156,8 @@ jobs:
 
   browser-e2e:
     name: Browser end-to-end
-    if: github.event_name == 'pull_request' && github.base_ref == 'Q.A.E2E'
-    needs: deploy-status
+    if: needs.deployment-gate-policy.outputs.browser-e2e == 'true'
+    needs: [deployment-gate-policy, deploy-status]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -167,8 +199,8 @@ jobs:
 
   pre-deploy-test:
     name: Pre-deploy test
-    if: github.event_name == 'pull_request' && github.base_ref == 'deploy'
-    needs: test-and-build
+    if: needs.deployment-gate-policy.outputs.pre-deploy-test == 'true'
+    needs: [test-and-build, deployment-gate-policy]
     runs-on: ubuntu-latest
     permissions:
       contents: read

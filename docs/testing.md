@@ -84,10 +84,11 @@ docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12
 
 The CI workflow runs on pull requests and pushes to `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy`.
 
-It has six jobs:
+It has seven jobs:
 
 - workflow linting with `actionlint`
 - promotion-path validation for pull requests into `Q.A`, `main`, `Q.A.E2E`, and `deploy`
+- deployment-gate policy resolution, which centrally selects the end-to-end and pre-deploy gates from the pull request target branch
 - application validation on Node 24 and the current latest Node release:
 
 ```bash
@@ -101,6 +102,8 @@ pnpm test:build-output
 - `Deploy status` for pull requests into `Q.A.E2E`; it validates GitHub Pages readiness, then validates the live HTTPS site after a production deployment exists
 - browser end-to-end validation on Playwright's Chromium, Firefox, WebKit, and Chromium mobile projects for pull requests into `Q.A.E2E`
 - `Pre-deploy test` for pull requests into `deploy`; it downloads the Node 24-validated `dist` artifact and runs the same Playwright matrix against that exact artifact
+
+The policy resolver is unit-tested independently from the workflow syntax: only an accepted `main -> Q.A.E2E` promotion enables `Deploy status` and browser E2E, while only an accepted `Q.A.E2E -> deploy` promotion enables the artifact-based pre-deploy test. It depends on the promotion-path job, and also rejects invalid source branches itself. Browser E2E waits for `Deploy status` to pass.
 
 Every pull request uploads the Node 24-validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`; push-triggered uploads are limited to `Q.A` and `Q.A.E2E`. Pull requests into `Q.A.E2E` retain Playwright reports and failure traces as `neocom-e2e-<commit-sha>`, while pull requests into `deploy` retain artifact-based pre-deploy evidence as `neocom-pre-deploy-<commit-sha>`. Download the artifacts from the workflow run to inspect the exact static site without creating a public QA deployment.
 

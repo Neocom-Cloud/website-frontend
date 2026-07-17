@@ -46,6 +46,7 @@ describe("promotion policy", () => {
     ["feature/new-site", "Q.A"],
     ["develop", "main"],
     ["Q.A", "Q.A.E2E"],
+    ["develop", "Q.A.E2E"],
     ["main", "deploy"]
   ])("rejects an out-of-order promotion from %s to %s", (headRef, baseRef) => {
     expect(validatePromotion(baseRef, headRef)).toMatchObject({ valid: false });
