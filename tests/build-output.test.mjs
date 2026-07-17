@@ -111,6 +111,16 @@ describe("production build output", () => {
     }
   });
 
+  it("preserves accented Portuguese metadata in the published build", () => {
+    const landing = readDistFile("pt-br/index.html");
+    const neoHealth = readDistFile("pt-br/projects/neo-health/index.html");
+
+    expect(landing).toContain("NeoCom | Inovação em comunicações");
+    expect(landing).toContain("confiança digital");
+    expect(neoHealth).toContain("histórico e dados pessoais de saúde");
+    expect(neoHealth).toContain("Conheça a visão da NeoCom");
+  });
+
   it("publishes every required canonical URL in the sitemap", () => {
     const sitemap = readDistFile("sitemap.xml");
     const requiredCanonicalUrls = [

@@ -32,9 +32,10 @@ describe("static site generation", () => {
     });
 
     expect(html).toContain('lang="pt-BR"');
-    expect(html).toContain("NeoCom | Inovacao em comunicacoes");
+    expect(html).toContain('<meta charset="UTF-8" />');
+    expect(html).toContain("NeoCom | Inovação em comunicações");
     expect(html).toContain(
-      "Landing page da NeoCom focada em privacidade, sustentabilidade, confianca digital",
+      "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital",
     );
     expect(html).toContain("https://neocom.cloud/assets/NeoCom_Icon_Final_v2.svg");
     expect(html).toContain('hreflang="en" href="https://neocom.cloud/en/"');

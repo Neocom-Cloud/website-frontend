@@ -12,31 +12,31 @@ export const ptBrSiteCopy = {
   },
   nav: {
     projects: "Projetos",
-    mission: "Missao",
+    mission: "Missão",
     contact: "Contato"
   },
   hero: {
     eyebrow: "neocom.cloud",
-    titleLead: "Inovacao em",
+    titleLead: "Inovação em",
     phrases: [
-      "comunicacoes",
+      "comunicações",
       "privacidade",
       "sustentabilidade",
       "comunidade",
-      "tecnologia etica",
-      "confianca digital"
+      "tecnologia ética",
+      "confiança digital"
     ],
     subtitle:
-      "Tecnologia com proposito. Conexao com responsabilidade. Privacidade como fundamento.",
-    cta: "Conheca nossos projetos"
+      "Tecnologia com propósito. Conexão com responsabilidade. Privacidade como fundamento.",
+    cta: "Conheça nossos projetos"
   },
   values: {
     eyebrow: "Nossos valores",
     title: "O que nos move",
-    subtitle: "Os principios por tras de cada decisao",
+    subtitle: "Os princípios por trás de cada decisão",
     items: [
       { icon: "lock", label: "Privacidade" },
-      { icon: "shield", label: "Seguranca" },
+      { icon: "shield", label: "Segurança" },
       { icon: "award", label: "Confiabilidade" },
       { icon: "certificate", label: "Comprovabilidade" },
       { icon: "users", label: "Comunidade" }
@@ -45,137 +45,137 @@ export const ptBrSiteCopy = {
   projects: {
     eyebrow: "Projetos",
     title: "O que estamos construindo",
-    subtitle: "Solucoes reais para problemas que importam",
+    subtitle: "Soluções reais para problemas que importam",
     items: {
       neorecicla: {
         name: "NeoRecicla",
         category: "Sustentabilidade / Blockchain",
         summary:
-          "Coleta automatizada de residuos em universidades com pontos de reciclagem verificados em blockchain.",
+          "Coleta automatizada de resíduos em universidades com pontos de reciclagem verificados em blockchain.",
         cardCta: "Explorar projeto",
-        artAlt: "Icone do NeoRecicla",
-        detailEyebrow: "Sustentabilidade rastreavel",
+        artAlt: "Ícone do NeoRecicla",
+        detailEyebrow: "Sustentabilidade rastreável",
         detailIntro:
-          "NeoRecicla conecta coleta automatizada, incentivo ao descarte correto e trilha auditavel de recompensas em um fluxo simples para campus universitarios.",
+          "NeoRecicla conecta coleta automatizada, incentivo ao descarte correto e trilha auditável de recompensas em um fluxo simples para campus universitários.",
         highlights: [
-          "Maquinas de coleta como ponto fisico de engajamento",
-          "Pontuacao rastreavel para programas de incentivo",
-          "Dados verificaveis para parceiros e operacao"
+          "Máquinas de coleta como ponto físico de engajamento",
+          "Pontuação rastreável para programas de incentivo",
+          "Dados verificáveis para parceiros e operação"
         ],
         sections: [
           {
             title: "Problema real",
             paragraphs: [
-              "Universidades costumam depender de campanhas pontuais e processos manuais para estimular a reciclagem correta. O resultado e baixa aderencia, pouco dado confiavel e quase nenhuma visibilidade sobre impacto real."
+              "Universidades costumam depender de campanhas pontuais e processos manuais para estimular a reciclagem correta. O resultado é baixa aderência, pouco dado confiável e quase nenhuma visibilidade sobre impacto real."
             ]
           },
           {
-            title: "Direcao do produto",
+            title: "Direção do produto",
             paragraphs: [
-              "A proposta e usar maquinas de coleta como interface principal, registrando interacoes e recompensas com um historico verificavel. O blockchain entra como camada de comprovabilidade, nao como fetiche tecnico."
+              "A proposta é usar máquinas de coleta como interface principal, registrando interações e recompensas com um histórico verificável. O blockchain entra como camada de comprovabilidade, não como fetiche técnico."
             ]
           },
           {
             title: "Valor para a NeoCom",
             paragraphs: [
-              "NeoRecicla traduz a tese da NeoCom para um caso concreto: tecnologia que melhora um processo cotidiano, gera confianca nos dados e cria relacao direta com comunidade e instituicoes."
+              "NeoRecicla traduz a tese da NeoCom para um caso concreto: tecnologia que melhora um processo cotidiano, gera confiança nos dados e cria relação direta com comunidade e instituições."
             ]
           }
         ],
-        status: "Fase atual: validacao de escopo, parceiros e desenho operacional.",
+        status: "Fase atual: validação de escopo, parceiros e desenho operacional.",
         cta: "Quero conversar sobre o NeoRecicla"
       },
       devrecord: {
         name: "DevRecord",
         category: "Tecnologia / Identidade",
         summary:
-          "Um ponto de verdade imutavel para o historico de producao de desenvolvedores, livre de plataformas centralizadas.",
+          "Um ponto de verdade imutável para o histórico de produção de desenvolvedores, livre de plataformas centralizadas.",
         cardCta: "Ver conceito",
-        artAlt: "Icone temporario do DevRecord",
-        detailEyebrow: "Identidade tecnica verificavel",
+        artAlt: "Ícone temporário do DevRecord",
+        detailEyebrow: "Identidade técnica verificável",
         detailIntro:
-          "DevRecord e uma proposta para consolidar historico de producao, autoria e reputacao tecnica sem depender inteiramente de uma unica plataforma de hospedagem de codigo.",
+          "DevRecord é uma proposta para consolidar histórico de produção, autoria e reputação técnica sem depender inteiramente de uma única plataforma de hospedagem de código.",
         highlights: [
-          "Historico portavel entre plataformas",
-          "Registro orientado a comprovabilidade e reputacao",
-          "Modelo pensado para profissionais e organizacoes"
+          "Histórico portável entre plataformas",
+          "Registro orientado a comprovabilidade e reputação",
+          "Modelo pensado para profissionais e organizações"
         ],
         sections: [
           {
             title: "Problema real",
             paragraphs: [
-              "A historia profissional de um desenvolvedor fica fragmentada entre plataformas, empresas e contextos privados. Isso enfraquece a portabilidade da reputacao e cria dependencia de provedores centralizados."
+              "A história profissional de um desenvolvedor fica fragmentada entre plataformas, empresas e contextos privados. Isso enfraquece a portabilidade da reputação e cria dependência de provedores centralizados."
             ]
           },
           {
-            title: "Direcao do produto",
+            title: "Direção do produto",
             paragraphs: [
-              "DevRecord investiga uma estrutura onde contribuicoes relevantes possam ser referenciadas, contextualizadas e mantidas como trilha de verdade ao longo do tempo, com foco em independencia e verificacao."
+              "DevRecord investiga uma estrutura onde contribuições relevantes possam ser referenciadas, contextualizadas e mantidas como trilha de verdade ao longo do tempo, com foco em independência e verificação."
             ]
           },
           {
             title: "Valor para a NeoCom",
             paragraphs: [
-              "O projeto leva a serio privacidade, confiabilidade e identidade digital. Ele amplia a NeoCom para o espaco de infraestrutura de confianca, nao apenas interfaces de comunicacao."
+              "O projeto leva a sério privacidade, confiabilidade e identidade digital. Ele amplia a NeoCom para o espaço de infraestrutura de confiança, não apenas interfaces de comunicação."
             ]
           }
         ],
         status:
-          "Fase atual: conceito, arquitetura inicial e definicao de recorte de produto.",
+          "Fase atual: conceito, arquitetura inicial e definição de recorte de produto.",
         cta: "Quero conversar sobre o DevRecord"
       },
       "neo-health": {
         name: "Neo Health",
-        category: "Saude Pessoal / Rastreamento",
+        category: "Saúde Pessoal / Rastreamento",
         summary:
-          "Rastreador pessoal de informacoes de saude para centralizar historico, metricas e dados importantes sob controle do usuario.",
-        cardCta: "Abrir visao geral",
-        artAlt: "Icone do Neo Health",
+          "Rastreador pessoal de informações de saúde para centralizar histórico, métricas e dados importantes sob controle do usuário.",
+        cardCta: "Abrir visão geral",
+        artAlt: "Ícone do Neo Health",
         badge: "Conceito",
-        detailEyebrow: "Controle pessoal de dados sensiveis",
+        detailEyebrow: "Controle pessoal de dados sensíveis",
         detailIntro:
-          "Neo Health explora um espaco delicado: como reunir historico, registros e metricas de saude com mais clareza para o usuario, sem abrir mao de controle e privacidade.",
+          "Neo Health explora um espaço delicado: como reunir histórico, registros e métricas de saúde com mais clareza para o usuário, sem abrir mão de controle e privacidade.",
         highlights: [
-          "Visao consolidada de informacoes dispersas",
-          "Prioridade para dados sensiveis sob controle do usuario",
-          "Escopo pensado para utilidade real antes de integracoes amplas"
+          "Visão consolidada de informações dispersas",
+          "Prioridade para dados sensíveis sob controle do usuário",
+          "Escopo pensado para utilidade real antes de integrações amplas"
         ],
         sections: [
           {
             title: "Problema real",
             paragraphs: [
-              "Informacoes de saude costumam ficar espalhadas entre apps, clinicas, exames e anotacoes pessoais. Isso dificulta continuidade de cuidado, historico confiavel e entendimento do proprio contexto."
+              "Informações de saúde costumam ficar espalhadas entre apps, clínicas, exames e anotações pessoais. Isso dificulta continuidade de cuidado, histórico confiável e entendimento do próprio contexto."
             ]
           },
           {
-            title: "Direcao do produto",
+            title: "Direção do produto",
             paragraphs: [
-              "Neo Health parte de uma base simples: agregar o que importa, organizar linha do tempo e reduzir atrito para consulta e acompanhamento. A camada critica e governanca de acesso, nao volume de features."
+              "Neo Health parte de uma base simples: agregar o que importa, organizar linha do tempo e reduzir atrito para consulta e acompanhamento. A camada crítica é governança de acesso, não volume de features."
             ]
           },
           {
             title: "Valor para a NeoCom",
             paragraphs: [
-              "Esse conceito estressa a tese de privacidade da NeoCom em um dominio sensivel. Se a abordagem for valida aqui, ela fortalece a credibilidade da marca em qualquer produto orientado a dados pessoais."
+              "Esse conceito estressa a tese de privacidade da NeoCom em um domínio sensível. Se a abordagem for válida aqui, ela fortalece a credibilidade da marca em qualquer produto orientado a dados pessoais."
             ]
           }
         ],
-        status: "Fase atual: conceito e definicao de recorte para validacao inicial.",
+        status: "Fase atual: conceito e definição de recorte para validação inicial.",
         cta: "Quero conversar sobre o Neo Health"
       }
     }
   },
   mission: {
-    eyebrow: "Missao",
+    eyebrow: "Missão",
     title: "Por que existimos",
     body:
-      "A NeoCom nasceu da crenca de que tecnologia so tem valor quando serve as pessoas com transparencia, etica e respeito a privacidade. Cada projeto e uma resposta direta a um problema real, construida com a comunidade, para a comunidade."
+      "A NeoCom nasceu da crença de que tecnologia só tem valor quando serve às pessoas com transparência, ética e respeito à privacidade. Cada projeto é uma resposta direta a um problema real, construída com a comunidade, para a comunidade."
   },
   contact: {
     eyebrow: "Contato",
     title: "Fale com a NeoCom",
     subtitle:
-      "Para pilotos, parcerias e conversas tecnicas, o canal principal e direto.",
+      "Para pilotos, parcerias e conversas técnicas, o canal principal é direto.",
     emailLabel: "Email principal",
     availability:
       "Resposta centralizada pelo time fundador em contato@neocom.cloud.",
@@ -184,44 +184,44 @@ export const ptBrSiteCopy = {
   projectPage: {
     backToProjects: "Voltar para projetos",
     highlightsTitle: "Pontos-chave",
-    sectionsTitle: "Visao geral",
+    sectionsTitle: "Visão geral",
     statusTitle: "Status atual",
     contactNote:
-      "Se este projeto conversa com sua operacao, pesquisa ou comunidade, vale iniciar a discussao cedo."
+      "Se este projeto conversa com sua operação, pesquisa ou comunidade, vale iniciar a discussão cedo."
   },
   seo: {
     landing: {
-      title: "NeoCom | Inovacao em comunicacoes",
+      title: "NeoCom | Inovação em comunicações",
       description:
-        "Landing page da NeoCom focada em privacidade, sustentabilidade, confianca digital e projetos como NeoRecicla, DevRecord e Neo Health.",
+        "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health.",
       ogDescription:
-        "Tecnologia com proposito, conexao com responsabilidade e privacidade como fundamento.",
-      twitterDescription: "Explore os projetos e a missao da NeoCom."
+        "Tecnologia com propósito, conexão com responsabilidade e privacidade como fundamento.",
+      twitterDescription: "Explore os projetos e a missão da NeoCom."
     },
     projects: {
       neorecicla: {
         description:
-          "NeoRecicla e o projeto da NeoCom para coleta automatizada de residuos em universidades com recompensas verificaveis.",
-        ogDescription: "Sustentabilidade rastreavel para ambientes universitarios.",
+          "NeoRecicla é o projeto da NeoCom para coleta automatizada de resíduos em universidades com recompensas verificáveis.",
+        ogDescription: "Sustentabilidade rastreável para ambientes universitários.",
         twitterDescription:
-          "Coleta automatizada com dados verificaveis para reciclagem."
+          "Coleta automatizada com dados verificáveis para reciclagem."
       },
       devrecord: {
         description:
-          "DevRecord e o conceito da NeoCom para reputacao tecnica verificavel e historico portavel de contribuicoes.",
-        ogDescription: "Identidade tecnica verificavel, alem de plataformas unicas.",
+          "DevRecord é o conceito da NeoCom para reputação técnica verificável e histórico portável de contribuições.",
+        ogDescription: "Identidade técnica verificável, além de plataformas únicas.",
         twitterDescription:
-          "Explore o conceito da NeoCom para trilhas de contribuicao verificaveis."
+          "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
       },
       "neo-health": {
         description:
-          "Neo Health e o conceito da NeoCom para organizar historico e dados pessoais de saude sob controle do usuario.",
-        ogDescription: "Dados sensiveis com governanca pessoal e contexto claro.",
+          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+        ogDescription: "Dados sensíveis com governança pessoal e contexto claro.",
         twitterDescription:
-          "Conheca a visao da NeoCom para historico pessoal de saude."
+          "Conheça a visão da NeoCom para histórico pessoal de saúde."
       }
     }
   },
   footer:
-    "NeoCom nao opera area logada, cookies de rastreamento ou coleta de analiticos nesta versao inicial."
+    "NeoCom não opera área logada, cookies de rastreamento ou coleta de analíticos nesta versão inicial."
 };

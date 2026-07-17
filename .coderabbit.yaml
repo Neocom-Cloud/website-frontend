@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: pt-BR
-tone_instructions: "Seja objetivo. Priorize bugs, regressoes, seguranca, acessibilidade, SEO e lacunas de teste com acao concreta."
+tone_instructions: "Seja objetivo. Priorize bugs, regressões, segurança, acessibilidade, SEO e lacunas de teste com ação concreta."
 
 reviews:
   profile: assertive
