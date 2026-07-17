@@ -19,6 +19,7 @@
     "test:build-output": "vitest run --config vitest.build.config.ts",
     "test:e2e": "playwright test",
     "verify:promotion": "node scripts/verify-promotion.mjs",
+    "verify:pages": "node scripts/verify-pages-status.mjs",
     "verify:repository": "node scripts/verify-repository-integrity.mjs"
   },
   "dependencies": {

@@ -67,9 +67,10 @@ Recommended repository rules:
    - `Validate promotion path`
    - `Test and build (Node 24)`
    - `Test and build (Node latest)`
-3. Require the `Browser end-to-end` check for `Q.A.E2E` and `deploy` promotion PRs. It runs Playwright on Chromium, Firefox, WebKit, and Chromium mobile.
-4. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> Q.A.E2E -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
-5. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
+3. Require `Browser end-to-end` and `Deploy status` for `Q.A.E2E` promotion PRs. `Deploy status` validates Pages configuration and, after the first publication, the live HTTPS site.
+4. Require `Pre-deploy test` for `deploy` promotion PRs. It runs Playwright on Chromium, Firefox, WebKit, and Chromium mobile against the Node 24-validated artifact that would be published.
+5. Restrict the source branch for staged promotions through the CI policy: `develop -> Q.A -> main -> Q.A.E2E -> deploy`. GitHub branch rules do not enforce a pull request's source branch by themselves.
+6. Keep GitHub Pages set to `GitHub Actions`; changing the default branch does not affect the deployment source.
 
 A push to `deploy` publishes production. A manual dispatch also publishes only when run from `deploy`; both paths use the Node 24 baseline and rerun typechecking, tests, the production build, and deployment-output smoke tests before uploading the Pages artifact.
 
@@ -84,7 +85,7 @@ A push to `deploy` publishes production. A manual dispatch also publishes only w
 
 1. In `Settings -> Pages`, enter `neocom.cloud` in `Custom domain` and save it.
 2. Leave the setting in place while DNS propagates. Use `Check again` only after the records below resolve publicly.
-3. Enable `Enforce HTTPS` only after GitHub makes it available.
+3. Enable `Enforce HTTPS` as soon as GitHub makes it available after the first deployment. Subsequent `Deploy status` checks require it.
 
 Important:
 

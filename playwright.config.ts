@@ -1,6 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 import { E2E_BASE_URL, E2E_HOST, E2E_PORT } from "./tests/e2e/constants";
 
+const useExistingBuild = process.env.E2E_USE_EXISTING_BUILD === "1";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -13,7 +15,9 @@ export default defineConfig({
     trace: "retain-on-failure"
   },
   webServer: {
-    command: `pnpm build && pnpm exec vite preview --host ${E2E_HOST} --port ${E2E_PORT}`,
+    command: useExistingBuild
+      ? `pnpm exec vite preview --host ${E2E_HOST} --port ${E2E_PORT}`
+      : `pnpm build && pnpm exec vite preview --host ${E2E_HOST} --port ${E2E_PORT}`,
     url: E2E_BASE_URL,
     timeout: 120_000,
     reuseExistingServer: !process.env.CI
