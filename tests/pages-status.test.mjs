@@ -10,6 +10,13 @@ import {
 
 const repository = "Neocom-Cloud/website-frontend";
 const token = "test-token";
+const expectedPublicUrls = [
+  "https://neocom.cloud/",
+  "https://neocom.cloud/pt-br/",
+  "https://neocom.cloud/en/",
+  "https://neocom.cloud/robots.txt",
+  "https://neocom.cloud/sitemap.xml"
+];
 
 function createPages(overrides = {}) {
   return {
@@ -104,9 +111,7 @@ describe("GitHub Pages readiness", () => {
     });
 
     expect(result).toMatchObject({ bootstrap: false });
-    expect(result.probes).toEqual(
-      PUBLIC_PAGE_PROBES.map((probe) => getPublicProbeUrl(probe.pathname))
-    );
+    expect(result.probes).toEqual(expectedPublicUrls);
   });
 
   it("fails when a published public route is unhealthy", async () => {
@@ -124,6 +129,23 @@ describe("GitHub Pages readiness", () => {
         attempts: 1
       })
     ).rejects.toThrow("https://neocom.cloud/pt-br/ returned HTTP 503.");
+  });
+
+  it("times out an unresponsive Pages request", async () => {
+    const fetchImpl = (_url, { signal }) =>
+      new Promise((_resolve, reject) => {
+        signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+      });
+
+    await expect(
+      verifyPagesStatus({
+        repository,
+        token,
+        fetchImpl,
+        attempts: 1,
+        attemptTimeoutMs: 5
+      })
+    ).rejects.toThrow(/timed out|timeout/i);
   });
 
   it("builds the Pages endpoint from the repository identifier", () => {

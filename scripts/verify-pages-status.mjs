@@ -87,12 +87,23 @@ export function validatePagesConfiguration(pages) {
   };
 }
 
-async function fetchWithRetry(url, options, fetchImpl, attempts, retryDelayMs) {
+async function fetchWithRetry(
+  url,
+  options,
+  fetchImpl,
+  attempts,
+  retryDelayMs,
+  attemptTimeoutMs
+) {
   let lastError;
 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      const response = await fetchImpl(url, options);
+      const timeoutSignal = AbortSignal.timeout(attemptTimeoutMs);
+      const signal = options.signal
+        ? AbortSignal.any([options.signal, timeoutSignal])
+        : timeoutSignal;
+      const response = await fetchImpl(url, { ...options, signal });
 
       if (response.ok) {
         return response;
@@ -122,7 +133,8 @@ async function verifyPublicProbe(probe, options) {
     { headers: { Accept: "text/html,application/xml,text/plain" } },
     options.fetchImpl,
     options.attempts,
-    options.retryDelayMs
+    options.retryDelayMs,
+    options.attemptTimeoutMs
   );
   const contentType = getContentType(response);
 
@@ -150,7 +162,8 @@ export async function verifyPagesStatus({
   apiOrigin = PAGES_API_ORIGIN,
   siteOrigin = PRODUCTION_ORIGIN,
   attempts = 3,
-  retryDelayMs = 1_000
+  retryDelayMs = 1_000,
+  attemptTimeoutMs = 10_000
 }) {
   if (!repository || !token) {
     throw new Error("GITHUB_REPOSITORY and GITHUB_TOKEN are required.");
@@ -167,7 +180,8 @@ export async function verifyPagesStatus({
     },
     fetchImpl,
     attempts,
-    retryDelayMs
+    retryDelayMs,
+    attemptTimeoutMs
   );
   const pages = await pagesResponse.json();
   const configuration = validatePagesConfiguration(pages);
@@ -184,6 +198,7 @@ export async function verifyPagesStatus({
     PUBLIC_PAGE_PROBES.map((probe) =>
       verifyPublicProbe(probe, {
         attempts,
+        attemptTimeoutMs,
         fetchImpl,
         retryDelayMs,
         siteOrigin

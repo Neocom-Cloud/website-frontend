@@ -125,6 +125,7 @@ jobs:
   browser-e2e:
     name: Browser end-to-end
     if: github.event_name == 'pull_request' && github.base_ref == 'Q.A.E2E'
+    needs: deploy-status
     runs-on: ubuntu-latest
     permissions:
       contents: read
