@@ -92,6 +92,35 @@ describe("GitHub Pages readiness", () => {
     });
   });
 
+  it.each([
+    [
+      createPages({ build_type: "legacy" }),
+      true,
+      "GitHub Pages build type must be workflow."
+    ],
+    [
+      createPages({ protected_domain_state: "pending" }),
+      true,
+      "GitHub Pages custom-domain protection must be verified."
+    ],
+    [
+      createPages({ https_certificate: { state: "pending" } }),
+      true,
+      "GitHub Pages HTTPS certificate must be approved."
+    ],
+    [
+      createPages({ https_enforced: true, status: "building" }),
+      false,
+      "GitHub Pages status must be built after deployment (received building)."
+    ]
+  ])("blocks invalid configuration gates", (pages, bootstrap, error) => {
+    expect(validatePagesConfiguration(pages)).toMatchObject({
+      bootstrap,
+      valid: false,
+      errors: expect.arrayContaining([error])
+    });
+  });
+
   it("requires HTTPS enforcement once a deployment exists", () => {
     expect(
       validatePagesConfiguration(createPages({ status: "built" }))
