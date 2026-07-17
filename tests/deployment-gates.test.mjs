@@ -86,6 +86,10 @@ describe("deployment gate policy", () => {
     [
       { EVENT_NAME: "pull_request", BASE_REF: "deploy" },
       "BASE_REF and HEAD_REF are required for pull requests."
+    ],
+    [
+      { EVENT_NAME: "pull_request", HEAD_REF: "main" },
+      "BASE_REF and HEAD_REF are required for pull requests."
     ]
   ])("rejects incomplete workflow context %#", (environment, errorMessage) => {
     return expect(runDeploymentGateResolver(environment)).rejects.toThrow(errorMessage);
