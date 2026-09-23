@@ -13,6 +13,7 @@ export const enSiteCopy = {
     toLightShort: "Light"
   },
   nav: {
+    label: "Primary",
     projects: "Projects",
     mission: "Mission",
     contact: "Contact"

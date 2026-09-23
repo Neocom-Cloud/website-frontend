@@ -3,24 +3,42 @@ import { describe, expect, it } from "vitest";
 import { SOCIAL_ASSETS, SOCIAL_KITS } from "./assets";
 import { SocialKit } from "./SocialKit";
 
+/** The sizes X expects, declared here so the catalogue cannot grade itself. */
+const EXPECTED_ARTBOARDS = [
+  ["banner", 1500, 500],
+  ["avatar-dark", 400, 400],
+  ["avatar-light", 400, 400],
+  ["post-manifesto", 1600, 900],
+  ["post-portfolio", 1600, 900],
+  ["devrecord-banner", 1500, 500],
+  ["devrecord-avatar", 400, 400],
+  ["devrecord-avatar-light", 400, 400],
+  ["devrecord-post-thesis", 1600, 900],
+  ["devrecord-post-what", 1600, 900]
+] as const;
+
 describe("SocialKit", () => {
-  it("renders every catalogued artboard at its native pixel size", () => {
+  it("renders every expected artboard at its native pixel size", () => {
     const { container } = render(<SocialKit />);
     const artboards = Array.from(
       container.querySelectorAll<HTMLElement>("[data-social-artboard]")
     );
 
     expect(artboards.map((artboard) => artboard.dataset.socialArtboard)).toEqual(
-      SOCIAL_ASSETS.map((asset) => asset.id)
+      EXPECTED_ARTBOARDS.map(([id]) => id)
     );
 
-    for (const asset of SOCIAL_ASSETS) {
-      const artboard = container.querySelector<HTMLElement>(
-        `[data-social-artboard="${asset.id}"]`
-      )!;
+    for (const [id, width, height] of EXPECTED_ARTBOARDS) {
+      const artboard = container.querySelector<HTMLElement>(`[data-social-artboard="${id}"]`)!;
 
-      expect(artboard.style.width).toBe(`${asset.width}px`);
-      expect(artboard.style.height).toBe(`${asset.height}px`);
+      expect(artboard.style.width, id).toBe(`${width}px`);
+      expect(artboard.style.height, id).toBe(`${height}px`);
+
+      // The catalogue drives both the render and the captions, so hold it to
+      // the same numbers instead of letting it define them.
+      const asset = SOCIAL_ASSETS.find((candidate) => candidate.id === id)!;
+
+      expect([asset.width, asset.height], id).toEqual([width, height]);
     }
   });
 

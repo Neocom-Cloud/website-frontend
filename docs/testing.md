@@ -42,7 +42,9 @@ Playwright specs in `tests/e2e/visual.spec.ts` confirm the look of the 3A model 
 - no horizontal overflow and no broken images on every localized page, at 1280, 390 and 320 px
 - readable contrast on the locale switcher
 
-Pixel snapshots (`tests/e2e/visual-snapshots.spec.ts`, baselines in `tests/e2e/__screenshots__/chromium`) are opt-in because text rasterisation differs between operating systems. The committed baselines were recorded on Windows with Chromium:
+Pixel snapshots (`tests/e2e/visual-snapshots.spec.ts`, baselines in `tests/e2e/__screenshots__/chromium`) are opt-in because text rasterisation differs between operating systems.
+
+The committed baselines were recorded on **Windows with Chromium**, and `snapshotPathTemplate` stores one file per browser project with no platform segment. Comparing or updating them from macOS or Linux will report differences that are only font rasterisation, and `--update-snapshots` there would overwrite the Windows baselines with images that then fail for everyone else. Run both commands on Windows, or add a platform segment to the template first.
 
 ```bash
 pnpm test:visual          # compare against the baselines

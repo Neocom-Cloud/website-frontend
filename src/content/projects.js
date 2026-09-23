@@ -4,13 +4,13 @@ export const projectRegistry = {
   neorecicla: {
     accent: "green",
     artSrc: "/assets/NeoRecicla_Icon.svg",
-    socialImageSrc: "/assets/NeoRecicla_Icon.svg",
+    socialImageSrc: "/assets/social-neorecicla.jpg",
     template: "standard"
   },
   devrecord: {
     accent: "ember",
     artSrc: "/assets/devrecord-icon.svg",
-    socialImageSrc: "/assets/devrecord-icon.svg",
+    socialImageSrc: "/assets/social-devrecord.jpg",
     template: "standard"
   },
   "neo-health": {

@@ -44,7 +44,7 @@ export function SiteHeader({
       </a>
 
       <nav
-        aria-label="Primary"
+        aria-label={copy.nav.label}
         className="order-last flex w-full items-center gap-7 text-[15px] md:order-none md:ml-auto md:w-auto"
       >
         <a className="text-ink-2 no-underline" href={`${anchorPrefix}#projects`}>

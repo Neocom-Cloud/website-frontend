@@ -26,7 +26,13 @@ export function TypewriterWord({ phrases }: { phrases: string[] }) {
 
   return (
     <>
-      <span className="font-normal text-accent italic" data-testid="typewriter-text">
+      {/* The animation paints partial words, so only this span is announced. */}
+      <span className="sr-only">{phrases[state.phraseIndex]}</span>
+      <span
+        aria-hidden="true"
+        className="font-normal text-accent italic"
+        data-testid="typewriter-text"
+      >
         {getVisibleText(state, phrases, reducedMotion)}
       </span>
       {reducedMotion ? null : (

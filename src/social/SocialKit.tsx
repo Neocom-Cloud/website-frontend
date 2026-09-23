@@ -41,8 +41,10 @@ function Artboard({
 
   return (
     <figure className="m-0 flex flex-col gap-3" data-social-asset={asset.id}>
-      <figcaption className={`${MONO_LABEL} text-[11px] tracking-[0.16em] text-ink-2`}>
-        {asset.label} · {asset.width} × {asset.height}
+      <figcaption>
+        <h3 className={`${MONO_LABEL} m-0 text-[11px] font-normal tracking-[0.16em] text-ink-2`}>
+          {asset.label} · {asset.width} × {asset.height}
+        </h3>
       </figcaption>
       <div
         className={`relative overflow-hidden ${className}`}
@@ -318,6 +320,7 @@ export function SocialKit() {
 
   return (
     <main className="flex min-w-max flex-col gap-24 bg-page p-12 text-ink">
+      <h1 className="sr-only">Kits de perfil e posts para X</h1>
       <KitSection id={neocom.id} title={neocom.title}>
         <Banner />
         <div className="flex flex-wrap items-start gap-10">

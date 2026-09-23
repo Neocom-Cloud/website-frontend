@@ -99,10 +99,23 @@ test.describe("landing visual contract", () => {
     expect(heading.size).toBe("90px");
     expect(heading.weight).toBe("500");
     expect(heading.family).toContain("Familjen Grotesk");
-    expect(
-      await page.evaluate(() => document.fonts.check('16px "Familjen Grotesk Variable"'))
-    ).toBe(true);
-    expect(await page.evaluate(() => document.fonts.check('16px "IBM Plex Mono"'))).toBe(true);
+
+    // document.fonts.check() also answers true for a family that does not
+    // exist, so read the loaded faces instead of asking about a name.
+    const loaded = await page.evaluate(() => {
+      const families = new Set<string>();
+
+      document.fonts.forEach((face) => {
+        if (face.status === "loaded") {
+          families.add(face.family.replace(/^["']|["']$/g, ""));
+        }
+      });
+
+      return [...families];
+    });
+
+    expect(loaded).toContain("Familjen Grotesk Variable");
+    expect(loaded).toContain("IBM Plex Mono");
   });
 
   test("lays out five values and three projects in a single row on desktop", async ({ page }) => {
@@ -130,17 +143,56 @@ test.describe("landing visual contract", () => {
     expect(new Set(values.map((rect) => rect.left)).size).toBe(2);
   });
 
-  test("keeps the inactive locale link readable", async ({ page }) => {
-    await gotoWithTheme(page, "/pt-br/", "light");
+  for (const theme of themes) {
+    test(`keeps the inactive locale link readable in the ${theme} theme`, async ({ page }) => {
+      await gotoWithTheme(page, "/pt-br/", theme);
 
-    // --ink-3 sits at 2.68:1 against the chip; the switcher is a control, so it
-    // uses --ink-2 (4.96:1) and clears WCAG AA.
-    const colour = await page
-      .getByRole("link", { name: "EN", exact: true })
-      .evaluate((element) => getComputedStyle(element).color);
+      // --ink-3 sits at 2.68:1 against the chip. The switcher is a control, not
+      // a decorative label, so it has to clear WCAG AA. Measure the rendered
+      // ratio rather than a colour literal: a darker chip would keep a colour
+      // assertion passing while the control became unreadable.
+      const ratio = await page
+        .getByRole("link", { name: "EN", exact: true })
+        .evaluate((element) => {
+          const parse = (value: string) =>
+            (value.match(/[\d.]+/g) ?? []).map(Number) as [number, number, number, number?];
 
-    expect(colour).toBe("rgba(22, 22, 26, 0.62)");
-  });
+          const backdrop = (node: Element | null): [number, number, number] => {
+            for (let current = node; current; current = current.parentElement) {
+              const [r, g, b, alpha = 1] = parse(getComputedStyle(current).backgroundColor);
+
+              if (alpha > 0) {
+                return [r, g, b];
+              }
+            }
+
+            return [255, 255, 255];
+          };
+
+          const [r, g, b, alpha = 1] = parse(getComputedStyle(element).color);
+          const behind = backdrop(element);
+          const composited = [r, g, b].map((channel, index) =>
+            channel * alpha + behind[index] * (1 - alpha)
+          );
+
+          const luminance = (colour: number[]) =>
+            colour
+              .map((channel) => {
+                const c = channel / 255;
+                return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+              })
+              .reduce((sum, c, index) => sum + c * [0.2126, 0.7152, 0.0722][index], 0);
+
+          const [lighter, darker] = [luminance(composited), luminance(behind)].sort(
+            (a, z) => z - a
+          );
+
+          return (lighter + 0.05) / (darker + 0.05);
+        });
+
+      expect(ratio).toBeGreaterThanOrEqual(4.5);
+    });
+  }
 
   test("gives each project card its own accent colours", async ({ page }) => {
     await gotoWithTheme(page, "/pt-br/", "light");

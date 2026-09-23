@@ -13,6 +13,7 @@ export const ptBrSiteCopy = {
     toLightShort: "Claro"
   },
   nav: {
+    label: "Principal",
     projects: "Projetos",
     mission: "Missão",
     contact: "Contato"

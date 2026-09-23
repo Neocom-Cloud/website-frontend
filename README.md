@@ -73,6 +73,14 @@ This keeps one shared landing template, one shared standard project template, an
   - NeoCom brand: SVG
   - DevRecord: SVG
   - NeoRecicla: SVG
+- Social preview images are raster, not SVG. Open Graph and Twitter cards accept JPEG, GIF and PNG only, so a crawler handed an SVG `og:image` may render no preview at all. The vectors stay authoritative on the page; `scripts/rasterize-social-image.mjs` derives the copies the crawlers consume:
+
+  ```bash
+  node scripts/rasterize-social-image.mjs public/assets/NeoCom_Icon_Final_v2.svg public/assets/social-neocom.jpg
+  node scripts/rasterize-social-image.mjs public/assets/NeoRecicla_Icon.svg public/assets/social-neorecicla.jpg
+  node scripts/rasterize-social-image.mjs public/assets/devrecord-icon.svg public/assets/social-devrecord.jpg "#120d05"
+  ```
+
 - Temporary exception:
   - Neo Health has no source SVG yet. The delivered PNG carried a baked-in black frame around its rounded tile, which read as a black square on light surfaces. `scripts/crop-icon-frame.mjs` strips that frame and writes the two published derivatives — a WebP for the page and a JPEG for `og:image`. The 1.2 MB original stays in `assets/` as the source and is no longer published:
 

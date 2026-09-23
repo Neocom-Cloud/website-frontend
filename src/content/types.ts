@@ -68,6 +68,8 @@ export interface SiteCopy {
     toLightShort: string;
   };
   nav: {
+    /** Accessible name for the primary navigation landmark. */
+    label: string;
     projects: string;
     mission: string;
     contact: string;
