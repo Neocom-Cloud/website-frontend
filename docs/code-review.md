@@ -10,6 +10,8 @@ develop -> Q.A -> main -> Q.A.E2E -> deploy
 
 `Q.A` is the valid Git branch name for the QA stage. `Q.A.` is not valid because Git branch names cannot end with a period.
 
+Create feature, fix, and documentation branches from `develop` and target `develop` with their PRs. The five named stages above are persistent release branches. After a work PR is merged, verify that its head has no unique commits needed elsewhere and delete the obsolete remote branch. Keep a branch used by an open PR or its review assets until that review no longer needs it. A merged promotion PR does not make its source stage obsolete.
+
 Only `deploy` publishes GitHub Pages. CodeRabbit is advisory: CI and GitHub rulesets remain the merge gate.
 
 ## Pull Requests

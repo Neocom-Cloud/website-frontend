@@ -1,8 +1,8 @@
 # Deployment and DNS
 
-This project deploys a static site to GitHub Pages and serves it on `neocom.cloud`.
+This project is configured to deploy a static site to GitHub Pages with `neocom.cloud` as its intended custom domain. The repository configuration alone does not establish that DNS, the Pages setting, or a live deployment is ready; verify those separately before a production promotion.
 
-## Current hosting model
+## Configured hosting model
 
 - Build system: Vite static output
 - Build runtime: Node.js 24 baseline with pnpm 11.3.0; CI also validates the current latest Node release
@@ -10,6 +10,7 @@ This project deploys a static site to GitHub Pages and serves it on `neocom.clou
 - Canonical domain: `https://neocom.cloud`
 - Alternate host: `https://www.neocom.cloud`
 - GitHub Pages owner domain: `neocom-cloud.github.io`
+- Publishing trigger: a push to `deploy`, through `.github/workflows/deploy-pages.yml`; a manual workflow run also builds only when the selected ref is `deploy`
 
 ## Locale routing model
 

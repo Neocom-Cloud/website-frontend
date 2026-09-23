@@ -1,6 +1,6 @@
 # NeoCom Website Frontend
 
-Static multi-page marketing site for `neocom.cloud`, built with Vite and React and deployed to GitHub Pages.
+Static bilingual website for NeoCom, NeoRecicla, DevRecord, and Neo Health. The production target is GitHub Pages at `https://neocom.cloud`. This repository contains the site source, generated localized pages, tests, and deployment workflows.
 
 This repository is `pnpm`-first. Use `pnpm` for install, development, testing, and build commands.
 
@@ -18,7 +18,7 @@ Node.js 24 or later is supported. With `nvm`, run `nvm use` to select the Node 2
 
 ```bash
 nvm use
-pnpm install
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
@@ -27,11 +27,11 @@ pnpm dev
 ```bash
 pnpm generate:pages
 pnpm typecheck
-pnpm test
+pnpm test:ci
 pnpm build
 pnpm test:build-output
-BASE_REF=deploy HEAD_REF=Q.A.E2E pnpm verify:promotion
 pnpm verify:repository
+pnpm test:e2e
 pnpm preview
 ```
 
@@ -42,6 +42,8 @@ pnpm test:watch
 ```
 
 `pnpm generate:pages` regenerates the localized HTML entry points and `public/sitemap.xml` from the centralized content catalog.
+
+`pnpm test:e2e` builds and previews the site, then runs Playwright in Chromium, Firefox, WebKit, and mobile Chromium. Install the browsers with `pnpm exec playwright install` first if needed. Use `BASE_REF=<target> HEAD_REF=<source> pnpm verify:promotion` for a release promotion PR; the accepted pairs are documented in [deployment](./docs/deployment.md).
 
 ## Architecture
 
@@ -56,6 +58,8 @@ pnpm test:watch
 
 This keeps one shared landing template, one shared standard project template, and one centralized translation source of truth.
 
+The generated HTML under `pt-br/` and `en/` and `public/sitemap.xml` should be committed alongside changes to their source catalogs. Do not hand-edit them. See the [architecture and content guide](./docs/architecture.md) for the source-of-truth map and common edit procedures.
+
 ## Asset policy
 
 - Prefer `.svg` for logos, icons, and social preview assets whenever the source asset exists in SVG.
@@ -63,8 +67,9 @@ This keeps one shared landing template, one shared standard project template, an
   - NeoCom brand: SVG
   - DevRecord: SVG
   - NeoRecicla: SVG
-- Temporary exception:
-  - Neo Health still uses PNG because there is no source SVG in the repository yet
+- Current limitations:
+  - DevRecord uses `NeoCom_Icon_App.svg` as its project icon.
+  - Neo Health uses PNG because there is no source SVG in the repository yet.
 
 ## Locale behavior
 
@@ -90,6 +95,7 @@ This keeps one shared landing template, one shared standard project template, an
 ## Testing
 
 - Test guide: [docs/testing.md](./docs/testing.md)
+- Architecture and content guide: [docs/architecture.md](./docs/architecture.md)
 - Code review guide: [docs/code-review.md](./docs/code-review.md)
 - Delivery playbook: [docs/development-playbook.md](./docs/development-playbook.md)
 - Generic delivery playbook template: [docs/generic-development-playbook.md](./docs/generic-development-playbook.md)
@@ -100,3 +106,5 @@ This keeps one shared landing template, one shared standard project template, an
 - The public domain is `neocom.cloud`.
 - The GitHub Pages owner domain used for DNS targets is `neocom-cloud.github.io`.
 - The site ships `pt-BR` and `en` locales.
+- `CONTEXT.md` is the historical product brief; use the source and guides above for current implementation details.
+- The site has no login, backend, or blog.

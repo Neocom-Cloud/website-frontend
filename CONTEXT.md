@@ -1,3 +1,5 @@
+> Historical planning brief. For current routes, assets, implementation, tests, and release behavior, see `README.md` and `docs/architecture.md`. Statements below record early design intent and may differ from the current site.
+
 Here's the full context from our conversation, that generated the base_designs:
 
 ---

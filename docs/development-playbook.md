@@ -206,6 +206,8 @@ For each boundary:
 8. Merge only if the PR is clean and all valid review work is complete.
 9. After merging, restart at step 1 for the next boundary; steps 1-3 fetch, set, inspect, and validate that boundary's refs.
 
+After a feature, fix, or documentation PR has merged, delete its work branch once its head is confirmed merged and no open PR or review artifact still depends on it. Retain the persistent `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy` branches even when a promotion PR is merged.
+
 The browser E2E gate is required for `main -> Q.A.E2E`. The `Q.A.E2E` PR also verifies GitHub Pages readiness. The `Q.A.E2E -> deploy` PR runs the artifact-based `Pre-deploy test`, which serves the Node 24-validated `dist` output through the same Playwright matrix. `Q.A.E2E` is the manual acceptance boundary; leave the PR open there until a human explicitly accepts it. Only `deploy` can publish GitHub Pages.
 
 ### 7. Produce a final evidence record

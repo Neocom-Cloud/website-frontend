@@ -1,6 +1,6 @@
 # Testing
 
-This repository uses Vitest for unit tests and jsdom-based integration tests.
+This repository uses Vitest for unit tests and jsdom-based integration tests, Playwright for browser end-to-end tests, and a separate Vitest configuration for checks against the built `dist/` site.
 
 Use Node.js 24 or later before running the commands below. The repository includes `.nvmrc`, so `nvm use` selects the Node 24 baseline.
 
@@ -41,6 +41,10 @@ Deployment smoke tests inspect the finished `dist` output in a Node environment.
 - localized HTML points to Vite-built JavaScript and CSS instead of source modules
 - canonical metadata remains in the production output
 
+### Browser end-to-end tests
+
+`tests/e2e/site.spec.ts` checks navigation, localized routes, language choice, theme persistence, and site behavior in Chromium, Firefox, WebKit, and mobile Chromium. `playwright.config.ts` starts a Vite preview after building the site. Set `E2E_USE_EXISTING_BUILD=1` only when `dist/` already contains the exact build to test; CI uses this for the pre-deploy artifact.
+
 ## Run tests locally
 
 ```bash
@@ -49,6 +53,8 @@ pnpm test
 pnpm build
 pnpm test:build-output
 pnpm verify:repository
+pnpm exec playwright install
+pnpm test:e2e
 ```
 
 To validate a promotion locally, use `BASE_REF=<target-branch> HEAD_REF=<source-branch> pnpm verify:promotion`, replacing both placeholders with one of the valid promotion pairs:
@@ -123,5 +129,7 @@ This keeps deployment and test enforcement separate:
 
 ## Current gaps
 
-- No browser visual-regression coverage yet
+- No automated pixel-baseline visual-regression coverage on the current integration branch
 - No Lighthouse or accessibility CI checks yet
+
+When visual checks are added, update this section with their commands, baseline policy, and CI scope.
