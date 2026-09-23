@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { SITE_ORIGIN } from "../src/site/constants.js";
+import { SITE_ORIGIN, THEME_STORAGE_KEY } from "../src/site/constants.js";
 import {
   locales,
   projectRegistry,
@@ -8,7 +8,10 @@ import {
   siteContent
 } from "../src/content/site.js";
 
-const BRAND_IMAGE_SRC = "/assets/NeoCom_Icon_Final_v2.svg";
+// Raster, not the SVG brand mark: Open Graph and Twitter cards do not accept
+// SVG, so a crawler handed one may render no preview at all. Regenerate with
+// scripts/rasterize-social-image.mjs.
+const BRAND_IMAGE_SRC = "/assets/social-neocom.jpg";
 const PAGE_ENTRY_SRC = "/src/page-entry.tsx";
 const WATCH_ROOTS = ["src/content", "src/site", "scripts/static-site.mjs"];
 
@@ -90,6 +93,28 @@ function renderAlternateLinks(page) {
   return alternateLines.join("\n");
 }
 
+/**
+ * Applies the stored theme before first paint.
+ *
+ * The document ships with data-theme="light" so the light tokens resolve
+ * without JavaScript. React only reconciles the stored value in an effect,
+ * which runs after paint, so a visitor who chose dark saw a light flash.
+ *
+ * @returns {string}
+ */
+function renderThemeBootstrap() {
+  return `    <script>
+      try {
+        var stored = localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (error) {
+        // Storage denied; the document already carries the light default.
+      }
+    </script>`;
+}
+
 function getPageSeo(page) {
   const copy = siteContent[page.locale];
 
@@ -144,6 +169,8 @@ export function getViteInputMap(rootDir) {
     root: resolve(rootDir, "index.html"),
     notFound: resolve(rootDir, "404.html")
   };
+  // social/index.html is deliberately absent: the X/Twitter kit is a reference
+  // surface served by `pnpm dev`, never published.
 
   for (const page of getStaticPageDefinitions()) {
     inputs[getInputKey(page)] = resolve(rootDir, getPageFilePath(page));
@@ -207,6 +234,7 @@ ${renderAlternateLinks(page)}
     <meta name="twitter:image" content="${getAbsoluteUrl(seo.imageSrc)}" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
+${renderThemeBootstrap()}
   </head>
   <body>
     <div id="root"></div>

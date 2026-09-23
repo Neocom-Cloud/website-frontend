@@ -4,9 +4,10 @@ import type { IconName } from "../content/types";
 interface IconProps {
   name: IconName;
   className?: string;
+  strokeWidth?: number;
 }
 
-export function Icon({ name, className }: IconProps) {
+export function Icon({ name, className, strokeWidth = 1.6 }: IconProps) {
   return (
     <svg
       aria-hidden="true"
@@ -16,7 +17,7 @@ export function Icon({ name, className }: IconProps) {
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth="1.75"
+      strokeWidth={strokeWidth}
     >
       {iconPaths[name]}
     </svg>

@@ -93,6 +93,11 @@ describe("production build output", () => {
     }
   });
 
+  it("leaves the development-only X/Twitter kit out of the build", () => {
+    expect(existsSync(resolve(distDir, "social/index.html"))).toBe(false);
+    expect(readDistFile("robots.txt")).not.toContain("social");
+  });
+
   it("publishes every configured project asset", () => {
     for (const project of Object.values(projectRegistry)) {
       for (const assetPath of [project.artSrc, project.socialImageSrc]) {

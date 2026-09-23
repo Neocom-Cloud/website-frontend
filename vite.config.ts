@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 interface StaticSiteModule {
   createStaticPagesPlugin(rootDir: string): unknown;
@@ -16,7 +17,7 @@ export default defineConfig(async () => {
   await staticSite.generateStaticFiles(__dirname);
 
   return {
-    plugins: [react(), staticSite.createStaticPagesPlugin(__dirname)],
+    plugins: [react(), tailwindcss(), staticSite.createStaticPagesPlugin(__dirname)],
     test: {
       environment: "jsdom",
       globals: true,

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&family=Archivo:wght@400;500;600&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" />
+<style>
+  body { margin: 0; background: #e9e9ea; }
+  a { color: inherit; }
+  a:hover { color: inherit; }
+  @keyframes termblink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+</style>
+</helmet>
+<div id="top">
+      <div style="border: 1px solid rgba(16,20,24,0.14); background: {{ b2.bg }}; color: {{ b2.ink }}; fontFamily: 'Familjen Grotesk', 'Helvetica Neue', Helvetica, sans-serif">
+        <header style="display: flex; alignItems: center; gap: 32px; padding: 22px 44px">
+          <a href="#top" style="display: inline-flex; alignItems: center; gap: 11px; fontSize: 19px; fontWeight: 600; letterSpacing: -0.01em; textDecoration: none; color: {{ b2.ink }}">
+            <img alt="" src="assets/nc-mark.svg" style="width: 27px; height: 27px; borderRadius: 8px; display: block" />
+            <span>NeoCom</span>
+          </a>
+          <nav style="marginLeft: auto; display: flex; alignItems: center; gap: 28px; fontSize: 15px">
+            <a href="#top" style="textDecoration: none; color: {{ b2.ink2 }}">Projetos</a>
+            <a href="#top" style="textDecoration: none; color: {{ b2.ink2 }}">Missão</a>
+            <a href="#top" style="textDecoration: none; color: {{ b2.ink2 }}">Contato</a>
+          </nav>
+          <div style="display: flex; alignItems: center; gap: 14px">
+            <div style="display: flex; alignItems: center; gap: 4px; padding: 5px; borderRadius: 999px; background: {{ b2.chip }}; fontSize: 12px; fontWeight: 500">
+              <span style="padding: 4px 10px; borderRadius: 999px; background: {{ b2.surface }}; color: {{ b2.ink }}">PT</span>
+              <span style="padding: 4px 10px; color: {{ b2.ink3 }}">EN</span>
+            </div>
+            <button type="button" onClick="{{ toggleTheme }}" style="fontFamily: inherit; fontSize: 12px; fontWeight: 500; cursor: pointer; padding: 9px 15px; borderRadius: 999px; border: 1px solid {{ b2.rule }}; background: transparent; color: {{ b2.ink2 }}">{{ themeLabelShort }}</button>
+          </div>
+        </header>
+
+        <section style="position: relative; overflow: hidden; margin: 0 20px; padding: 74px 48px 68px; borderRadius: 28px 28px 28px 8px; background: {{ b2.field }}">
+          <div style="position: absolute; top: 0; left: 48px; width: 96px; height: 3px; background: {{ b2.accent }}"></div>
+          <svg viewBox="0 0 348 342" fill="none" preserveAspectRatio="xMidYMid meet" style="position: absolute; top: -150px; right: -300px; width: 740px; height: 680px; opacity: 0.13; color: {{ b2.accent }}; pointerEvents: none"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M256.619 289.994H65.5502H62.8438C62.8438 289.994 61.5242 290.007 60.6787 289.994C42.0049 289.994 -1.65182e-05 265.652 0 218.05C1.65183e-05 170.447 37.9454 146.446 60.6787 146.105C61.5242 146.092 62.8438 146.105 62.8438 146.105C65.8208 146.105 65.8208 142.318 65.8208 142.318V139.614C65.8208 46.5722 179.217 20.8776 217.376 95.527C218.324 97.3798 219.542 100.395 219.542 100.395L221.165 104.723C221.165 104.723 227.931 104.182 235.238 104.182C248.77 104.182 265.513 105.481 278.54 117.435C287.742 125.879 294.237 138.532 294.237 147.187L294.291 148.539C294.832 157.194 298.026 160.517 305.062 162.062C306.416 162.256 308.581 162.874 308.581 162.874C308.581 162.874 351.071 173.963 347.823 226.164C347.823 249.694 325.089 289.994 280.164 289.994H256.619Z"></path></svg>
+          <div style="position: relative; display: flex; alignItems: flex-start; justifyContent: space-between; gap: 40px">
+            <div style="display: inline-flex; alignItems: center; gap: 9px; padding: 7px 14px 7px 11px; borderRadius: 999px; background: {{ b2.surface }}; fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.2em; textTransform: uppercase; color: {{ b2.ink2 }}">
+              <span style="width: 7px; height: 7px; borderRadius: 999px; background: {{ b2.accent }}"></span>
+              <span>neocom.cloud</span>
+            </div>
+          </div>
+          <h1 style="position: relative; margin: 30px 0 0; fontSize: 90px; lineHeight: 0.98; fontWeight: 500; letterSpacing: -0.04em; maxWidth: 15em; color: {{ b2.ink }}">Inovação em <span style="fontStyle: italic; fontWeight: 400; color: {{ b2.accent }}">{{ typed }}</span><span style="display: inline-block; width: 0.46em; height: 5px; marginLeft: 8px; verticalAlign: 0.12em; animation: termblink 1.1s step-end infinite; background: {{ b2.accent }}"></span></h1>
+          <div style="position: relative; display: grid; gridTemplateColumns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; marginTop: 52px; alignItems: end">
+            <p style="margin: 0; fontSize: 20px; lineHeight: 1.6; textWrap: pretty; color: {{ b2.ink2 }}">Tecnologia com propósito. Conexão com responsabilidade. Privacidade como fundamento.</p>
+            <div style="display: flex; alignItems: center; gap: 22px; flexWrap: wrap; justifyContent: flex-end">
+              <a href="#top" style="display: inline-flex; alignItems: center; gap: 12px; padding: 16px 26px; borderRadius: 999px; textDecoration: none; fontSize: 15px; fontWeight: 500; background: {{ b2.ink }}; color: {{ b2.bg }}">
+                <span>Conheça nossos projetos</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style="width: 16px; height: 16px"><path d="M5 12h12"></path><path d="m13 6 6 6-6 6"></path></svg>
+              </a>
+              <a href="#top" style="fontSize: 15px; textDecoration: none; borderBottom: 1px solid {{ b2.rule }}; paddingBottom: 3px; color: {{ b2.ink2 }}">Falar com a NeoCom</a>
+            </div>
+          </div>
+        </section>
+
+        <section style="padding: 76px 64px 60px">
+          <div style="display: grid; gridTemplateColumns: minmax(0, 1fr) minmax(0, 1fr); alignItems: end; gap: 32px; marginBottom: 34px">
+            <div>
+              <div style="display: flex; alignItems: center; gap: 12px; marginBottom: 18px; fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.2em; textTransform: uppercase; color: {{ b2.ink3 }}">
+                <span style="width: 34px; height: 2px; background: {{ b2.accent }}"></span>
+                <span>01 — nossos valores</span>
+              </div>
+              <h2 style="margin: 0; fontSize: 42px; fontWeight: 500; letterSpacing: -0.03em; lineHeight: 1.02; color: {{ b2.ink }}">O que nos move</h2>
+            </div>
+            <p style="margin: 0; fontSize: 17px; lineHeight: 1.6; textAlign: right; color: {{ b2.ink2 }}">Os princípios por trás de cada decisão</p>
+          </div>
+          <div style="display: grid; gridTemplateColumns: repeat(5, minmax(0, 1fr)); gap: 14px">
+            <div style="display: flex; flexDirection: column; gap: 26px; padding: 24px; borderRadius: 18px 18px 18px 6px; background: {{ b2.surface }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style="width: 22px; height: 22px; color: {{ b2.accent }}"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+              <span style="fontSize: 17px; fontWeight: 500; color: {{ b2.ink }}">Privacidade</span>
+            </div>
+            <div style="display: flex; flexDirection: column; gap: 26px; padding: 24px; borderRadius: 18px 18px 18px 6px; background: {{ b2.surface }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style="width: 22px; height: 22px; color: {{ b2.accent }}"><path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3Z"></path><path d="m9.5 12 1.8 1.8 3.7-3.8"></path></svg>
+              <span style="fontSize: 17px; fontWeight: 500; color: {{ b2.ink }}">Segurança</span>
+            </div>
+            <div style="display: flex; flexDirection: column; gap: 26px; padding: 24px; borderRadius: 18px 18px 18px 6px; background: {{ b2.surface }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style="width: 22px; height: 22px; color: {{ b2.accent }}"><circle cx="12" cy="8.5" r="4.5"></circle><path d="m9.5 13.5-1.5 6 4-2 4 2-1.5-6"></path></svg>
+              <span style="fontSize: 17px; fontWeight: 500; color: {{ b2.ink }}">Confiabilidade</span>
+            </div>
+            <div style="display: flex; flexDirection: column; gap: 26px; padding: 24px; borderRadius: 18px 18px 18px 6px; background: {{ b2.surface }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style="width: 22px; height: 22px; color: {{ b2.accent }}"><rect x="4" y="5" width="16" height="10" rx="2"></rect><path d="M8 9h8"></path><path d="M8 12h5"></path><path d="m12 15 2 3 2-3"></path></svg>
+              <span style="fontSize: 17px; fontWeight: 500; color: {{ b2.ink }}">Comprovabilidade</span>
+            </div>
+            <div style="display: flex; flexDirection: column; gap: 26px; padding: 24px; borderRadius: 18px 18px 18px 6px; background: {{ b2.surface }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style="width: 22px; height: 22px; color: {{ b2.accent }}"><path d="M16 19a4 4 0 0 0-8 0"></path><circle cx="12" cy="9" r="3"></circle><path d="M6.5 18.5a3.5 3.5 0 0 0-2.5-1"></path><path d="M20 17.5a3.5 3.5 0 0 0-2.5 1"></path><path d="M7.5 9.5a2.5 2.5 0 1 1-1-4.8"></path><path d="M16.5 4.7a2.5 2.5 0 1 1 0 4.8"></path></svg>
+              <span style="fontSize: 17px; fontWeight: 500; color: {{ b2.ink }}">Comunidade</span>
+            </div>
+          </div>
+        </section>
+
+        <section style="padding: 16px 64px 76px">
+          <div style="display: grid; gridTemplateColumns: minmax(0, 1fr) minmax(0, 1fr); alignItems: end; gap: 32px; marginBottom: 34px">
+            <div>
+              <div style="display: flex; alignItems: center; gap: 12px; marginBottom: 18px; fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.2em; textTransform: uppercase; color: {{ b2.ink3 }}">
+                <span style="width: 34px; height: 2px; background: {{ b2.accent }}"></span>
+                <span>02 — projetos</span>
+              </div>
+              <h2 style="margin: 0; fontSize: 42px; fontWeight: 500; letterSpacing: -0.03em; lineHeight: 1.02; color: {{ b2.ink }}">O que estamos construindo</h2>
+            </div>
+            <p style="margin: 0; fontSize: 17px; lineHeight: 1.6; textAlign: right; color: {{ b2.ink2 }}">Soluções reais para problemas que importam</p>
+          </div>
+          <div style="display: grid; gridTemplateColumns: repeat(3, minmax(0, 1fr)); gap: 18px">
+            <sc-for list="{{ tiles2 }}" as="t" hint-placeholder-count="3">
+              <a href="#top" style="display: flex; flexDirection: column; minHeight: 450px; textDecoration: none; borderRadius: 22px 22px 22px 6px; overflow: hidden; background: {{ b2.surface }}">
+                <div style="position: relative; display: flex; alignItems: center; justifyContent: center; height: 216px; background: {{ t.fieldB }}">
+                  <span style="position: absolute; left: 18px; bottom: 6px; fontSize: 72px; fontWeight: 600; letterSpacing: -0.05em; lineHeight: 1; color: {{ b2.ghost }}">{{ t.index }}</span>
+                  <img alt="{{ t.artAlt }}" src="{{ t.art }}" style="position: relative; width: 108px; maxHeight: 132px; objectFit: contain" />
+                  <sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}">
+                    <span style="position: absolute; top: 16px; right: 16px; fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 10px; letterSpacing: 0.14em; textTransform: uppercase; borderRadius: 999px; padding: 5px 10px; background: {{ b2.surface }}; color: {{ t.accentB }}">{{ t.badge }}</span>
+                  </sc-if>
+                </div>
+                <div style="display: flex; flexDirection: column; gap: 14px; padding: 26px; flex: 1">
+                  <span style="fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 10px; letterSpacing: 0.18em; textTransform: uppercase; color: {{ t.accentB }}">{{ t.category }}</span>
+                  <div style="fontSize: 30px; fontWeight: 500; letterSpacing: -0.025em; lineHeight: 1.06; color: {{ b2.ink }}">{{ t.name }}</div>
+                  <div style="fontSize: 15px; lineHeight: 1.7; color: {{ b2.ink2 }}">{{ t.summary }}</div>
+                  <div style="marginTop: auto; display: inline-flex; alignItems: center; alignSelf: flex-start; gap: 10px; padding: 11px 18px; borderRadius: 999px; fontSize: 14px; fontWeight: 500; background: {{ t.fieldB }}; color: {{ b2.ink }}">
+                    <span>{{ t.cardCta }}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style="width: 15px; height: 15px"><path d="M5 12h12"></path><path d="m13 6 6 6-6 6"></path></svg>
+                  </div>
+                </div>
+              </a>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="margin: 0 20px; padding: 66px 48px; borderRadius: 28px 28px 28px 8px; background: {{ b2.surface }}">
+          <div style="display: grid; gridTemplateColumns: minmax(0, 4fr) minmax(0, 8fr); gap: 48px; alignItems: start">
+            <div>
+              <div style="display: flex; alignItems: center; gap: 12px; marginBottom: 18px; fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.2em; textTransform: uppercase; color: {{ b2.ink3 }}">
+                <span style="width: 34px; height: 2px; background: {{ b2.accent }}"></span>
+                <span>03 — missão</span>
+              </div>
+              <h2 style="margin: 0; fontSize: 42px; fontWeight: 500; letterSpacing: -0.03em; lineHeight: 1.02; color: {{ b2.ink }}">Por que existimos</h2>
+            </div>
+            <p style="margin: 0; fontSize: 26px; lineHeight: 1.5; letterSpacing: -0.015em; textWrap: pretty; color: {{ b2.ink }}">A NeoCom nasceu da crença de que tecnologia só tem valor quando serve às pessoas com transparência, ética e respeito à privacidade. Cada projeto é uma resposta direta a um problema real, construída com a comunidade, para a comunidade.</p>
+          </div>
+        </section>
+
+        <section style="padding: 76px 64px 60px">
+          <div style="display: grid; gridTemplateColumns: minmax(0, 4fr) minmax(0, 8fr); gap: 48px; alignItems: start">
+            <div>
+              <div style="display: flex; alignItems: center; gap: 12px; marginBottom: 18px; fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.2em; textTransform: uppercase; color: {{ b2.ink3 }}">
+                <span style="width: 34px; height: 2px; background: {{ b2.accent }}"></span>
+                <span>04 — contato</span>
+              </div>
+              <h2 style="margin: 0 0 14px; fontSize: 42px; fontWeight: 500; letterSpacing: -0.03em; lineHeight: 1.02; color: {{ b2.ink }}">Fale com a NeoCom</h2>
+              <p style="margin: 0; fontSize: 17px; lineHeight: 1.7; color: {{ b2.ink2 }}">Para pilotos, parcerias e conversas técnicas, o canal principal é direto.</p>
+            </div>
+            <div style="padding: 36px; borderRadius: 22px 22px 22px 6px; background: {{ b2.field }}">
+              <div style="fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.2em; textTransform: uppercase; color: {{ b2.ink3 }}; marginBottom: 16px">Email principal</div>
+              <a href="mailto:contato@neocom.cloud" style="fontSize: 38px; fontWeight: 500; letterSpacing: -0.03em; textDecoration: none; color: {{ b2.ink }}">contato@neocom.cloud</a>
+              <p style="margin: 20px 0 0; fontSize: 16px; lineHeight: 1.7; color: {{ b2.ink2 }}">Resposta centralizada pelo time fundador em contato@neocom.cloud.</p>
+              <a href="mailto:contato@neocom.cloud" style="display: inline-flex; alignItems: center; gap: 12px; marginTop: 26px; padding: 15px 24px; borderRadius: 999px; textDecoration: none; fontSize: 15px; fontWeight: 500; background: {{ b2.ink }}; color: {{ b2.bg }}">
+                <span>Enviar email</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style="width: 16px; height: 16px"><path d="M5 12h12"></path><path d="m13 6 6 6-6 6"></path></svg>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <footer style="display: flex; alignItems: flex-start; justifyContent: space-between; gap: 40px; flexWrap: wrap; padding: 34px 64px; borderTop: 1px solid {{ b2.rule }}; fontSize: 13px; color: {{ b2.ink3 }}">
+          <div style="display: flex; flexDirection: column; gap: 9px">
+            <span style="fontSize: 15px; fontWeight: 500; color: {{ b2.ink2 }}">NeoCom / neocom.cloud / 2026</span>
+            <span style="maxWidth: 68ch; lineHeight: 1.8">NeoCom não possui área logada, não usa cookies de rastreamento nem coleta dados analíticos nesta versão inicial.</span>
+          </div>
+          <a href="mailto:contato@neocom.cloud" style="textDecoration: none; color: {{ b2.ink2 }}">contato@neocom.cloud</a>
+        </footer>
+      </div>
+
+      <div style="display: flex; alignItems: center; gap: 12px; marginTop: 12px">
+        
+        
+        <sc-for list="{{ tabs2 }}" as="tab" hint-placeholder-count="3">
+          <button type="button" onClick="{{ tab.select }}" style="fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.12em; textTransform: uppercase; cursor: pointer; padding: 6px 11px; borderRadius: 999px; border: 1px solid {{ tab.border }}; background: {{ tab.bg }}; color: {{ tab.color }}">{{ tab.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="border: 1px solid rgba(16,20,24,0.14); background: {{ p2.pageB }}; color: {{ b2.ink }}; fontFamily: 'Familjen Grotesk', 'Helvetica Neue', Helvetica, sans-serif">
+        <header style="display: flex; alignItems: center; gap: 32px; padding: 22px 44px">
+          <a href="#top" style="display: inline-flex; alignItems: center; gap: 10px; fontSize: 19px; fontWeight: 600; letterSpacing: -0.01em; textDecoration: none; color: {{ b2.ink }}">
+            <img alt="" src="assets/nc-mark.svg" style="width: 27px; height: 27px; borderRadius: 8px; display: block" />
+            <span>NeoCom</span>
+          </a>
+          <nav style="marginLeft: auto; display: flex; alignItems: center; gap: 28px; fontSize: 15px">
+            <a href="#top" style="textDecoration: none; color: {{ p2.accent }}">Projetos</a>
+            <a href="#top" style="textDecoration: none; color: {{ b2.ink2 }}">Missão</a>
+            <a href="#top" style="textDecoration: none; color: {{ b2.ink2 }}">Contato</a>
+          </nav>
+          <div style="display: flex; alignItems: center; gap: 4px; padding: 5px; borderRadius: 999px; background: {{ b2.chip }}; fontSize: 12px; fontWeight: 500">
+            <span style="padding: 4px 10px; borderRadius: 999px; background: {{ b2.surface }}; color: {{ b2.ink }}">PT</span>
+            <span style="padding: 4px 10px; color: {{ b2.ink3 }}">EN</span>
+          </div>
+        </header>
+
+        <section style="position: relative; overflow: hidden; margin: 0 20px; padding: 44px 48px 52px; borderRadius: 28px 28px 28px 8px; background: {{ p2.fieldB }}">
+          <div style="position: absolute; top: 0; left: 48px; width: 96px; height: 3px; background: {{ p2.accent }}"></div>
+          <img alt="" src="{{ p2.art }}" style="position: absolute; left: 50%; bottom: -150px; width: 520px; height: auto; objectFit: contain; opacity: 0.16; pointerEvents: none; userSelect: none" />
+          <a href="#top" style="display: inline-flex; alignItems: center; gap: 10px; fontSize: 15px; textDecoration: none; color: {{ b2.ink2 }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style="width: 16px; height: 16px"><path d="M19 12H5"></path><path d="m11 6-6 6 6 6"></path></svg>
+            <span>Voltar para projetos</span>
+          </a>
+          <div style="position: relative; display: grid; gridTemplateColumns: minmax(0, 7fr) minmax(0, 5fr); gap: 52px; alignItems: start; marginTop: 40px">
+            <div>
+              <div style="display: inline-flex; alignItems: center; gap: 10px; padding: 7px 14px; borderRadius: 999px; background: {{ b2.surface }}; fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 10px; letterSpacing: 0.18em; textTransform: uppercase; color: {{ p2.accent }}">
+                <span style="width: 6px; height: 6px; borderRadius: 999px; background: {{ p2.accent }}"></span>
+                <span>{{ p2.category }}</span>
+              </div>
+              <h1 style="margin: 24px 0 22px; fontSize: 72px; fontWeight: 500; lineHeight: 0.98; letterSpacing: -0.04em; color: {{ b2.ink }}">{{ p2.name }}</h1>
+              <p style="margin: 0; fontSize: 20px; lineHeight: 1.65; maxWidth: 32em; textWrap: pretty; color: {{ b2.ink2 }}">{{ p2.detailIntro }}</p>
+              <div style="display: flex; alignItems: center; gap: 18px; marginTop: 36px; flexWrap: wrap">
+                <a href="#top" style="display: inline-flex; alignItems: center; gap: 12px; padding: 15px 24px; borderRadius: 999px; textDecoration: none; fontSize: 15px; fontWeight: 500; background: {{ b2.ink }}; color: {{ b2.bg }}">
+                  <span>{{ p2.cta }}</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style="width: 16px; height: 16px"><path d="M5 12h12"></path><path d="m13 6 6 6-6 6"></path></svg>
+                </a>
+                <sc-if value="{{ p2.badge }}" hint-placeholder-val="{{ false }}">
+                  <span style="fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.14em; textTransform: uppercase; borderRadius: 999px; padding: 8px 14px; background: {{ b2.surface }}; color: {{ b2.ink2 }}">{{ p2.badge }}</span>
+                </sc-if>
+              </div>
+            </div>
+            <aside style="borderRadius: 22px 22px 22px 6px; overflow: hidden; background: {{ b2.surface }}">
+              <div style="display: flex; alignItems: center; justifyContent: center; height: 208px; background: {{ p2.fieldB }}">
+                <img alt="{{ p2.artAlt }}" src="{{ p2.art }}" style="width: 112px; maxHeight: 136px; objectFit: contain" />
+              </div>
+              <div style="padding: 26px">
+                <div style="fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 10px; letterSpacing: 0.2em; textTransform: uppercase; marginBottom: 14px; color: {{ p2.accent }}">{{ p2.detailEyebrow }}</div>
+                <p style="margin: 0; fontSize: 15px; lineHeight: 1.75; color: {{ b2.ink2 }}">{{ p2.summary }}</p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section style="padding: 72px 64px">
+          <div style="display: grid; gridTemplateColumns: minmax(0, 7fr) minmax(0, 5fr); gap: 52px; alignItems: start">
+            <div>
+              <div style="fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.22em; textTransform: uppercase; color: {{ b2.ink3 }}; marginBottom: 26px">Visão geral</div>
+              <div style="display: flex; flexDirection: column; gap: 14px">
+                <sc-for list="{{ p2.sections }}" as="s" hint-placeholder-count="3">
+                  <article style="padding: 32px 34px; borderRadius: 22px 22px 22px 6px; background: {{ b2.surface }}">
+                    <h2 style="margin: 0 0 14px; fontSize: 24px; fontWeight: 500; letterSpacing: -0.02em; color: {{ b2.ink }}">{{ s.title }}</h2>
+                    <p style="margin: 0; fontSize: 16px; lineHeight: 1.8; textWrap: pretty; color: {{ b2.ink2 }}">{{ s.body }}</p>
+                  </article>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display: flex; flexDirection: column; gap: 14px">
+              <div style="padding: 30px 32px; borderRadius: 22px 22px 22px 6px; background: {{ p2.fieldB }}">
+                <div style="fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.2em; textTransform: uppercase; color: {{ p2.accent }}; marginBottom: 18px">Pontos-chave</div>
+                <ul style="margin: 0; padding: 0; listStyle: none; display: flex; flexDirection: column; gap: 16px">
+                  <sc-for list="{{ p2.highlights }}" as="h" hint-placeholder-count="3">
+                    <li style="display: flex; gap: 12px; fontSize: 16px; lineHeight: 1.65; color: {{ b2.ink2 }}">
+                      <span style="marginTop: 9px; width: 6px; height: 6px; borderRadius: 999px; flex: 0 0 auto; background: {{ p2.accent }}"></span>
+                      <span>{{ h }}</span>
+                    </li>
+                  </sc-for>
+                </ul>
+              </div>
+              <div style="padding: 30px 32px; borderRadius: 22px 22px 22px 6px; background: {{ b2.surface }}">
+                <div style="fontFamily: 'IBM Plex Mono', ui-monospace, monospace; fontSize: 11px; letterSpacing: 0.2em; textTransform: uppercase; color: {{ b2.ink3 }}; marginBottom: 14px">Status atual</div>
+                <p style="margin: 0; fontSize: 16px; lineHeight: 1.75; color: {{ b2.ink2 }}">{{ p2.status }}</p>
+              </div>
+              <div style="padding: 30px 32px; borderRadius: 22px 22px 22px 6px; background: {{ b2.surface }}">
+                <p style="margin: 0 0 22px; fontSize: 18px; lineHeight: 1.65; letterSpacing: -0.01em; color: {{ b2.ink }}">Se este projeto conversa com sua operação, pesquisa ou comunidade, vale iniciar a discussão cedo.</p>
+                <a href="#top" style="display: inline-flex; alignItems: center; gap: 10px; padding: 13px 20px; borderRadius: 999px; textDecoration: none; fontSize: 14px; fontWeight: 500; background: {{ p2.fieldB }}; color: {{ b2.ink }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style="width: 15px; height: 15px"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg>
+                  <span>{{ p2.cta }}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer style="display: flex; alignItems: flex-start; justifyContent: space-between; gap: 40px; flexWrap: wrap; padding: 34px 64px; borderTop: 1px solid {{ b2.rule }}; fontSize: 13px; color: {{ b2.ink3 }}">
+          <div style="display: flex; flexDirection: column; gap: 9px">
+            <span style="fontSize: 15px; fontWeight: 500; color: {{ b2.ink2 }}">NeoCom / neocom.cloud / 2026</span>
+            <span style="maxWidth: 68ch; lineHeight: 1.8">NeoCom não possui área logada, não usa cookies de rastreamento nem coleta dados analíticos nesta versão inicial.</span>
+          </div>
+          <a href="mailto:contato@neocom.cloud" style="textDecoration: none; color: {{ b2.ink2 }}">contato@neocom.cloud</a>
+        </footer>
+      </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const CONTENT = {
+  neorecicla: {
+    name: "NeoRecicla", accentKey: "green", art: "assets/NeoRecicla_Icon.svg", artAlt: "Ícone do NeoRecicla",
+    category: "Sustentabilidade / Blockchain",
+    summary: "Coleta automatizada de resíduos em universidades com pontos de reciclagem verificados em blockchain.",
+    cardCta: "Explorar projeto",
+    detailEyebrow: "Sustentabilidade rastreável",
+    detailIntro: "NeoRecicla conecta coleta automatizada, incentivo ao descarte correto e trilha auditável de recompensas em um fluxo simples para campus universitários.",
+    highlights: [
+      "Máquinas de coleta como ponto físico de engajamento",
+      "Pontuação rastreável para programas de incentivo",
+      "Dados verificáveis para parceiros e operação"
+    ],
+    sections: [
+      { title: "Problema real", body: "Universidades costumam depender de campanhas pontuais e processos manuais para estimular a reciclagem correta. O resultado é baixa aderência, pouco dado confiável e quase nenhuma visibilidade sobre impacto real." },
+      { title: "Direção do produto", body: "A proposta é usar máquinas de coleta como interface principal, registrando interações e recompensas com um histórico verificável. O blockchain entra como camada de comprovabilidade, não como fetiche técnico." },
+      { title: "Valor para a NeoCom", body: "NeoRecicla traduz a tese da NeoCom para um caso concreto: tecnologia que melhora um processo cotidiano, gera confiança nos dados e cria relação direta com comunidade e instituições." }
+    ],
+    status: "Fase atual: validação de escopo, parceiros e desenho operacional.",
+    cta: "Quero conversar sobre o NeoRecicla"
+  },
+  devrecord: {
+    name: "DevRecord", accentKey: "ember", art: "assets/devrecord-icon.svg", artAlt: "Ícone do DevRecord — sulco final",
+    category: "Tecnologia / Identidade",
+    summary: "Um ponto de verdade imutável para o histórico de produção de desenvolvedores, livre de plataformas centralizadas.",
+    cardCta: "Ver conceito",
+    detailEyebrow: "Identidade técnica verificável",
+    detailIntro: "DevRecord é uma proposta para consolidar histórico de produção, autoria e reputação técnica sem depender inteiramente de uma única plataforma de hospedagem de código.",
+    highlights: [
+      "Histórico portável entre plataformas",
+      "Registro orientado a comprovabilidade e reputação",
+      "Modelo pensado para profissionais e organizações"
+    ],
+    sections: [
+      { title: "Problema real", body: "A história profissional de um desenvolvedor fica fragmentada entre plataformas, empresas e contextos privados. Isso enfraquece a portabilidade da reputação e cria dependência de provedores centralizados." },
+      { title: "Direção do produto", body: "DevRecord investiga uma estrutura onde contribuições relevantes possam ser referenciadas, contextualizadas e mantidas como trilha de verdade ao longo do tempo, com foco em independência e verificação." },
+      { title: "Valor para a NeoCom", body: "O projeto leva a sério privacidade, confiabilidade e identidade digital. Ele amplia a NeoCom para o espaço de infraestrutura de confiança, não apenas interfaces de comunicação." }
+    ],
+    status: "Fase atual: conceito, arquitetura inicial e definição de recorte de produto.",
+    cta: "Quero conversar sobre o DevRecord"
+  },
+  "neo-health": {
+    name: "NeoHealth", accentKey: "amber", art: "assets/Icon_NeoHealth_Concept.png", artLight: "assets/Icon_NeoHealth_Concept_Light.png", artAlt: "Ícone do NeoHealth",
+    category: "Saúde Pessoal / Rastreamento",
+    summary: "Rastreador pessoal de informações de saúde para centralizar histórico, métricas e dados importantes sob controle do usuário.",
+    cardCta: "Abrir visão geral",
+    badge: "Conceito",
+    detailEyebrow: "Controle pessoal de dados sensíveis",
+    detailIntro: "NeoHealth explora um espaço delicado: como reunir histórico, registros e métricas de saúde com mais clareza para o usuário, sem abrir mão de controle e privacidade.",
+    highlights: [
+      "Visão consolidada de informações dispersas",
+      "Prioridade para dados sensíveis sob controle do usuário",
+      "Escopo pensado para utilidade real antes de integrações amplas"
+    ],
+    sections: [
+      { title: "Problema real", body: "Informações de saúde costumam ficar espalhadas entre apps, clínicas, exames e anotações pessoais. Isso dificulta continuidade de cuidado, histórico confiável e entendimento do próprio contexto." },
+      { title: "Direção do produto", body: "NeoHealth parte de uma base simples: agregar o que importa, organizar linha do tempo e reduzir atrito para consulta e acompanhamento. A camada crítica é governança de acesso, não volume de features." },
+      { title: "Valor para a NeoCom", body: "Esse conceito estressa a tese de privacidade da NeoCom em um domínio sensível. Se a abordagem for válida aqui, ela fortalece a credibilidade da marca em qualquer produto orientado a dados pessoais." }
+    ],
+    status: "Fase atual: conceito e definição de recorte para validação inicial.",
+    cta: "Quero conversar sobre o NeoHealth"
+  }
+};
+
+const PHRASES = ["comunicações", "privacidade", "sustentabilidade", "comunidade", "tecnologia ética", "confiança digital"];
+
+const VALUES = ["Privacidade", "Segurança", "Confiabilidade", "Comprovabilidade", "Comunidade"];
+
+const A2_LIGHT = {
+  bg: "#edeef0", surface: "#fbfbfc", panel: "#f5f6f8", ink: "#0e1013",
+  ink2: "rgba(14,16,19,0.62)", ink3: "rgba(14,16,19,0.42)",
+  rule: "rgba(14,16,19,0.12)", accent: "#037494",
+  grid: "repeating-linear-gradient(90deg, rgba(14,16,19,0.05) 0 1px, transparent 1px 104px)"
+};
+const A2_DARK = {
+  bg: "#0b0c0e", surface: "#101216", panel: "#0e1013", ink: "#eceef0",
+  ink2: "rgba(236,238,240,0.62)", ink3: "rgba(236,238,240,0.38)",
+  rule: "rgba(236,238,240,0.13)", accent: "#06cfe3",
+  grid: "repeating-linear-gradient(90deg, rgba(236,238,240,0.05) 0 1px, transparent 1px 104px)"
+};
+const B2_LIGHT = {
+  bg: "#eeece7", surface: "#faf9f6", field: "#e4e7e6", chip: "#e6e4de",
+  ink: "#16161a", ink2: "rgba(22,22,26,0.62)", ink3: "rgba(22,22,26,0.42)",
+  rule: "rgba(22,22,26,0.13)", accent: "#037494", ghost: "rgba(22,22,26,0.06)"
+};
+const B2_DARK = {
+  bg: "#131313", surface: "#1c1c1b", field: "#191b1c", chip: "#232322",
+  ink: "#ecebe7", ink2: "rgba(236,235,231,0.64)", ink3: "rgba(236,235,231,0.42)",
+  rule: "rgba(236,235,231,0.14)", accent: "#06cfe3", ghost: "rgba(236,235,231,0.07)"
+};
+
+const PROJECT_THEME_LIGHT = {
+  green: { accent: "#2f7d4a", fieldA: "#e8efe6", pageA: "#f1f5ef", panelA: "#fbfdfa", ruleA: "rgba(47,125,74,0.18)", fieldB: "#e3ece1", pageB: "#eff2ec" },
+  cyan: { accent: "#037494", fieldA: "#e4eef2", pageA: "#eef4f6", panelA: "#fafdfe", ruleA: "rgba(3,116,148,0.18)", fieldB: "#dfeaee", pageB: "#ecf1f2" },
+  amber: { accent: "#8f6a1f", fieldA: "#f3ecdd", pageA: "#f9f4ea", panelA: "#fffdf8", ruleA: "rgba(143,106,31,0.2)", fieldB: "#efe7d8", pageB: "#f4efe5" },
+  ember: { accent: "#a8620c", fieldA: "#f6eadd", pageA: "#fbf4ea", panelA: "#fffcf8", ruleA: "rgba(168,98,12,0.2)", fieldB: "#f2e5d6", pageB: "#f7f0e6" }
+};
+const PROJECT_THEME_DARK = {
+  green: { accent: "#5fbf7c", fieldA: "#0e1611", pageA: "#080c09", panelA: "#0c120e", ruleA: "rgba(95,191,124,0.18)", fieldB: "#15201a", pageB: "#101311" },
+  cyan: { accent: "#06cfe3", fieldA: "#0a1518", pageA: "#060f11", panelA: "#0a1315", ruleA: "rgba(6,207,227,0.18)", fieldB: "#121f22", pageB: "#0e1314" },
+  amber: { accent: "#d9a94f", fieldA: "#17140c", pageA: "#100e08", panelA: "#15120b", ruleA: "rgba(217,169,79,0.2)", fieldB: "#211c11", pageB: "#141210" },
+  ember: { accent: "#f4a71a", fieldA: "#1a1308", pageA: "#120d05", panelA: "#181107", ruleA: "rgba(244,167,26,0.22)", fieldB: "#251a0c", pageB: "#16110a" }
+};
+
+const A_LIGHT = {
+  bg: "#f4f5f6", surface: "#ffffff", ink: "#101418",
+  ink2: "rgba(16,20,24,0.62)", ink3: "rgba(16,20,24,0.42)",
+  rule: "rgba(16,20,24,0.13)", inkBorder: "rgba(16,20,24,0.3)", accent: "#037494",
+  flat: { green: "#eef2ee", cyan: "#eaf1f4", amber: "#f3f0ea", ember: "#f4efe7" }
+};
+const A_DARK = {
+  bg: "#0a0c0f", surface: "#0f1216", ink: "#e9ebee",
+  ink2: "rgba(233,235,238,0.66)", ink3: "rgba(233,235,238,0.4)",
+  rule: "rgba(233,235,238,0.14)", inkBorder: "rgba(233,235,238,0.32)", accent: "#06cfe3",
+  flat: { green: "#121614", cyan: "#101619", amber: "#151412", ember: "#171310" }
+};
+const B_LIGHT = {
+  bg: "#f7f5f1", surface: "#fffdfa", ink: "#1a1917",
+  ink2: "rgba(26,25,23,0.64)", ink3: "rgba(26,25,23,0.44)",
+  rule: "rgba(26,25,23,0.14)", accent: "#037494",
+  warm: { green: "#eef1ea", cyan: "#eaf0f2", amber: "#f4efe6", ember: "#f6ede1" }
+};
+const B_DARK = {
+  bg: "#131210", surface: "#1a1916", ink: "#ece9e3",
+  ink2: "rgba(236,233,227,0.66)", ink3: "rgba(236,233,227,0.42)",
+  rule: "rgba(236,233,227,0.15)", accent: "#06cfe3",
+  warm: { green: "#171a16", cyan: "#141a1c", amber: "#1c1a15", ember: "#1e1810" }
+};
+
+const DOT = { green: "#3f8f57", cyan: "#037494", amber: "#9a7530", ember: "#b06a10" };
+const DOT_DARK = { green: "#6ec085", cyan: "#06cfe3", amber: "#d2a558", ember: "#f0a828" };
+
+class Component extends DCLogic {
+  state = { theme: "light", slug: "neorecicla", slug2: "neorecicla", charIndex: 0, phraseIndex: 0, deleting: false, paused: false };
+
+  componentDidMount() { this.tick(); }
+  componentWillUnmount() { window.clearTimeout(this.timer); }
+
+  tick() {
+    const { charIndex, phraseIndex, deleting, paused } = this.state;
+    const phrase = PHRASES[phraseIndex];
+    const delay = paused ? 1900 : deleting ? 42 : 105;
+    this.timer = window.setTimeout(() => {
+      if (paused) { this.setState({ paused: false }, () => this.tick()); return; }
+      if (!deleting) {
+        const next = charIndex + 1;
+        const done = next === phrase.length;
+        this.setState({ charIndex: next, paused: done, deleting: done }, () => this.tick());
+        return;
+      }
+      const next = charIndex - 1;
+      if (next === 0) {
+        this.setState({ charIndex: 0, deleting: false, phraseIndex: (phraseIndex + 1) % PHRASES.length }, () => this.tick());
+        return;
+      }
+      this.setState({ charIndex: next }, () => this.tick());
+    }, delay);
+  }
+
+  renderVals() {
+    const dark = this.state.theme === "dark";
+    const a = dark ? A_DARK : A_LIGHT;
+    const b = dark ? B_DARK : B_LIGHT;
+    const dots = dark ? DOT_DARK : DOT;
+
+    const slugs = Object.keys(CONTENT);
+    const tiles = slugs.map((slug, i) => {
+      const p = CONTENT[slug];
+      return {
+        name: p.name, category: p.category, summary: p.summary, cardCta: p.cardCta,
+        art: p.art, artAlt: p.artAlt, badge: p.badge || false,
+        index: "0" + (i + 1),
+        flat: a.flat[p.accentKey], warm: b.warm[p.accentKey], accent: dots[p.accentKey]
+      };
+    });
+
+    const active = CONTENT[this.state.slug];
+    const p = Object.assign({}, active, {
+      badge: active.badge || false,
+      accent: dots[active.accentKey],
+      flat: a.flat[active.accentKey],
+      warm: b.warm[active.accentKey]
+    });
+
+    const tabs = slugs.map((slug) => {
+      const on = slug === this.state.slug;
+      return {
+        label: CONTENT[slug].name,
+        select: () => this.setState({ slug }),
+        border: on ? "rgba(3,116,148,0.45)" : "rgba(16,20,24,0.18)",
+        bg: on ? "rgba(3,116,148,0.07)" : "transparent",
+        color: on ? "#037494" : "rgba(16,20,24,0.5)"
+      };
+    });
+
+    const tab = (on) => ({
+      border: on ? "rgba(3,116,148,0.45)" : "rgba(16,20,24,0.18)",
+      bg: on ? "rgba(3,116,148,0.07)" : "transparent",
+      color: on ? "#037494" : "rgba(16,20,24,0.5)"
+    });
+
+    const a2 = dark ? A2_DARK : A2_LIGHT;
+    const b2 = dark ? B2_DARK : B2_LIGHT;
+    const pt = dark ? PROJECT_THEME_DARK : PROJECT_THEME_LIGHT;
+
+    const tiles2 = slugs.map((slug, i) => {
+      const it = CONTENT[slug];
+      const th = pt[it.accentKey];
+      return {
+        name: it.name, category: it.category, summary: it.summary, cardCta: it.cardCta,
+        art: (!dark && it.artLight) ? it.artLight : it.art, artAlt: it.artAlt, badge: it.badge || false,
+        index: "0" + (i + 1),
+        accentA: th.accent, accentB: th.accent, fieldA: th.fieldA, fieldB: th.fieldB
+      };
+    });
+
+    const act2 = CONTENT[this.state.slug2];
+    const th2 = pt[act2.accentKey];
+    const p2 = Object.assign({}, act2, th2, {
+      slug: this.state.slug2,
+      badge: act2.badge || false,
+      art: (!dark && act2.artLight) ? act2.artLight : act2.art,
+      statusShort: act2.status.replace("Fase atual: ", "fase atual — ").replace(".", "")
+    });
+
+    const tabs2 = slugs.map((slug) => {
+      const on = slug === this.state.slug2;
+      const th = PROJECT_THEME_LIGHT[CONTENT[slug].accentKey];
+      return {
+        label: CONTENT[slug].name,
+        select: () => this.setState({ slug2: slug }),
+        border: on ? th.accent : "rgba(16,20,24,0.18)",
+        bg: on ? th.fieldA : "transparent",
+        color: on ? th.accent : "rgba(16,20,24,0.5)"
+      };
+    });
+
+    return {
+      a, b, p, tiles, tabs,
+      a2, b2, p2, tiles2, tabs2,
+      theme: this.state.theme,
+      values: VALUES.map((label, i) => ({ n: "0" + (i + 1), label, lower: label.toLowerCase() })),
+      typed: PHRASES[this.state.phraseIndex].slice(0, this.state.charIndex),
+      themeLabel: dark ? "Modo claro" : "Modo escuro",
+      themeLabelShort: dark ? "Claro" : "Escuro",
+      toggleTheme: () => this.setState({ theme: dark ? "light" : "dark" }),
+      setLight: () => this.setState({ theme: "light" }),
+      setDark: () => this.setState({ theme: "dark" }),
+      lightTab: tab(!dark),
+      darkTab: tab(dark)
+    };
+  }
+}
+</script>
+</body>
+</html>

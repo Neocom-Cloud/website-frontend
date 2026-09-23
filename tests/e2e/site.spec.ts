@@ -122,6 +122,26 @@ test.describe("published static site", () => {
     }
   });
 
+  test("applies a stored dark theme before the app boots", async ({ page }) => {
+    await page.addInitScript(() => window.localStorage.setItem("neocom-theme", "dark"));
+    await page.goto("/pt-br/", { waitUntil: "commit" });
+
+    // Read at DOMContentLoaded, before the module bundle has hydrated: the
+    // inline bootstrap must already have swapped the document off the light
+    // default, otherwise the visitor sees a flash.
+    const theme = await page.evaluate(async () => {
+      if (document.readyState === "loading") {
+        await new Promise((resolve) =>
+          document.addEventListener("DOMContentLoaded", resolve, { once: true })
+        );
+      }
+
+      return document.documentElement.dataset.theme;
+    });
+
+    expect(theme).toBe("dark");
+  });
+
   test("persists the selected theme after reload", async ({ page }) => {
     await page.goto("/pt-br/");
     await page.getByRole("button", { name: "Modo escuro", exact: true }).click();

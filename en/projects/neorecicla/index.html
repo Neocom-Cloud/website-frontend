@@ -22,16 +22,26 @@
       content="Traceable sustainability for university environments."
     />
     <meta property="og:url" content="https://neocom.cloud/en/projects/neorecicla/" />
-    <meta property="og:image" content="https://neocom.cloud/assets/NeoRecicla_Icon.svg" />
+    <meta property="og:image" content="https://neocom.cloud/assets/social-neorecicla.jpg" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="NeoRecicla | NeoCom" />
     <meta
       name="twitter:description"
       content="Automated collection with verifiable recycling data."
     />
-    <meta name="twitter:image" content="https://neocom.cloud/assets/NeoRecicla_Icon.svg" />
+    <meta name="twitter:image" content="https://neocom.cloud/assets/social-neorecicla.jpg" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
+    <script>
+      try {
+        var stored = localStorage.getItem("neocom-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (error) {
+        // Storage denied; the document already carries the light default.
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
