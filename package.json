@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "packageManager": "pnpm@11.3.0",
   "scripts": {
     "generate:pages": "node scripts/generate-pages.mjs",
@@ -12,13 +15,19 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ci": "vitest run"
+    "test:ci": "vitest run",
+    "test:build-output": "vitest run --config vitest.build.config.ts",
+    "test:e2e": "playwright test",
+    "verify:promotion": "node scripts/verify-promotion.mjs",
+    "verify:pages": "node scripts/verify-pages-status.mjs",
+    "verify:repository": "node scripts/verify-repository-integrity.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
