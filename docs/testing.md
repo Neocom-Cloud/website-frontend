@@ -32,6 +32,23 @@ Integration tests render React components with Testing Library and cover:
 
 These are DOM-level tests, not browser end-to-end tests.
 
+### Browser visual tests
+
+Playwright specs in `tests/e2e/visual.spec.ts` confirm the look of the 3A model in a real browser using computed styles and geometry (so they are stable across operating systems):
+
+- light and dark palettes for the page, hero, cards and per-project accent/field/page colours
+- display typography and loaded web fonts
+- desktop grid (5 values, 3 projects per row) and mobile stacking
+- no horizontal overflow and no broken images on every localized page, at 1280, 390 and 320 px
+- readable contrast on the locale switcher
+
+Pixel snapshots (`tests/e2e/visual-snapshots.spec.ts`, baselines in `tests/e2e/__screenshots__/chromium`) are opt-in because text rasterisation differs between operating systems. The committed baselines were recorded on Windows with Chromium:
+
+```bash
+pnpm test:visual          # compare against the baselines
+pnpm test:visual:update   # re-record after an intentional design change
+```
+
 ### Deployment smoke tests
 
 Deployment smoke tests inspect the finished `dist` output in a Node environment. They verify:

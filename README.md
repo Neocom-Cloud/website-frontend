@@ -10,8 +10,10 @@ Node.js 24 or later is supported. With `nvm`, run `nvm use` to select the Node 2
 
 - Vite
 - React
+- Tailwind CSS v4 (`@tailwindcss/vite`)
 - TypeScript
 - Vitest + Testing Library
+- Playwright (browser and visual tests)
 - GitHub Actions
 
 ## Local development
@@ -43,9 +45,17 @@ pnpm test:watch
 
 `pnpm generate:pages` regenerates the localized HTML entry points and `public/sitemap.xml` from the centralized content catalog.
 
+## Design model
+
+The site follows the **NeoCom 3A** model (light/dark, per-project accent colours). The design sources live in [`New_Claude_Designs/`](./New_Claude_Designs) (`NeoCom 3A.dc.html`, `NeoCom Social X.dc.html` and the `support.js` runtime that renders them) and are kept only as reference.
+
+- Design tokens (palette, radii, fonts) are CSS variables in `src/styles/global.css`, switched by `html[data-theme]` and, on project pages, by `data-accent`. Components use semantic Tailwind utilities such as `bg-surface`, `text-ink-2`, `text-accent` and `bg-project-field`.
+- Typefaces (Familjen Grotesk, IBM Plex Mono) are self-hosted through Fontsource, so visitors make no request to a font CDN.
+- The X / Twitter profile kits for NeoCom and DevRecord (banner, avatars, posts) live in `src/social/` and render at `/social/` **under `pnpm dev` only**. They are reference surfaces for exporting the artwork at its exact pixel sizes, so the page is deliberately left out of `getViteInputMap` and never reaches production.
+
 ## Architecture
 
-- Shared React page models live in `src/App.tsx`.
+- The page shell lives in `src/App.tsx`; pages are in `src/pages/` and building blocks in `src/components/`.
 - Localized copy and SEO strings live in:
   - `src/content/locales/pt-br.js`
   - `src/content/locales/en.js`
@@ -64,7 +74,13 @@ This keeps one shared landing template, one shared standard project template, an
   - DevRecord: SVG
   - NeoRecicla: SVG
 - Temporary exception:
-  - Neo Health still uses PNG because there is no source SVG in the repository yet
+  - Neo Health has no source SVG yet. The delivered PNG carried a baked-in black frame around its rounded tile, which read as a black square on light surfaces. `scripts/crop-icon-frame.mjs` strips that frame and writes the two published derivatives — a WebP for the page and a JPEG for `og:image`. The 1.2 MB original stays in `assets/` as the source and is no longer published:
+
+    ```bash
+    node scripts/crop-icon-frame.mjs assets/Icon_NeoHealth_Concept.png public/assets/Icon_NeoHealth_Concept
+    ```
+
+    Replace all of it with an SVG once one exists. The light-theme variant the design model expects was never delivered, so the dark tile is used in both themes.
 
 ## Locale behavior
 

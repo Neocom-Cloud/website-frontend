@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   getStaticPageDefinitions,
@@ -8,21 +9,28 @@ import {
 
 describe("static site generation", () => {
   it("builds the expected localized page manifest for Vite", () => {
+    const rootDir = resolve("/tmp/neocom");
     const pages = getStaticPageDefinitions();
-    const inputs = getViteInputMap("/tmp/neocom");
+    const inputs = getViteInputMap(rootDir);
     const inputValues = Object.values(inputs);
 
     expect(pages).toHaveLength(8);
-    expect(inputs.root).toBe("/tmp/neocom/index.html");
-    expect(inputs.notFound).toBe("/tmp/neocom/404.html");
-    expect(inputs.ptBrLanding).toBe("/tmp/neocom/pt-br/index.html");
-    expect(inputs.enLanding).toBe("/tmp/neocom/en/index.html");
+    expect(inputs.root).toBe(resolve(rootDir, "index.html"));
+    expect(inputs.notFound).toBe(resolve(rootDir, "404.html"));
+    expect(inputs.ptBrLanding).toBe(resolve(rootDir, "pt-br/index.html"));
+    expect(inputs.enLanding).toBe(resolve(rootDir, "en/index.html"));
     expect(inputValues).toContain(
-      "/tmp/neocom/pt-br/projects/neorecicla/index.html",
+      resolve(rootDir, "pt-br/projects/neorecicla/index.html"),
     );
     expect(inputValues).toContain(
-      "/tmp/neocom/en/projects/neo-health/index.html",
+      resolve(rootDir, "en/projects/neo-health/index.html"),
     );
+  });
+
+  it("leaves the X/Twitter kit out of the published site", () => {
+    // social/index.html is a development-only reference surface.
+    expect(getViteInputMap(resolve("/tmp/neocom"))).not.toHaveProperty("socialKit");
+    expect(renderSitemapXml()).not.toContain("social");
   });
 
   it("renders localized landing metadata from the centralized catalog", () => {

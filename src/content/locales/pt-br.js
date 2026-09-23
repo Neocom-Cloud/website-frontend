@@ -8,7 +8,9 @@ export const ptBrSiteCopy = {
   },
   themeToggle: {
     toDark: "Modo escuro",
-    toLight: "Modo claro"
+    toLight: "Modo claro",
+    toDarkShort: "Escuro",
+    toLightShort: "Claro"
   },
   nav: {
     projects: "Projetos",
@@ -28,7 +30,8 @@ export const ptBrSiteCopy = {
     ],
     subtitle:
       "Tecnologia com propósito. Conexão com responsabilidade. Privacidade como fundamento.",
-    cta: "Conheça nossos projetos"
+    cta: "Conheça nossos projetos",
+    secondaryCta: "Falar com a NeoCom"
   },
   values: {
     eyebrow: "Nossos valores",
@@ -91,7 +94,7 @@ export const ptBrSiteCopy = {
         summary:
           "Um ponto de verdade imutável para o histórico de produção de desenvolvedores, livre de plataformas centralizadas.",
         cardCta: "Ver conceito",
-        artAlt: "Ícone temporário do DevRecord",
+        artAlt: "Ícone do DevRecord",
         detailEyebrow: "Identidade técnica verificável",
         detailIntro:
           "DevRecord é uma proposta para consolidar histórico de produção, autoria e reputação técnica sem depender inteiramente de uma única plataforma de hospedagem de código.",

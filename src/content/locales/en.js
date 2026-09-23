@@ -8,7 +8,9 @@ export const enSiteCopy = {
   },
   themeToggle: {
     toDark: "Dark mode",
-    toLight: "Light mode"
+    toLight: "Light mode",
+    toDarkShort: "Dark",
+    toLightShort: "Light"
   },
   nav: {
     projects: "Projects",
@@ -28,7 +30,8 @@ export const enSiteCopy = {
     ],
     subtitle:
       "Technology with purpose. Connection with responsibility. Privacy as a foundation.",
-    cta: "Explore our projects"
+    cta: "Explore our projects",
+    secondaryCta: "Talk to NeoCom"
   },
   values: {
     eyebrow: "Our values",
@@ -92,7 +95,7 @@ export const enSiteCopy = {
         summary:
           "An immutable source of truth for developer production history, independent from centralized hosting platforms.",
         cardCta: "View concept",
-        artAlt: "Temporary DevRecord icon",
+        artAlt: "DevRecord icon",
         detailEyebrow: "Verifiable technical identity",
         detailIntro:
           "DevRecord is a proposal for consolidating production history, authorship, and technical reputation without depending entirely on a single code-hosting platform.",

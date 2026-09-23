@@ -144,6 +144,8 @@ export function getViteInputMap(rootDir) {
     root: resolve(rootDir, "index.html"),
     notFound: resolve(rootDir, "404.html")
   };
+  // social/index.html is deliberately absent: the X/Twitter kit is a reference
+  // surface served by `pnpm dev`, never published.
 
   for (const page of getStaticPageDefinitions()) {
     inputs[getInputKey(page)] = resolve(rootDir, getPageFilePath(page));
