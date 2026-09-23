@@ -399,16 +399,37 @@
     return o;
   }
   function compileAttr(raw) {
-    const whole = raw.match(/^\s*\{\{((?:(?!\{\{|\}\})[\s\S])+?)\}\}\s*$/);
-    if (whole) {
-      const path = whole[1];
-      return (vals) => resolve(vals, path);
+    const parts = [];
+    let cursor = 0;
+    while (true) {
+      const start = raw.indexOf("{{", cursor);
+      if (start < 0) break;
+      let quote = null;
+      let end = -1;
+      for (let i = start + 2; i < raw.length - 1; i++) {
+        const char = raw[i];
+        if (quote) {
+          if (char === "\\") i++;
+          else if (char === quote) quote = null;
+        } else if (char === '"' || char === "'") {
+          quote = char;
+        } else if (char === "}" && raw[i + 1] === "}") {
+          end = i;
+          break;
+        }
+      }
+      if (end < 0) break;
+      parts.push({ text: raw.slice(cursor, start) }, { expr: raw.slice(start + 2, end) });
+      cursor = end + 2;
     }
-    if (raw.includes("{{")) {
-      const parts = raw.split(/\{\{([\s\S]+?)\}\}/g);
-      return (vals) => parts.map((s, i) => i & 1 ? resolve(vals, s) ?? "" : s).join("");
+    if (!parts.length) return () => raw;
+    parts.push({ text: raw.slice(cursor) });
+    if (parts.length === 3 && !parts[0].text.trim() && !parts[2].text.trim()) {
+      return (vals) => resolve(vals, parts[1].expr);
     }
-    return () => raw;
+    return (vals) => parts.map((part) =>
+      part.expr === void 0 ? part.text : resolve(vals, part.expr) ?? ""
+    ).join("");
   }
 
   // src/compile.ts
