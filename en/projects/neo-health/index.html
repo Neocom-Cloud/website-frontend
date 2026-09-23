@@ -22,16 +22,26 @@
       content="Sensitive data with personal governance and clear context."
     />
     <meta property="og:url" content="https://neocom.cloud/en/projects/neo-health/" />
-    <meta property="og:image" content="https://neocom.cloud/assets/Icon_NeoHealth_Concept.png" />
+    <meta property="og:image" content="https://neocom.cloud/assets/Icon_NeoHealth_Concept.jpg" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Neo Health | NeoCom" />
     <meta
       name="twitter:description"
       content="See NeoCom&#39;s approach to personal health history and control."
     />
-    <meta name="twitter:image" content="https://neocom.cloud/assets/Icon_NeoHealth_Concept.png" />
+    <meta name="twitter:image" content="https://neocom.cloud/assets/Icon_NeoHealth_Concept.jpg" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
+    <script>
+      try {
+        var stored = localStorage.getItem("neocom-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (error) {
+        // Storage denied; the document already carries the light default.
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

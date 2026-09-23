@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   getStaticPageDefinitions,
@@ -6,23 +7,39 @@ import {
   renderStaticPage
 } from "../scripts/static-site.mjs";
 
+function getPagePathLabel(page: { locale: string; pageKind: string; projectSlug?: string }) {
+  return `${page.locale}/${page.pageKind}${page.projectSlug ? `/${page.projectSlug}` : ""}`;
+}
+
 describe("static site generation", () => {
   it("builds the expected localized page manifest for Vite", () => {
+    const rootDir = resolve("/tmp/neocom");
     const pages = getStaticPageDefinitions();
-    const inputs = getViteInputMap("/tmp/neocom");
+    const inputs = getViteInputMap(rootDir);
     const inputValues = Object.values(inputs);
 
     expect(pages).toHaveLength(8);
-    expect(inputs.root).toBe("/tmp/neocom/index.html");
-    expect(inputs.notFound).toBe("/tmp/neocom/404.html");
-    expect(inputs.ptBrLanding).toBe("/tmp/neocom/pt-br/index.html");
-    expect(inputs.enLanding).toBe("/tmp/neocom/en/index.html");
+    expect(inputs.root).toBe(resolve(rootDir, "index.html"));
+    expect(inputs.notFound).toBe(resolve(rootDir, "404.html"));
+    expect(inputs.ptBrLanding).toBe(resolve(rootDir, "pt-br/index.html"));
+    expect(inputs.enLanding).toBe(resolve(rootDir, "en/index.html"));
     expect(inputValues).toContain(
-      "/tmp/neocom/pt-br/projects/neorecicla/index.html",
+      resolve(rootDir, "pt-br/projects/neorecicla/index.html"),
     );
     expect(inputValues).toContain(
-      "/tmp/neocom/en/projects/neo-health/index.html",
+      resolve(rootDir, "en/projects/neo-health/index.html"),
     );
+  });
+
+  it("leaves the X/Twitter kit out of the published site", () => {
+    // social/index.html is a development-only reference surface. Assert on the
+    // resolved paths rather than the key, so renaming the entry cannot hide it.
+    const inputPaths = Object.values(getViteInputMap(resolve("/tmp/neocom"))).map((path) =>
+      path.replaceAll("\\", "/"),
+    );
+
+    expect(inputPaths.some((path) => path.endsWith("/social/index.html"))).toBe(false);
+    expect(renderSitemapXml()).not.toContain("social");
   });
 
   it("renders localized landing metadata from the centralized catalog", () => {
@@ -50,7 +67,7 @@ describe("static site generation", () => {
     expect(page.querySelector('meta[name="twitter:description"]')?.getAttribute("content")).toBe(
       "Explore os projetos e a missão da NeoCom."
     );
-    expect(html).toContain("https://neocom.cloud/assets/NeoCom_Icon_Final_v2.svg");
+    expect(html).toContain("https://neocom.cloud/assets/social-neocom.jpg");
     expect(html).toContain('hreflang="en" href="https://neocom.cloud/en/"');
   });
 
@@ -111,7 +128,7 @@ describe("static site generation", () => {
     }
   });
 
-  it("renders project metadata with the shared template and SVG-first assets", () => {
+  it("renders project metadata with the shared template and a raster social image", () => {
     const html = renderStaticPage({
       locale: "en",
       pageKind: "project",
@@ -121,10 +138,40 @@ describe("static site generation", () => {
     expect(html).toContain('data-page-kind="project"');
     expect(html).toContain('data-project-slug="neorecicla"');
     expect(html).toContain("NeoRecicla | NeoCom");
-    expect(html).toContain("https://neocom.cloud/assets/NeoRecicla_Icon.svg");
+    expect(html).toContain("https://neocom.cloud/assets/social-neorecicla.jpg");
     expect(html).toContain(
       'hreflang="pt-BR" href="https://neocom.cloud/pt-br/projects/neorecicla/"',
     );
+  });
+
+  it("applies the stored theme before first paint on every page", () => {
+    for (const page of getStaticPageDefinitions()) {
+      const html = renderStaticPage(page);
+      const head = html.slice(0, html.indexOf("</head>"));
+
+      // The bootstrap has to run from the head, ahead of the module script, or
+      // a visitor who chose dark sees the light default paint first.
+      expect(head, getPagePathLabel(page)).toContain('localStorage.getItem("neocom-theme")');
+      expect(head, getPagePathLabel(page)).toContain("document.documentElement.dataset.theme");
+      expect(html.indexOf("dataset.theme")).toBeLessThan(html.indexOf("page-entry"));
+    }
+  });
+
+  it("points social previews at raster images", () => {
+    // Open Graph and Twitter cards do not accept SVG, so a crawler handed one
+    // may render no preview at all.
+    for (const page of getStaticPageDefinitions()) {
+      const html = renderStaticPage(page);
+      const images = [...html.matchAll(/(?:og:image|twitter:image)" content="([^"]+)"/g)].map(
+        ([, url]) => url,
+      );
+
+      expect(images.length, getPagePathLabel(page)).toBe(2);
+
+      for (const url of images) {
+        expect(url, getPagePathLabel(page)).toMatch(/\.(?:jpe?g|png|gif)$/);
+      }
+    }
   });
 
   it("includes root and every localized page in the sitemap", () => {

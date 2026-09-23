@@ -4,21 +4,22 @@ export const projectRegistry = {
   neorecicla: {
     accent: "green",
     artSrc: "/assets/NeoRecicla_Icon.svg",
-    socialImageSrc: "/assets/NeoRecicla_Icon.svg",
+    socialImageSrc: "/assets/social-neorecicla.jpg",
     template: "standard"
   },
   devrecord: {
-    accent: "cyan",
-    artSrc: "/assets/NeoCom_Icon_App.svg",
-    socialImageSrc: "/assets/NeoCom_Icon_App.svg",
-    artClassName: "square",
+    accent: "ember",
+    artSrc: "/assets/devrecord-icon.svg",
+    socialImageSrc: "/assets/social-devrecord.jpg",
     template: "standard"
   },
   "neo-health": {
     accent: "amber",
-    artSrc: "/assets/Icon_NeoHealth_Concept.png",
-    socialImageSrc: "/assets/Icon_NeoHealth_Concept.png",
-    artClassName: "square",
+    // Both derived from the archived PNG by scripts/crop-icon-frame.mjs: WebP
+    // on the page, JPEG as the social image because some link-preview crawlers
+    // reject WebP and render transparency as black.
+    artSrc: "/assets/Icon_NeoHealth_Concept.webp",
+    socialImageSrc: "/assets/Icon_NeoHealth_Concept.jpg",
     template: "standard"
   }
 };
