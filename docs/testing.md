@@ -142,5 +142,5 @@ This keeps deployment and test enforcement separate:
 
 ## Current gaps
 
-- No browser visual-regression coverage yet
+- Pixel visual-regression snapshots are optional; compare and update them on Windows with Chromium.
 - No Lighthouse or accessibility CI checks yet

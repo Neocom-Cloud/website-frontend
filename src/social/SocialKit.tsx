@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { CloudMark } from "../components/CloudMark";
+import { ptBrSiteCopy } from "../content/locales/pt-br.js";
 import {
   DEVRECORD_COPY,
   SOCIAL_ASSETS,
@@ -308,7 +309,7 @@ function KitSection({ id, title, children }: { id: SocialKitId; title: string; c
     <section className="flex flex-col gap-10" data-social-kit={id}>
       <header className="flex flex-col gap-2">
         <div className={`${MONO_LABEL} text-[11px] tracking-[0.2em] text-ink-3`}>{title}</div>
-        <h2 className="m-0 text-[26px] font-medium">Kit de perfil e posts</h2>
+        <h2 className="m-0 text-[26px] font-medium">{ptBrSiteCopy.social.sectionTitle}</h2>
       </header>
       {children}
     </section>
@@ -320,7 +321,7 @@ export function SocialKit() {
 
   return (
     <main className="flex min-w-max flex-col gap-24 bg-page p-12 text-ink">
-      <h1 className="sr-only">Kits de perfil e posts para X</h1>
+      <h1 className="sr-only">{ptBrSiteCopy.social.pageTitle}</h1>
       <KitSection id={neocom.id} title={neocom.title}>
         <Banner />
         <div className="flex flex-wrap items-start gap-10">

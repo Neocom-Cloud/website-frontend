@@ -226,6 +226,69 @@ export const ptBrSiteCopy = {
       }
     }
   },
+  social: {
+    pageTitle: "Kits de perfil e posts para X",
+    sectionTitle: "Kit de perfil e posts",
+    kits: { neocom: "NeoCom · X / Twitter", devrecord: "DevRecord · X / Twitter" },
+    assetLabels: {
+      banner: "Banner",
+      "avatar-dark": "Avatar escuro",
+      "avatar-light": "Avatar claro",
+      "post-manifesto": "Post · manifesto",
+      "post-portfolio": "Post · portfólio de projetos",
+      "devrecord-banner": "Banner",
+      "devrecord-avatar": "Avatar",
+      "devrecord-avatar-light": "Avatar em campo claro",
+      "devrecord-post-thesis": "Post · tese",
+      "devrecord-post-what": "Post · o que é"
+    },
+    neocom: {
+      bannerLine: "Tecnologia que melhora processos cotidianos e deixa rastro",
+      bannerHighlight: "verificável",
+      manifesto: "Inovação só vale quando dá para comprovar.",
+      values: ["Privacidade", "Segurança", "Confiabilidade", "Comprovabilidade", "Comunidade"],
+      portfolioTitle: "Três projetos em construção",
+      portfolio: [
+        {
+          name: "NeoRecicla",
+          summary: "Coleta verificada em blockchain para campus universitários.",
+          icon: "/assets/NeoRecicla_Icon.svg",
+          background: "#151a1e",
+          watermarkOpacity: 0.18
+        },
+        {
+          name: "DevRecord",
+          summary: "Histórico de produção portável e comprovável.",
+          icon: "/assets/devrecord-icon.svg",
+          background: "#191309",
+          watermarkOpacity: 0.35
+        },
+        {
+          name: "NeoHealth",
+          summary: "Saúde conectada com dado sob controle da pessoa.",
+          icon: "/assets/Icon_NeoHealth_Concept.webp",
+          background: "#17140c",
+          watermarkOpacity: 0.3
+        }
+      ]
+    },
+    devrecord: {
+      bannerLead: "Um ponto de verdade",
+      bannerHighlight: "imutável",
+      bannerTail: "para o histórico de produção de desenvolvedores.",
+      bannerFooter: "Um projeto NeoCom · neocom.cloud",
+      thesis: "Seu histórico técnico não deveria pertencer a uma plataforma.",
+      pills: ["Portável", "Comprovável", "Sem plataforma central"],
+      whatTitle: "Identidade técnica verificável",
+      whatBadge: "Conceito",
+      whatPoints: [
+        "Histórico portável entre plataformas",
+        "Registro orientado a comprovabilidade e reputação",
+        "Modelo pensado para profissionais e organizações"
+      ],
+      whatFooter: "neocom.cloud / devrecord"
+    }
+  },
   footer:
     "NeoCom não possui área logada, não usa cookies de rastreamento nem coleta dados analíticos nesta versão inicial."
 };

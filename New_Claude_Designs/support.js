@@ -399,7 +399,7 @@
     return o;
   }
   function compileAttr(raw) {
-    const whole = raw.match(/^\s*\{\{([\s\S]+?)\}\}\s*$/);
+    const whole = raw.match(/^\s*\{\{((?:(?!\{\{|\}\})[\s\S])+?)\}\}\s*$/);
     if (whole) {
       const path = whole[1];
       return (vals) => resolve(vals, path);

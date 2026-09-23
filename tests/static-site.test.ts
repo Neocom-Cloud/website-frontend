@@ -169,7 +169,7 @@ describe("static site generation", () => {
       expect(images.length, getPagePathLabel(page)).toBe(2);
 
       for (const url of images) {
-        expect(url, getPagePathLabel(page)).toMatch(/.(jpe?g|png|gif)$/);
+        expect(url, getPagePathLabel(page)).toMatch(/\.(?:jpe?g|png|gif)$/);
       }
     }
   });

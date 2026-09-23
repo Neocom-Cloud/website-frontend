@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { ptBrSiteCopy } from "../content/locales/pt-br.js";
 import { SOCIAL_ASSETS, SOCIAL_KITS } from "./assets";
 import { SocialKit } from "./SocialKit";
 
@@ -58,6 +59,9 @@ describe("SocialKit", () => {
   it("carries the approved copy of both kits", () => {
     render(<SocialKit />);
 
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      ptBrSiteCopy.social.pageTitle
+    );
     expect(screen.getByText("Inovação só vale quando dá para comprovar.")).toBeInTheDocument();
     expect(screen.getByText("Três projetos em construção")).toBeInTheDocument();
     expect(
