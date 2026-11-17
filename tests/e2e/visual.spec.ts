@@ -30,7 +30,7 @@ const projectPalette = {
     light: { accent: "rgb(168, 98, 12)", field: "rgb(242, 229, 214)", page: "rgb(247, 240, 230)" },
     dark: { accent: "rgb(244, 167, 26)", field: "rgb(37, 26, 12)", page: "rgb(22, 17, 10)" }
   },
-  "neo-health": {
+  "apollo": {
     light: { accent: "rgb(143, 106, 31)", field: "rgb(239, 231, 216)", page: "rgb(244, 239, 229)" },
     dark: { accent: "rgb(217, 169, 79)", field: "rgb(33, 28, 17)", page: "rgb(20, 18, 16)" }
   }

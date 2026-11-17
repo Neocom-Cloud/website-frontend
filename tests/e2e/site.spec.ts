@@ -2,17 +2,17 @@ import { expect, test } from "@playwright/test";
 import { E2E_BASE_URL } from "./constants";
 
 const locales = ["pt-br", "en"] as const;
-const projectSlugs = ["neorecicla", "devrecord", "neo-health"] as const;
+const projectSlugs = ["neorecicla", "devrecord", "apollo"] as const;
 const projectNames = {
   "pt-br": {
     neorecicla: "NeoRecicla",
     devrecord: "DevRecord",
-    "neo-health": "Apollo"
+    "apollo": "Apollo"
   },
   en: {
     neorecicla: "NeoRecicla",
     devrecord: "DevRecord",
-    "neo-health": "Apollo"
+    "apollo": "Apollo"
   }
 } as const;
 const localeLinkNames = { "pt-br": "PT", en: "EN" } as const;

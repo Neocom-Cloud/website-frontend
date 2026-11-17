@@ -1,4 +1,4 @@
-export const projectSlugs = ["neorecicla", "devrecord", "neo-health"];
+export const projectSlugs = ["neorecicla", "devrecord", "apollo"];
 
 export const projectRegistry = {
   neorecicla: {
@@ -13,7 +13,7 @@ export const projectRegistry = {
     socialImageSrc: "/assets/social-devrecord.jpg",
     template: "standard"
   },
-  "neo-health": {
+  apollo: {
     accent: "amber",
     // Both variants are final brand artwork, cropped and re-encoded by
     // scripts/crop-icon-frame.mjs. The social image is a JPEG because some

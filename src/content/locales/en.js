@@ -128,7 +128,7 @@ export const enSiteCopy = {
         status: "Current stage: concept work, early architecture, and product scoping.",
         cta: "Talk to us about DevRecord"
       },
-      "neo-health": {
+      "apollo": {
         name: "Apollo",
         category: "Personal Health / Tracking",
         summary:
@@ -218,7 +218,7 @@ export const enSiteCopy = {
         twitterDescription:
           "Explore NeoCom's concept for verifiable contribution trails."
       },
-      "neo-health": {
+      "apollo": {
         description:
           "Apollo is NeoCom's concept for organizing personal health history and data under user control.",
         ogDescription: "Sensitive data with personal governance and clear context.",

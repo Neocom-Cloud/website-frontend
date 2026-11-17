@@ -27,7 +27,7 @@ describe("static site generation", () => {
       resolve(rootDir, "pt-br/projects/neorecicla/index.html"),
     );
     expect(inputValues).toContain(
-      resolve(rootDir, "en/projects/neo-health/index.html"),
+      resolve(rootDir, "en/projects/apollo/index.html"),
     );
   });
 
@@ -81,7 +81,7 @@ describe("static site generation", () => {
         twitterDescription:
           "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
       },
-      "neo-health": {
+      "apollo": {
         description:
           "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
         ogDescription:
@@ -184,7 +184,7 @@ describe("static site generation", () => {
       "<loc>https://neocom.cloud/en/projects/devrecord/</loc>",
     );
     expect(xml).toContain(
-      "<loc>https://neocom.cloud/pt-br/projects/neo-health/</loc>",
+      "<loc>https://neocom.cloud/pt-br/projects/apollo/</loc>",
     );
   });
 });

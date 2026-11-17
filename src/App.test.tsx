@@ -61,7 +61,7 @@ describe("App integration", () => {
     expect(cards.map((card) => card.getAttribute("href"))).toEqual([
       "/en/projects/neorecicla/",
       "/en/projects/devrecord/",
-      "/en/projects/neo-health/"
+      "/en/projects/apollo/"
     ]);
     expect(within(cards[2]).getByText("Concept")).toBeInTheDocument();
     expect(within(cards[0]).getByText("01")).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe("App integration", () => {
   });
 
   it("renders the project detail blocks from the localized catalog", () => {
-    render(<App locale="pt-br" pageKind="project" projectSlug="neo-health" />);
+    render(<App locale="pt-br" pageKind="project" projectSlug="apollo" />);
 
     expect(screen.getByText("Visão geral")).toBeInTheDocument();
     expect(screen.getByText("Pontos-chave")).toBeInTheDocument();

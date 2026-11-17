@@ -81,16 +81,15 @@ This keeps one shared landing template, one shared standard project template, an
   node scripts/rasterize-social-image.mjs public/assets/devrecord-icon.svg public/assets/social-devrecord.jpg "#120d05"
   ```
 
-- Apollo (slug `neo-health`) ships final artwork in two theme variants rather than an SVG. Both are cropped and re-encoded from the delivered PNGs by `scripts/crop-icon-frame.mjs`; the page loads a WebP per theme and `og:image` a JPEG, because some link-preview crawlers reject WebP:
+- Apollo ships final artwork in two theme variants rather than an SVG. Both are cropped and re-encoded from the delivered PNGs by `scripts/crop-icon-frame.mjs`; the page loads a WebP per theme and `og:image` a JPEG, because some link-preview crawlers reject WebP:
 
   ```bash
   node scripts/crop-icon-frame.mjs assets/Icon_NeoHealth_Concept.png public/assets/Icon_NeoHealth_Concept
   node scripts/crop-icon-frame.mjs assets/Icon_NeoHealth_Concept_Light.png public/assets/Icon_NeoHealth_Concept_Light
   ```
 
-  The asset filenames and the `neo-health` slug still carry the old product
-  name. Only the display name was changed; renaming the route would move every
-  localized URL and its sitemap entry, which is a separate decision.
+  The asset filenames still read `Icon_NeoHealth_Concept`. They are internal
+  paths, never shown, and renaming them buys nothing but churn.
 
 ## Locale behavior
 

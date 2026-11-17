@@ -128,7 +128,7 @@ export const ptBrSiteCopy = {
           "Fase atual: conceito, arquitetura inicial e definição de recorte de produto.",
         cta: "Quero conversar sobre o DevRecord"
       },
-      "neo-health": {
+      "apollo": {
         name: "Apollo",
         category: "Saúde Pessoal / Rastreamento",
         summary:
@@ -217,7 +217,7 @@ export const ptBrSiteCopy = {
         twitterDescription:
           "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
       },
-      "neo-health": {
+      "apollo": {
         description:
           "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
         ogDescription: "Dados sensíveis com governança pessoal e contexto claro.",

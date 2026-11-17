@@ -24,8 +24,8 @@ const staticPageContract = [
   {
     locale: "pt-br",
     htmlLang: "pt-BR",
-    outputPath: "pt-br/projects/neo-health/index.html",
-    pathname: "/pt-br/projects/neo-health/"
+    outputPath: "pt-br/projects/apollo/index.html",
+    pathname: "/pt-br/projects/apollo/"
   },
   {
     locale: "en",
@@ -42,8 +42,8 @@ const staticPageContract = [
   {
     locale: "en",
     htmlLang: "en",
-    outputPath: "en/projects/neo-health/index.html",
-    pathname: "/en/projects/neo-health/"
+    outputPath: "en/projects/apollo/index.html",
+    pathname: "/en/projects/apollo/"
   }
 ];
 const canonicalOrigin = "https://neocom.cloud";
@@ -157,7 +157,7 @@ describe("production build output", () => {
           "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
       },
       {
-        outputPath: "pt-br/projects/neo-health/index.html",
+        outputPath: "pt-br/projects/apollo/index.html",
         title: "Apollo | NeoCom",
         description:
           "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
