@@ -11,6 +11,7 @@ Two stacks, both modelled on `DevRecord/infra/terraform-landing*`:
 | `terraform-site-bootstrap` | Encrypted state bucket, KMS key, GitHub OIDC deploy roles | Local, committed nowhere |
 | `terraform-site` | Site bucket, CloudFront distribution, OAC, directory-index function | The bucket the bootstrap created |
 | `terraform-dns` | The Cloudflare zone's records | The same bucket, under `dns/` |
+| `terraform-paperclip-deploy` | IAM Roles Anywhere trust anchor, profile and a content-deploy role for Paperclip | The same bucket, under `paperclip/` |
 
 ## Why CloudFront and not the S3 website endpoint
 
@@ -88,6 +89,45 @@ aws cloudfront create-invalidation --distribution-id <distribution_id> --paths '
 ```
 
 `terraform output deploy_command` prints this with the values filled in.
+
+## The Paperclip deploy stack
+
+`terraform-paperclip-deploy` lets the Paperclip server publish the site with
+**temporary credentials and no stored access key**, through IAM Roles Anywhere.
+It owns three things: a trust anchor (the private CA), a role, and a Roles
+Anywhere *profile* that ties them together. Only a certificate signed by that CA
+**and** carrying `CN=paperclip` can assume the role. No IAM user is involved.
+
+The role allows exactly what step 3 runs and nothing else: `s3:PutObject`,
+`s3:DeleteObject`, `s3:ListBucket` and `s3:GetBucketLocation` on the site bucket,
+and `cloudfront:CreateInvalidation` and `cloudfront:GetInvalidation` on the site
+distribution. It cannot change infrastructure, touch IAM or read other buckets.
+
+The trust anchor is a private CA made with OpenSSL, **not** the paid AWS Private
+CA. Its public certificate is versioned here as `ca.pem`, so the whole setup is
+reproducible from this repository. The bucket name and distribution ID are read
+from the site stack's state, so run step 2 first. Apply with an identity that may
+create IAM roles and Roles Anywhere resources.
+
+```bash
+export AWS_PROFILE=neocom
+terraform -chdir=infra/terraform-paperclip-deploy init   -backend-config="bucket=<state_bucket_name>"   -backend-config="key=paperclip/preview.tfstate"   -backend-config="region=us-east-1"   -backend-config="encrypt=true"   -backend-config="kms_key_id=<state_kms_key_arn>"   -backend-config="use_lockfile=true"
+terraform -chdir=infra/terraform-paperclip-deploy apply   # reads terraform.tfvars
+terraform -chdir=infra/terraform-paperclip-deploy output -raw aws_config_profile
+```
+
+Operational notes:
+
+- **Never commit a private key.** Only `ca.pem` (public) lives in the repo; the
+  CA key stays offline on the operator's PC, and the client key
+  (`paperclip.key`) lives only on the Paperclip host. `*.key` is git-ignored.
+- The client certificate expires on **2027-11-17**. Re-issue it with the offline
+  CA and replace it on the server before then. Nothing in AWS changes, because
+  the trust anchor is the CA, valid until 2031-11-16.
+- Rotating the CA means replacing `ca.pem` and re-applying.
+- To revoke access at once, disable the profile or the trust anchor.
+- Install `aws_signing_helper` on the Paperclip host and use the
+  `aws_config_profile` output as its `~/.aws/config` block.
 
 ## The DNS stack
 
