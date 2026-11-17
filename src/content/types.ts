@@ -34,7 +34,8 @@ export interface ProjectCopy {
   summary: string;
   cardCta: string;
   artAlt: string;
-  badge?: string;
+  /** Delivery phase, shown on the card and the project page. */
+  badge: string;
   detailEyebrow: string;
   detailIntro: string;
   highlights: string[];

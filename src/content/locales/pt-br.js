@@ -58,6 +58,7 @@ export const ptBrSiteCopy = {
           "Coleta automatizada de resíduos em universidades com pontos de reciclagem verificados em blockchain.",
         cardCta: "Explorar projeto",
         artAlt: "Ícone do NeoRecicla",
+        badge: "Conceito",
         detailEyebrow: "Sustentabilidade rastreável",
         detailIntro:
           "NeoRecicla conecta coleta automatizada, incentivo ao descarte correto e trilha auditável de recompensas em um fluxo simples para campus universitários.",
@@ -96,6 +97,7 @@ export const ptBrSiteCopy = {
           "Um ponto de verdade imutável para o histórico de produção de desenvolvedores, livre de plataformas centralizadas.",
         cardCta: "Ver conceito",
         artAlt: "Ícone do DevRecord",
+        badge: "Conceito",
         detailEyebrow: "Identidade técnica verificável",
         detailIntro:
           "DevRecord é uma proposta para consolidar histórico de produção, autoria e reputação técnica sem depender inteiramente de uma única plataforma de hospedagem de código.",

@@ -34,11 +34,9 @@ export function ProjectCard({ locale, projectSlug, position, theme }: ProjectCar
           className="relative max-h-[132px] w-[108px] object-contain"
           src={getProjectArt(visual, theme)}
         />
-        {project.badge ? (
-          <span className="absolute top-4 right-4 rounded-full bg-surface px-2.5 py-[5px] font-mono text-[10px] tracking-[0.14em] text-project uppercase">
-            {project.badge}
-          </span>
-        ) : null}
+        <span className="absolute top-4 right-4 rounded-full bg-surface px-2.5 py-[5px] font-mono text-[10px] tracking-[0.14em] text-project uppercase">
+          {project.badge}
+        </span>
       </div>
 
       <div className="flex flex-1 flex-col gap-3.5 p-[26px]">

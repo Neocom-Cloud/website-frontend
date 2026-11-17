@@ -63,7 +63,11 @@ describe("App integration", () => {
       "/en/projects/devrecord/",
       "/en/projects/apollo/"
     ]);
-    expect(within(cards[2]).getByText("Concept")).toBeInTheDocument();
+    // Every project is at concept stage, so the badge describes the whole
+    // portfolio rather than singling one out.
+    for (const card of cards) {
+      expect(within(card).getByText("Concept")).toBeInTheDocument();
+    }
     expect(within(cards[0]).getByText("01")).toBeInTheDocument();
   });
 
@@ -113,6 +117,7 @@ describe("App integration", () => {
     expect(screen.getByText("Status atual")).toBeInTheDocument();
     expect(screen.getAllByRole("article")).toHaveLength(3);
     expect(screen.getByText("Conceito")).toBeInTheDocument();
+    expect(screen.getByTestId("project-hero")).toHaveTextContent("Conceito");
 
     for (const link of screen.getAllByRole("link", { name: "Quero conversar sobre o Apollo" })) {
       expect(link.getAttribute("href")).toContain("mailto:contato@neocom.cloud?subject=");

@@ -58,6 +58,7 @@ export const enSiteCopy = {
           "Automated recycling collection for universities with blockchain-verified reward points.",
         cardCta: "Explore project",
         artAlt: "NeoRecicla icon",
+        badge: "Concept",
         detailEyebrow: "Traceable sustainability",
         detailIntro:
           "NeoRecicla connects automated collection, reward incentives, and an auditable record of recycling activity in a simple flow for university campuses.",
@@ -97,6 +98,7 @@ export const enSiteCopy = {
           "An immutable source of truth for developer production history, independent from centralized hosting platforms.",
         cardCta: "View concept",
         artAlt: "DevRecord icon",
+        badge: "Concept",
         detailEyebrow: "Verifiable technical identity",
         detailIntro:
           "DevRecord is a proposal for consolidating production history, authorship, and technical reputation without depending entirely on a single code-hosting platform.",

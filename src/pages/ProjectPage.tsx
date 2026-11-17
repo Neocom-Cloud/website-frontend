@@ -53,11 +53,9 @@ export function ProjectPage({ locale, projectSlug, theme }: ProjectPageProps) {
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-[18px]">
               <ButtonLink href={mailto}>{project.cta}</ButtonLink>
-              {project.badge ? (
-                <span className="rounded-full bg-surface px-3.5 py-2 font-mono text-[11px] tracking-[0.14em] text-ink-2 uppercase">
-                  {project.badge}
-                </span>
-              ) : null}
+              <span className="rounded-full bg-surface px-3.5 py-2 font-mono text-[11px] tracking-[0.14em] text-ink-2 uppercase">
+                {project.badge}
+              </span>
             </div>
           </div>
 
