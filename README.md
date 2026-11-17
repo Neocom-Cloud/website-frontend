@@ -1,6 +1,6 @@
 # NeoCom Website Frontend
 
-Static multi-page marketing site for `neocom.cloud`, built with Vite and React and deployed to GitHub Pages.
+Static multi-page marketing site for `neocom.cloud`, built with Vite and React and hosted on AWS (S3 behind CloudFront).
 
 This repository is `pnpm`-first. Use `pnpm` for install, development, testing, and build commands.
 
@@ -103,13 +103,13 @@ This keeps one shared landing template, one shared standard project template, an
   - `/en/`
   - `/pt-br/projects/:slug/`
   - `/en/projects/:slug/`
-- GitHub Pages cannot do true server-side locale detection from request headers. If you later need `Accept-Language` or geo-based edge routing, add that at Cloudflare or AWS.
+- The static files cannot do true server-side locale detection from request headers. If you later need `Accept-Language` or geo-based edge routing, add that at CloudFront or Cloudflare.
 
 ## Deployment and DNS
 
-- Deployment workflow: [deploy-pages.yml](./.github/workflows/deploy-pages.yml)
+- Deployment workflow: [deploy-aws.yml](./.github/workflows/deploy-aws.yml)
 - DNS and custom-domain runbook: [docs/deployment.md](./docs/deployment.md)
-- Configure records in the authoritative DNS provider's zone before GitHub Pages can validate `neocom.cloud`. Hostinger and providers without apex CNAME flattening require GitHub Pages' four apex A records; Cloudflare can use its supported apex CNAME-flattening mechanism. In every case, configure `www -> neocom-cloud.github.io` and follow the provider's supported apex-record method.
+- The site is served by CloudFront from a private S3 bucket. DNS lives in Cloudflare, managed by `infra/terraform-dns`: `neocom.cloud` and `www` are CNAMEs to the production distribution, and the Zoho mail records are preserved untouched.
 - Production publishes only from the `deploy` branch after `develop -> Q.A -> main -> Q.A.E2E -> deploy`; `main` remains the default branch.
 
 ## Testing
@@ -123,5 +123,5 @@ This keeps one shared landing template, one shared standard project template, an
 ## Notes
 
 - The public domain is `neocom.cloud`.
-- The GitHub Pages owner domain used for DNS targets is `neocom-cloud.github.io`.
+- The production CloudFront distribution is `d2bmtl9y1doakb.cloudfront.net`.
 - The site ships `pt-BR` and `en` locales.

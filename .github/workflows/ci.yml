@@ -165,10 +165,9 @@ jobs:
     if: needs.deployment-gate-policy.outputs.deploy-status == 'true'
     needs: deployment-gate-policy
     runs-on: ubuntu-latest
-    # The readiness check only reads repository files and GitHub Pages configuration.
+    # The readiness check only requests public HTTPS pages of the production site.
     permissions:
       contents: read
-      pages: read
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -180,10 +179,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Verify GitHub Pages readiness
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/verify-pages-status.mjs
+      - name: Verify production site readiness
+        run: node scripts/verify-site-status.mjs
 
   browser-e2e:
     name: Browser end-to-end

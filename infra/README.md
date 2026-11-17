@@ -145,8 +145,8 @@ pass while this stack is missing a record. A test fails if the two fall out of
 step; run `pnpm generate:dns` after editing the inventory.
 
 Web records are declared separately, because they follow whichever host serves
-the site: `web_target` starts at `github-pages` and moves to `cloudfront`.
-The mail records are untouched either way.
+the site: the apex and `www` are CNAMEs to the production distribution
+(`cloudfront_domain`). The mail records are not part of that.
 
 `proxy_web` owns the orange cloud on those records and defaults to `false`,
 which is Phase 1 of the runbook: an apply lands the zone grey. Raise it only
@@ -169,8 +169,8 @@ checked while Hostinger is still authoritative and nothing is at risk.
 
 Production reuses `terraform-site` with `environment=production`, which gives it
 its own bucket (`neocom-site-production`) and distribution. Nothing below
-changes what `neocom.cloud` serves until step 8: while the DNS still points at
-GitHub Pages, the new distribution receives no traffic.
+changes what `neocom.cloud` serves until step 7: until the nameservers move,
+the new distribution receives no traffic on the real domain.
 
 Order matters, and each step is reversible until the nameservers move:
 
@@ -213,18 +213,18 @@ Order matters, and each step is reversible until the nameservers move:
    own `*.cloudfront.net` domain, still with no DNS change.
 6. **Cloudflare zone**: apply `terraform-dns` with the certificate's records in
    `acm_validation_records` (the `validation_records` output of step 1) and
-   `web_target = "github-pages"`, then prove the whole record set with
+   `cloudfront_domain` set to the production distribution, then prove the whole record set with
    `pnpm verify:dns --server <a Cloudflare nameserver>`. The **Zoho** MX, SPF,
    DKIM (`zmail` selector) and `zoho-verification` TXT must all be there: a
    record that exists at Hostinger and not at Cloudflare stops existing the
    moment the nameservers change, and broken outgoing mail fails silently.
    The ACM records have to stay in the zone for good, because ACM re-checks
    them to renew the certificate.
-7. **Change the nameservers** at the registrar.
-8. **Cut over**: set `web_target = "cloudfront"` and `cloudfront_domain`, with
-   low TTLs going in. Terraform destroys the four apex A records and creates the
-   CNAMEs in their place, so choose a quiet window. Keep `proxy_web = false`
-   first; raise it only with SSL/TLS on **Full (strict)**.
-9. After a period of observation, retire GitHub Pages.
+7. **Change the nameservers** at the registrar. This is the cut-over: the
+   zone already answers with the CNAMEs and the mail records, so choose a quiet
+   window. Keep `proxy_web = false` first; raise it only with SSL/TLS on
+   **Full (strict)**.
+8. Afterwards, set `SITE_ORIGIN=https://neocom.cloud` for the `Deploy status`
+   gate.
 
 See `docs/deployment.md` for the DNS runbook and the full record inventory.

@@ -8,7 +8,7 @@ Use it for a feature, maintenance change, release hardening, or infrastructure a
 
 1. Understand the current repository before proposing a change. Inspect the working tree, branch, workflows, tests, relevant documentation, and existing implementation first.
 2. Prefer one maintainable model over duplicated variants. Shared templates receive data and translations; locale, project, route, and SEO metadata come from centralized catalogs.
-3. Keep infrastructure intentionally simple until there is a concrete need to add complexity. GitHub Pages is the current static hosting target; Hostinger remains the registrar, and Cloudflare is optional DNS or edge infrastructure.
+3. Keep infrastructure intentionally simple until there is a concrete need to add complexity. AWS (S3 behind CloudFront) is the static hosting target; Hostinger remains the registrar, and Cloudflare hosts the DNS zone.
 4. Treat every automated review finding as a hypothesis. Verify it against the current code and user-facing behavior before changing anything.
 5. Make every stage independently verifiable. Local checks establish fast feedback; CI, code review, and protected promotion PRs establish delivery evidence.
 6. Never use a deployment branch as a development shortcut. The branch order is part of the release contract.
@@ -32,7 +32,7 @@ This separation avoids parallel `pt-br` and `en` page implementations. A future 
 
 ### Static hosting and locale limits
 
-GitHub Pages serves static files and cannot decide a language from request headers before it responds. The root redirect uses this client-side precedence:
+The site is static files and cannot decide a language from request headers before it responds. The root redirect uses this client-side precedence:
 
 1. `?lang=` query override
 2. stored locale
@@ -206,7 +206,7 @@ For each boundary:
 8. Merge only if the PR is clean and all valid review work is complete.
 9. After merging, restart at step 1 for the next boundary; steps 1-3 fetch, set, inspect, and validate that boundary's refs.
 
-The browser E2E gate is required for `main -> Q.A.E2E`. The `Q.A.E2E` PR also verifies GitHub Pages readiness. The `Q.A.E2E -> deploy` PR runs the artifact-based `Pre-deploy test`, which serves the Node 24-validated `dist` output through the same Playwright matrix. `Q.A.E2E` is the manual acceptance boundary; leave the PR open there until a human explicitly accepts it. Only `deploy` can publish GitHub Pages.
+The browser E2E gate is required for `main -> Q.A.E2E`. The `Q.A.E2E` PR also verifies production site readiness. The `Q.A.E2E -> deploy` PR runs the artifact-based `Pre-deploy test`, which serves the Node 24-validated `dist` output through the same Playwright matrix. `Q.A.E2E` is the manual acceptance boundary; leave the PR open there until a human explicitly accepts it. Only `deploy` can publish the production site.
 
 ### 7. Produce a final evidence record
 

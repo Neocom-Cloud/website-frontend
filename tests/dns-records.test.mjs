@@ -44,8 +44,8 @@ describe("DNS record contract", () => {
 });
 
 describe("reconciliation with the registrar's export", () => {
-  // The zone as Hostinger exported it. Probing could never have found the two
-  // GitHub verification records: their names are not guessable.
+  // The zone as Hostinger exported it. Probing could never have found the
+  // GitHub organisation verification record: its name is not guessable.
   const zoneFile = readFileSync(
     resolve(process.cwd(), "docs/dns/hostinger-zone-2026-11-17.txt"),
     "utf8"
@@ -62,18 +62,26 @@ describe("reconciliation with the registrar's export", () => {
       // move rather than carried across.
       if (type === "SOA" || type === "NS") continue;
 
+      // The export's A records are GitHub Pages' four addresses. They are
+      // retired on purpose: the apex now points at CloudFront through a CNAME
+      // that Cloudflare flattens, which a literal comparison cannot express.
+      if (type === "A") continue;
+
       expect(covered.has(type), `${type} appears in the export`).toBe(true);
     }
   });
 
-  it("carries both GitHub verification records", () => {
-    for (const name of ["_github-pages-challenge-neocom-cloud", "_gh-neocom-cloud-o"]) {
-      expect(zoneFile).toContain(name);
-      expect(
-        EXPECTED_RECORDS.some((record) => record.name.startsWith(`${name}.`)),
-        name
-      ).toBe(true);
-    }
+  it("keeps the GitHub organisation verification record and drops the Pages one", () => {
+    const org = "_gh-neocom-cloud-o";
+
+    expect(zoneFile).toContain(org);
+    expect(EXPECTED_RECORDS.some((record) => record.name.startsWith(`${org}.`))).toBe(true);
+
+    // The Pages challenge belongs to hosting the site on GitHub, which is over.
+    expect(zoneFile).toContain("_github-pages-challenge-neocom-cloud");
+    expect(
+      EXPECTED_RECORDS.some((record) => record.name.includes("_github-pages-challenge"))
+    ).toBe(false);
   });
 
   it("uses the same DKIM key the export holds", () => {

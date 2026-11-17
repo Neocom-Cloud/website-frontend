@@ -29,25 +29,14 @@ variable "mail_ttl" {
   }
 }
 
-variable "web_target" {
-  type        = string
-  default     = "github-pages"
-  description = <<-EOT
-    Which host the web records point at. Start on github-pages, which is what
-    the zone serves today, and switch to cloudfront once the distribution
-    carries the custom domain. The mail records are unaffected either way.
-  EOT
-
-  validation {
-    condition     = contains(["github-pages", "cloudfront"], var.web_target)
-    error_message = "web_target must be github-pages or cloudfront."
-  }
-}
-
 variable "cloudfront_domain" {
   type        = string
-  default     = ""
-  description = "Distribution domain, from the terraform-site output. Required when web_target is cloudfront."
+  description = "Production distribution domain, the distribution_domain output of terraform-site with environment=production."
+
+  validation {
+    condition     = can(regex("\\.cloudfront\\.net$", var.cloudfront_domain))
+    error_message = "cloudfront_domain must be a *.cloudfront.net hostname."
+  }
 }
 
 variable "proxy_web" {
@@ -55,9 +44,9 @@ variable "proxy_web" {
   default     = false
   description = <<-EOT
     Whether the web records go through Cloudflare's proxy (the orange cloud).
-    Phase 1 of the runbook in docs/deployment.md keeps them grey: the origin
-    has to carry HTTPS for this domain first, and a proxied record in front of
-    one that does not answers 526. Flip this to true only once the origin
+    Phase 1 of the runbook in docs/deployment.md keeps them grey. A proxied
+    record in front of an origin that does not carry HTTPS for this domain
+    answers 526. Flip this to true only once the origin
     serves HTTPS, with SSL/TLS set to Full (strict). The mail and verification
     records in records.json are never proxied, whatever this is set to.
   EOT

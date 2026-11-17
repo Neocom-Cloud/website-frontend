@@ -2,9 +2,9 @@
  * The authoritative record set for neocom.cloud.
  *
  * Reconciled against Hostinger's own zone export (2026-11-17 03:39 UTC), not
- * just external queries. That export is what turned up the two GitHub
- * verification records below: their names cannot be guessed, so no amount of
- * probing would have found them. This is the contract the zone has to satisfy
+ * just external queries. That export is what turned up the GitHub
+ * organisation verification record below: its name cannot be guessed, so no
+ * amount of probing would have found it. This is the contract the zone has to satisfy
  * wherever it is hosted — if a record here stops resolving, something is
  * broken.
  *
@@ -18,6 +18,9 @@
  */
 
 export const DOMAIN = "neocom.cloud";
+
+/** `distribution_domain` output of terraform-site with environment=production. */
+export const PRODUCTION_DISTRIBUTION_DOMAIN = "d2bmtl9y1doakb.cloudfront.net";
 
 /** Hostinger today; replace once Cloudflare is authoritative. */
 export const CURRENT_NAMESERVERS = ["ns1.dns-parking.com", "ns2.dns-parking.com"];
@@ -66,37 +69,18 @@ export const EXPECTED_RECORDS = [
     why: "Proves domain ownership to Zoho, which rechecks periodically."
   },
   {
-    name: `_github-pages-challenge-neocom-cloud.${DOMAIN}`,
-    type: "TXT",
-    values: ["575fa685442268029470e5200acb64"],
-    purpose: "verification",
-    why: "Proves the domain to GitHub Pages. Losing it drops the custom-domain verification that blocks takeover."
-  },
-  {
     name: `_gh-neocom-cloud-o.${DOMAIN}`,
     type: "TXT",
     values: ["813e3476ab"],
     purpose: "verification",
-    why: "Verifies the domain for the GitHub organisation, independently of Pages."
-  },
-  {
-    name: DOMAIN,
-    type: "A",
-    values: [
-      "185.199.108.153",
-      "185.199.109.153",
-      "185.199.110.153",
-      "185.199.111.153"
-    ],
-    purpose: "web",
-    why: "Points the apex at GitHub Pages. Replaced when the site moves to CloudFront."
+    why: "Verifies the domain for the GitHub organisation. Unrelated to hosting, so it stays."
   },
   {
     name: `www.${DOMAIN}`,
     type: "CNAME",
-    values: ["neocom-cloud.github.io"],
+    values: [PRODUCTION_DISTRIBUTION_DOMAIN],
     purpose: "web",
-    why: "Alternate host. Replaced when the site moves to CloudFront."
+    why: "Alternate host, served by the production CloudFront distribution. The apex has no entry here: Cloudflare flattens a CNAME at the apex into A records that change, which a literal comparison cannot match."
   }
 ];
 
