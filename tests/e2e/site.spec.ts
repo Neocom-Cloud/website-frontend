@@ -7,12 +7,12 @@ const projectNames = {
   "pt-br": {
     neorecicla: "NeoRecicla",
     devrecord: "DevRecord",
-    "neo-health": "Neo Health"
+    "neo-health": "Apollo"
   },
   en: {
     neorecicla: "NeoRecicla",
     devrecord: "DevRecord",
-    "neo-health": "Neo Health"
+    "neo-health": "Apollo"
   }
 } as const;
 const localeLinkNames = { "pt-br": "PT", en: "EN" } as const;

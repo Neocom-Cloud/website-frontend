@@ -15,10 +15,11 @@ export const projectRegistry = {
   },
   "neo-health": {
     accent: "amber",
-    // Both derived from the archived PNG by scripts/crop-icon-frame.mjs: WebP
-    // on the page, JPEG as the social image because some link-preview crawlers
-    // reject WebP and render transparency as black.
+    // Both variants are final brand artwork, cropped and re-encoded by
+    // scripts/crop-icon-frame.mjs. The social image is a JPEG because some
+    // link-preview crawlers reject WebP and render transparency as black.
     artSrc: "/assets/Icon_NeoHealth_Concept.webp",
+    artLightSrc: "/assets/Icon_NeoHealth_Concept_Light.webp",
     socialImageSrc: "/assets/Icon_NeoHealth_Concept.jpg",
     template: "standard"
   }

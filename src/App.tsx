@@ -41,9 +41,9 @@ export function App({ locale, pageKind, projectSlug }: AppProps) {
 
         <main>
           {pageKind === "landing" ? (
-            <LandingPage locale={locale} />
+            <LandingPage locale={locale} theme={theme} />
           ) : (
-            <ProjectPage locale={locale} projectSlug={projectSlug!} />
+            <ProjectPage locale={locale} projectSlug={projectSlug!} theme={theme} />
           )}
         </main>
 

@@ -53,7 +53,7 @@ describe("static site generation", () => {
     expect(page.querySelector("meta[charset]")?.getAttribute("charset")).toBe("UTF-8");
     expect(page.title).toBe("NeoCom | Inovação em comunicações");
     expect(page.querySelector('meta[name="description"]')?.getAttribute("content")).toBe(
-      "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health."
+      "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Apollo."
     );
     expect(page.querySelector('meta[property="og:title"]')?.getAttribute("content")).toBe(
       "NeoCom | Inovação em comunicações"
@@ -83,7 +83,7 @@ describe("static site generation", () => {
       },
       "neo-health": {
         description:
-          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+          "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
         ogDescription:
           "Dados sensíveis com governança pessoal e contexto claro.",
         twitterDescription:

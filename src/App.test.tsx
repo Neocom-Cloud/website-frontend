@@ -114,7 +114,7 @@ describe("App integration", () => {
     expect(screen.getAllByRole("article")).toHaveLength(3);
     expect(screen.getByText("Conceito")).toBeInTheDocument();
 
-    for (const link of screen.getAllByRole("link", { name: "Quero conversar sobre o Neo Health" })) {
+    for (const link of screen.getAllByRole("link", { name: "Quero conversar sobre o Apollo" })) {
       expect(link.getAttribute("href")).toContain("mailto:contato@neocom.cloud?subject=");
     }
   });

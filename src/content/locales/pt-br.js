@@ -129,16 +129,16 @@ export const ptBrSiteCopy = {
         cta: "Quero conversar sobre o DevRecord"
       },
       "neo-health": {
-        name: "Neo Health",
+        name: "Apollo",
         category: "Saúde Pessoal / Rastreamento",
         summary:
           "Rastreador pessoal de informações de saúde para centralizar histórico, métricas e dados importantes sob controle do usuário.",
         cardCta: "Abrir visão geral",
-        artAlt: "Ícone do Neo Health",
+        artAlt: "Ícone do Apollo",
         badge: "Conceito",
         detailEyebrow: "Controle pessoal de dados sensíveis",
         detailIntro:
-          "Neo Health explora um espaço delicado: como reunir histórico, registros e métricas de saúde com mais clareza para o usuário, sem abrir mão de controle e privacidade.",
+          "Apollo explora um espaço delicado: como reunir histórico, registros e métricas de saúde com mais clareza para o usuário, sem abrir mão de controle e privacidade.",
         highlights: [
           "Visão consolidada de informações dispersas",
           "Prioridade para dados sensíveis sob controle do usuário",
@@ -154,7 +154,7 @@ export const ptBrSiteCopy = {
           {
             title: "Direção do produto",
             paragraphs: [
-              "Neo Health parte de uma base simples: agregar o que importa, organizar linha do tempo e reduzir atrito para consulta e acompanhamento. A camada crítica é governança de acesso, não volume de features."
+              "Apollo parte de uma base simples: agregar o que importa, organizar linha do tempo e reduzir atrito para consulta e acompanhamento. A camada crítica é governança de acesso, não volume de features."
             ]
           },
           {
@@ -165,7 +165,7 @@ export const ptBrSiteCopy = {
           }
         ],
         status: "Fase atual: conceito e definição de recorte para validação inicial.",
-        cta: "Quero conversar sobre o Neo Health"
+        cta: "Quero conversar sobre o Apollo"
       }
     }
   },
@@ -197,7 +197,7 @@ export const ptBrSiteCopy = {
     landing: {
       title: "NeoCom | Inovação em comunicações",
       description:
-        "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health.",
+        "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Apollo.",
       ogDescription:
         "Tecnologia com propósito, conexão com responsabilidade e privacidade como fundamento.",
       twitterDescription: "Explore os projetos e a missão da NeoCom."
@@ -219,7 +219,7 @@ export const ptBrSiteCopy = {
       },
       "neo-health": {
         description:
-          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+          "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
         ogDescription: "Dados sensíveis com governança pessoal e contexto claro.",
         twitterDescription:
           "Conheça a visão da NeoCom para histórico pessoal de saúde."
@@ -264,7 +264,7 @@ export const ptBrSiteCopy = {
           watermarkOpacity: 0.35
         },
         {
-          name: "NeoHealth",
+          name: "Apollo",
           summary: "Saúde conectada com dado sob controle da pessoa.",
           icon: "/assets/Icon_NeoHealth_Concept.webp",
           background: "#17140c",

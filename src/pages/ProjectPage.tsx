@@ -1,18 +1,21 @@
 import { Icon } from "../components/icons";
 import { ButtonLink } from "../components/ui";
 import { getProjectMailto, projectRegistry, siteContent } from "../content/site.js";
-import { Locale, ProjectSlug, getLandingPath } from "../lib/routes";
+import { Locale, ProjectSlug, Theme, getLandingPath } from "../lib/routes";
+import { getProjectArt } from "../lib/project-art";
 
 interface ProjectPageProps {
   locale: Locale;
   projectSlug: ProjectSlug;
+  theme: Theme;
 }
 
-export function ProjectPage({ locale, projectSlug }: ProjectPageProps) {
+export function ProjectPage({ locale, projectSlug, theme }: ProjectPageProps) {
   const copy = siteContent[locale];
   const project = copy.projects.items[projectSlug];
   const visual = projectRegistry[projectSlug];
   const mailto = getProjectMailto(locale, project.name);
+  const art = getProjectArt(visual, theme);
 
   return (
     <>
@@ -25,7 +28,7 @@ export function ProjectPage({ locale, projectSlug }: ProjectPageProps) {
           alt=""
           aria-hidden="true"
           className="pointer-events-none absolute bottom-[-150px] left-1/2 h-auto w-[520px] object-contain opacity-[0.16] select-none"
-          src={visual.artSrc}
+          src={art}
         />
 
         <a
@@ -63,7 +66,7 @@ export function ProjectPage({ locale, projectSlug }: ProjectPageProps) {
               <img
                 alt={project.artAlt}
                 className="max-h-[136px] w-[112px] object-contain"
-                src={visual.artSrc}
+                src={art}
               />
             </div>
             <div className="p-[26px]">

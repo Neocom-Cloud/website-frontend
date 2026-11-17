@@ -133,7 +133,7 @@ describe("production build output", () => {
         outputPath: "pt-br/index.html",
         title: "NeoCom | Inovação em comunicações",
         description:
-          "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health.",
+          "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Apollo.",
         ogDescription:
           "Tecnologia com propósito, conexão com responsabilidade e privacidade como fundamento.",
         twitterDescription: "Explore os projetos e a missão da NeoCom."
@@ -158,9 +158,9 @@ describe("production build output", () => {
       },
       {
         outputPath: "pt-br/projects/neo-health/index.html",
-        title: "Neo Health | NeoCom",
+        title: "Apollo | NeoCom",
         description:
-          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+          "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
         ogDescription: "Dados sensíveis com governança pessoal e contexto claro.",
         twitterDescription:
           "Conheça a visão da NeoCom para histórico pessoal de saúde."
