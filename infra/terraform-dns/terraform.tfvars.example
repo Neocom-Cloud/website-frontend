@@ -1,9 +1,14 @@
 cloudflare_zone_id = "replace-me"
 web_target         = "github-pages"
 
+# Grey records. Raise this only after the origin serves HTTPS for the domain,
+# which is Phase 2 in docs/deployment.md; earlier, Cloudflare answers 526.
+proxy_web = false
+
 # Never commit the token. Export it instead:
 #   export TF_VAR_cloudflare_api_token=...
 #
 # After the site moves:
 # web_target        = "cloudfront"
 # cloudfront_domain = "d2ogykvptv4dgl.cloudfront.net"
+# proxy_web         = true

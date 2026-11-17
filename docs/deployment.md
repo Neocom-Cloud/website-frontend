@@ -245,16 +245,23 @@ If DNSSEC is enabled at the registrar, disable it before changing nameservers.
 
 ### 2.3 Cloudflare web records for GitHub Pages
 
-Create or confirm these web records in Cloudflare:
+`infra/terraform-dns` declares these records, so the stack is where they
+change, not the dashboard. Apply it before the nameserver switch, as in the
+order of operations above.
 
 | Type | Name | Target | Proxy status |
 | --- | --- | --- | --- |
-| CNAME | @ | neocom-cloud.github.io | DNS only at first |
-| CNAME | www | neocom-cloud.github.io | DNS only at first |
+| A | @ | 185.199.108.153 | grey, while `proxy_web = false` |
+| A | @ | 185.199.109.153 | grey, while `proxy_web = false` |
+| A | @ | 185.199.110.153 | grey, while `proxy_web = false` |
+| A | @ | 185.199.111.153 | grey, while `proxy_web = false` |
+| CNAME | www | neocom-cloud.github.io | grey, while `proxy_web = false` |
 
-Why CNAME on the apex works here:
+Why four A records on the apex and not a CNAME:
 
-- Cloudflare supports CNAME flattening at the zone apex, so `@ -> neocom-cloud.github.io` is valid even though normal DNS apex CNAME rules are restrictive.
+- Cloudflare does support CNAME flattening at the zone apex, so `@ -> neocom-cloud.github.io` would be valid here too, unlike at a provider without it.
+- The stack uses GitHub Pages' four published apex addresses anyway, so the Cloudflare zone answers the apex exactly as Hostinger does today. The nameserver switch then changes nothing about the web records, which is one less difference to reason about if something breaks.
+- The flattened apex CNAME returns when `web_target` moves to `cloudfront`, where there is no published address set to use instead.
 
 ### 2.4 Point Hostinger to Cloudflare nameservers
 
@@ -279,20 +286,23 @@ Expected result:
 
 ### 2.5 Phase 1: keep the site DNS-only
 
-Before enabling the Cloudflare proxy:
+`proxy_web` defaults to `false`, so an apply lands this phase with nothing
+further to set:
 
-1. Keep `@` and `www` as `DNS only`.
+1. Leave `proxy_web = false`, which keeps `@` and `www` grey (`DNS only`).
 2. Confirm GitHub Pages recognizes `neocom.cloud` as the custom domain.
 3. Wait for GitHub Pages HTTPS issuance.
 4. Enable `Enforce HTTPS` in GitHub Pages.
 
-This is the lowest-risk configuration and may be all you need.
+This is the lowest-risk configuration and may be all you need. Do not set
+`proxy_web = true` before step 4: proxying a host that carries no certificate
+for the domain yet is what produces `526`.
 
 ### 2.6 Phase 2: optional Cloudflare proxy
 
 If you want Cloudflare in front of the site:
 
-1. Switch the `@` and `www` CNAME records from `DNS only` to `Proxied`.
+1. Set `proxy_web = true` and apply `infra/terraform-dns`, which flips the web records from grey to proxied. Do not toggle the cloud in the dashboard; the next apply would revert it.
 2. In Cloudflare, open `SSL/TLS -> Overview`.
 3. Set encryption mode to `Full (strict)`.
 4. Confirm that:
@@ -312,8 +322,8 @@ Expected benefits:
 If proxy mode causes issues:
 
 - Cloudflare `526` usually means the proxied origin certificate path is not valid yet for the requested hostname. First confirm GitHub Pages HTTPS is active, then retry.
-- Unexpected redirect loops or broken validation are a reason to switch the web records back to `DNS only`.
-- If the site works in `DNS only` but fails when proxied, keep the site `DNS only` and use Cloudflare only as the authoritative DNS provider for now.
+- Unexpected redirect loops or broken validation are a reason to go back: set `proxy_web = false` and apply. The records return to grey, and nothing else in the zone moves.
+- If the site works in `DNS only` but fails when proxied, keep `proxy_web = false` and use Cloudflare only as the authoritative DNS provider for now.
 
 ## 3. Troubleshooting
 

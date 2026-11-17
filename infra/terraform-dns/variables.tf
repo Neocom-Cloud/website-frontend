@@ -50,6 +50,19 @@ variable "cloudfront_domain" {
   description = "Distribution domain, from the terraform-site output. Required when web_target is cloudfront."
 }
 
+variable "proxy_web" {
+  type        = bool
+  default     = false
+  description = <<-EOT
+    Whether the web records go through Cloudflare's proxy (the orange cloud).
+    Phase 1 of the runbook in docs/deployment.md keeps them grey: the origin
+    has to carry HTTPS for this domain first, and a proxied record in front of
+    one that does not answers 526. Flip this to true only once the origin
+    serves HTTPS, with SSL/TLS set to Full (strict). The mail and verification
+    records in records.json are never proxied, whatever this is set to.
+  EOT
+}
+
 variable "create_dmarc" {
   type        = bool
   default     = true

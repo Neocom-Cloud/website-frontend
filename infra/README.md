@@ -101,6 +101,12 @@ Web records are declared separately, because they follow whichever host serves
 the site: `web_target` starts at `github-pages` and moves to `cloudfront`.
 The mail records are untouched either way.
 
+`proxy_web` owns the orange cloud on those records and defaults to `false`,
+which is Phase 1 of the runbook: an apply lands the zone grey. Raise it only
+once the origin serves HTTPS for this domain, with SSL/TLS on Full (strict) —
+proxying ahead of that answers 526. The cloud is never toggled in the
+dashboard, because the next apply would revert it.
+
 ```bash
 export TF_VAR_cloudflare_api_token=...   # Zone:DNS:Edit on this zone only
 terraform -chdir=infra/terraform-dns init   -backend-config="bucket=neocom-tfstate-431915868573-us-east-1"   -backend-config="key=dns/production.tfstate"   -backend-config="region=us-east-1"   -backend-config="encrypt=true"   -backend-config="kms_key_id=<state_kms_key_arn>"   -backend-config="use_lockfile=true"
