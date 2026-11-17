@@ -101,6 +101,12 @@ Web records are declared separately, because they follow whichever host serves
 the site: `web_target` starts at `github-pages` and moves to `cloudfront`.
 The mail records are untouched either way.
 
+`proxy_web` owns the orange cloud on those records and defaults to `false`,
+which is Phase 1 of the runbook: an apply lands the zone grey. Raise it only
+once the origin serves HTTPS for this domain, with SSL/TLS on Full (strict) —
+proxying ahead of that answers 526. The cloud is never toggled in the
+dashboard, because the next apply would revert it.
+
 ```bash
 export TF_VAR_cloudflare_api_token=...   # Zone:DNS:Edit on this zone only
 terraform -chdir=infra/terraform-dns init   -backend-config="bucket=neocom-tfstate-431915868573-us-east-1"   -backend-config="key=dns/production.tfstate"   -backend-config="region=us-east-1"   -backend-config="encrypt=true"   -backend-config="kms_key_id=<state_kms_key_arn>"   -backend-config="use_lockfile=true"
@@ -121,9 +127,19 @@ Production needs, in order:
    and the `zoho-verification` TXT especially. A record that exists at
    Hostinger and not at Cloudflare stops existing the moment the nameservers
    change, and broken outgoing mail fails silently.
-2. An ACM certificate in `us-east-1`, validated by a DNS record in Cloudflare.
-3. `custom_domain` and `acm_certificate_arn` set on this stack.
-4. A proxied CNAME in Cloudflare pointing at the distribution domain, with
-   SSL/TLS set to **Full (strict)**.
+2. An ACM certificate in `us-east-1`, validated by a DNS record in Cloudflare,
+   covering **both** `neocom.cloud` and `www.neocom.cloud`. `terraform-dns`
+   points both hosts at the distribution once `web_target` is `cloudfront`.
+3. `custom_domain` and `acm_certificate_arn` set on this stack. The
+   distribution takes both `custom_domain` and `www.<custom_domain>` as
+   aliases, matching the pair `terraform-dns` points here, so the certificate
+   in step 2 has to carry both names or the apply fails on the alias.
+4. The web records pointed at the distribution (`web_target = "cloudfront"`),
+   grey or proxied as `proxy_web` says. With the proxy on, SSL/TLS must be
+   **Full (strict)**.
+
+Flipping `web_target` is not seamless: Terraform destroys the four apex A
+records and creates the CNAMEs in their place, so plan it for a quiet window
+and keep the TTLs low going in.
 
 See `docs/deployment.md` for the DNS runbook and the full record inventory.

@@ -64,6 +64,7 @@ Recommended repository rules:
 1. Add a branch ruleset for `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy` that requires pull requests, requires branches to be up to date, blocks force pushes and deletions, and does not allow bypasses.
 2. Require these checks before merging, with no human approval requirement:
    - `Validate GitHub Actions workflows`
+   - `Validate Terraform stacks`
    - `Validate promotion path`
    - `Test and build (Node 24)`
    - `Test and build (Node latest)`
@@ -217,17 +218,49 @@ inventory against the archived copy and fails if a record goes missing.
 2. Create the zone in Cloudflare and let it scan, but **do not change
    nameservers**. Cloudflare's scan has the same blind spot as any external
    query, so treat it as a draft and reconcile it line by line.
-3. Check the proxy status. The orange cloud only handles HTTP/HTTPS. MX cannot
-   be proxied, but any A or CNAME tied to mail must stay **grey / DNS only**;
-   the importer sometimes marks them orange.
-4. `pnpm verify:dns --server <cloudflare nameserver>`. Do not proceed until it
+3. Reconcile the scan with `infra/terraform-dns` before the first apply. The
+   scan leaves records Terraform does not know about — the `www` CNAME and the
+   apex addresses among them — and the apply would try to create them a second
+   time, which Cloudflare rejects. List what is there:
+
+   ```bash
+   curl -sS -H "Authorization: Bearer $TF_VAR_cloudflare_api_token" "https://api.cloudflare.com/client/v4/zones/<zone_id>/dns_records?per_page=100" | jq -r '.result[] | [.id, .type, .name, .content] | @tsv'
+   ```
+
+   The zone is not authoritative yet, so nothing is at risk: deleting every
+   record the scan created and letting the apply own the whole set is the
+   simplest path, and the one that leaves no record outside the stack.
+
+   ```bash
+   curl -sS -X DELETE -H "Authorization: Bearer $TF_VAR_cloudflare_api_token" "https://api.cloudflare.com/client/v4/zones/<zone_id>/dns_records/<dns_record_id>"
+   ```
+
+   To keep a scanned record instead, import it so Terraform manages what is
+   already there (provider 5.x takes `<zone_id>/<dns_record_id>`). The address
+   depends on which resource owns the record: `preserved` holds only the mail
+   and verification set from `records.json`, and each web record is its own
+   resource, keyed by count or by the address itself.
+
+   ```bash
+   terraform -chdir=infra/terraform-dns import 'cloudflare_dns_record.preserved["<key from records.json>"]' '<zone_id>/<dns_record_id>'
+   terraform -chdir=infra/terraform-dns import 'cloudflare_dns_record.www_github_pages[0]' '<zone_id>/<dns_record_id>'
+   terraform -chdir=infra/terraform-dns import 'cloudflare_dns_record.apex_github_pages["185.199.108.153"]' '<zone_id>/<dns_record_id>'
+   ```
+
+4. Apply the stack, then run `terraform -chdir=infra/terraform-dns plan` again
+   and read it: a clean plan means the zone and the stack agree. The stack sets
+   the proxy itself — mail records are never proxied and the web records follow
+   `proxy_web` — so there is no orange cloud left to check by hand.
+5. `pnpm verify:dns --server <cloudflare nameserver>`. Do not proceed until it
    passes.
-5. Lower the TTL on the mail records to 300s, so a mistake costs five minutes.
-6. Change the nameservers at Hostinger, and **keep the Hostinger zone** — it is
+6. The mail records already carry a 300s TTL from `mail_ttl`, so a mistake
+   costs five minutes. Confirm it in the plan output rather than in the
+   dashboard.
+7. Change the nameservers at Hostinger, and **keep the Hostinger zone** — it is
    the rollback. Reverting means pointing the nameservers back.
-7. `pnpm verify:dns` against public resolvers, then send and receive a real
+8. `pnpm verify:dns` against public resolvers, then send and receive a real
    test message in both directions.
-8. Only then move the web records.
+9. Only then move the web records.
 
 There is no DMARC record today. Adding one is worthwhile but separate:
 `pnpm verify:dns --include-suggested` checks the `p=none` form, which is
@@ -245,16 +278,23 @@ If DNSSEC is enabled at the registrar, disable it before changing nameservers.
 
 ### 2.3 Cloudflare web records for GitHub Pages
 
-Create or confirm these web records in Cloudflare:
+`infra/terraform-dns` declares these records, so the stack is where they
+change, not the dashboard. Apply it before the nameserver switch, as in the
+order of operations above.
 
 | Type | Name | Target | Proxy status |
 | --- | --- | --- | --- |
-| CNAME | @ | neocom-cloud.github.io | DNS only at first |
-| CNAME | www | neocom-cloud.github.io | DNS only at first |
+| A | @ | 185.199.108.153 | grey, while `proxy_web = false` |
+| A | @ | 185.199.109.153 | grey, while `proxy_web = false` |
+| A | @ | 185.199.110.153 | grey, while `proxy_web = false` |
+| A | @ | 185.199.111.153 | grey, while `proxy_web = false` |
+| CNAME | www | neocom-cloud.github.io | grey, while `proxy_web = false` |
 
-Why CNAME on the apex works here:
+Why four A records on the apex and not a CNAME:
 
-- Cloudflare supports CNAME flattening at the zone apex, so `@ -> neocom-cloud.github.io` is valid even though normal DNS apex CNAME rules are restrictive.
+- Cloudflare does support CNAME flattening at the zone apex, so `@ -> neocom-cloud.github.io` would be valid here too, unlike at a provider without it.
+- The stack uses GitHub Pages' four published apex addresses anyway, so the Cloudflare zone answers the apex exactly as Hostinger does today. The nameserver switch then changes nothing about the web records, which is one less difference to reason about if something breaks.
+- The flattened apex CNAME returns when `web_target` moves to `cloudfront`, where there is no published address set to use instead.
 
 ### 2.4 Point Hostinger to Cloudflare nameservers
 
@@ -279,22 +319,25 @@ Expected result:
 
 ### 2.5 Phase 1: keep the site DNS-only
 
-Before enabling the Cloudflare proxy:
+`proxy_web` defaults to `false`, so an apply lands this phase with nothing
+further to set:
 
-1. Keep `@` and `www` as `DNS only`.
+1. Leave `proxy_web = false`, which keeps `@` and `www` grey (`DNS only`).
 2. Confirm GitHub Pages recognizes `neocom.cloud` as the custom domain.
 3. Wait for GitHub Pages HTTPS issuance.
 4. Enable `Enforce HTTPS` in GitHub Pages.
 
-This is the lowest-risk configuration and may be all you need.
+This is the lowest-risk configuration and may be all you need. Do not set
+`proxy_web = true` before step 4: proxying a host that carries no certificate
+for the domain yet is what produces `526`.
 
 ### 2.6 Phase 2: optional Cloudflare proxy
 
 If you want Cloudflare in front of the site:
 
-1. Switch the `@` and `www` CNAME records from `DNS only` to `Proxied`.
-2. In Cloudflare, open `SSL/TLS -> Overview`.
-3. Set encryption mode to `Full (strict)`.
+1. In Cloudflare, open `SSL/TLS -> Overview`.
+2. Set encryption mode to `Full (strict)`, **before** the proxy goes on. On `Flexible`, Cloudflare fetches the origin over HTTP, GitHub Pages redirects that straight back to HTTPS because section 2.5 enabled `Enforce HTTPS`, and the two bounce in a redirect loop until the mode is corrected.
+3. Set `proxy_web = true` and apply `infra/terraform-dns`, which flips the web records from grey to proxied. Do not toggle the cloud in the dashboard; the next apply would revert it.
 4. Confirm that:
    - `https://neocom.cloud`
    - `https://www.neocom.cloud`
@@ -312,8 +355,8 @@ Expected benefits:
 If proxy mode causes issues:
 
 - Cloudflare `526` usually means the proxied origin certificate path is not valid yet for the requested hostname. First confirm GitHub Pages HTTPS is active, then retry.
-- Unexpected redirect loops or broken validation are a reason to switch the web records back to `DNS only`.
-- If the site works in `DNS only` but fails when proxied, keep the site `DNS only` and use Cloudflare only as the authoritative DNS provider for now.
+- Unexpected redirect loops or broken validation are a reason to go back: set `proxy_web = false` and apply. The records return to grey, and nothing else in the zone moves.
+- If the site works in `DNS only` but fails when proxied, keep `proxy_web = false` and use Cloudflare only as the authoritative DNS provider for now.
 
 ## 3. Troubleshooting
 

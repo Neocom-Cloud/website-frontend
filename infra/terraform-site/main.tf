@@ -3,7 +3,11 @@ data "aws_caller_identity" "current" {}
 locals {
   name        = "${var.project_name}-site-${var.environment}"
   bucket_name = var.site_bucket_name != "" ? var.site_bucket_name : local.name
-  aliases     = var.custom_domain != "" ? [var.custom_domain] : []
+  # Both hosts, because terraform-dns points the apex and www at this
+  # distribution once web_target is cloudfront. CloudFront rejects a host that
+  # is not an alias, so www would 403 on the certificate name otherwise. The
+  # certificate in acm_certificate_arn has to cover both names.
+  aliases = var.custom_domain != "" ? [var.custom_domain, "www.${var.custom_domain}"] : []
 
   # CloudFront's own managed policies, by their documented fixed IDs.
   cache_policy_optimized           = "658327ea-f89d-4fab-a63d-7e88639e58f6"

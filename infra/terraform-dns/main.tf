@@ -26,6 +26,9 @@ resource "cloudflare_dns_record" "preserved" {
 
 # Web records, declared separately because they follow whichever host serves
 # the site and will change; the set above must not.
+# They start grey: proxy_web defaults to false, which is Phase 1 of the
+# runbook in docs/deployment.md. A proxied record in front of an origin
+# that carries no certificate for this domain yet answers 526.
 locals {
   github_pages_ips = [
     "185.199.108.153",
@@ -45,7 +48,7 @@ resource "cloudflare_dns_record" "apex_github_pages" {
   type    = "A"
   content = each.value
   ttl     = 1
-  proxied = true
+  proxied = var.proxy_web
   comment = "GitHub Pages apex"
 }
 
@@ -57,13 +60,15 @@ resource "cloudflare_dns_record" "www_github_pages" {
   type    = "CNAME"
   content = "neocom-cloud.github.io"
   ttl     = 1
-  proxied = true
+  proxied = var.proxy_web
   comment = "GitHub Pages alternate host"
 }
 
 # CloudFront already presents a valid certificate, so the zone can run
 # SSL/TLS in Full (strict) — unlike the S3 website endpoint, which is
 # HTTP-only and would force Flexible.
+# That distinction only bites once proxy_web is true; a grey record reaches
+# the distribution directly, on its own certificate.
 resource "cloudflare_dns_record" "apex_cloudfront" {
   count = var.web_target == "cloudfront" ? 1 : 0
 
@@ -72,7 +77,7 @@ resource "cloudflare_dns_record" "apex_cloudfront" {
   type    = "CNAME"
   content = var.cloudfront_domain
   ttl     = 1
-  proxied = true
+  proxied = var.proxy_web
   comment = "CloudFront distribution (apex, flattened by Cloudflare)"
 
   lifecycle {
@@ -91,7 +96,7 @@ resource "cloudflare_dns_record" "www_cloudfront" {
   type    = "CNAME"
   content = var.cloudfront_domain
   ttl     = 1
-  proxied = true
+  proxied = var.proxy_web
   comment = "CloudFront distribution (www)"
 }
 
