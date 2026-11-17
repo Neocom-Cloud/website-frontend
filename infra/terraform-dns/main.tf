@@ -100,6 +100,21 @@ resource "cloudflare_dns_record" "www_cloudfront" {
   comment = "CloudFront distribution (www)"
 }
 
+# Proof of domain control for the ACM certificate on CloudFront. Additive, so
+# they are safe to create before the nameservers move, and they have to remain
+# afterwards: ACM re-validates them to renew the certificate. Never proxied.
+resource "cloudflare_dns_record" "acm_validation" {
+  for_each = var.acm_validation_records
+
+  zone_id = var.cloudflare_zone_id
+  name    = each.value.name
+  type    = each.value.type
+  content = each.value.value
+  ttl     = var.mail_ttl
+  proxied = false
+  comment = "ACM certificate validation for ${each.key}; keep, needed for renewal"
+}
+
 # Monitoring only: p=none cannot reject mail, and the reports show what is
 # sending as the domain. Do not raise the policy without reading them first.
 resource "cloudflare_dns_record" "dmarc" {

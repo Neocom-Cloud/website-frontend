@@ -1,0 +1,3 @@
+aws_region          = "us-east-1"
+domain              = "neocom.cloud"
+wait_for_validation = false # set to true on the second apply
