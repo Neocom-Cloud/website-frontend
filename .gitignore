@@ -11,3 +11,8 @@ infra/*/terraform.tfstate
 infra/*/terraform.tfstate.backup
 infra/*/*.tfplan
 infra/*/terraform.tfvars
+
+# Private keys never belong in this repository. The Paperclip CA's PUBLIC
+# certificate (ca.pem) is committed on purpose; its key stays offline.
+*.key
+infra/**/*.key

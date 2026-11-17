@@ -1,12 +1,5 @@
 data "aws_caller_identity" "current" {}
 
-# The IAM user already exists (created by hand); this stack only attaches the
-# least-privilege deploy policy to it. It creates no access key on purpose: a
-# key created here would be stored in Terraform state.
-data "aws_iam_user" "paperclip" {
-  user_name = var.iam_user_name
-}
-
 # Bucket name and distribution ID come from the site stack's own state, so
 # nothing here is typed by hand and the two stacks cannot drift apart.
 data "terraform_remote_state" "site" {
@@ -23,8 +16,59 @@ data "terraform_remote_state" "site" {
 
 locals {
   account_id      = data.aws_caller_identity.current.account_id
+  name            = "${var.project_name}-site-${var.environment}-paperclip-deploy"
   bucket_name     = data.terraform_remote_state.site.outputs.bucket_name
   distribution_id = data.terraform_remote_state.site.outputs.distribution_id
+}
+
+# Trust anchor: the private CA's PUBLIC certificate, versioned beside this
+# stack as ca.pem. AWS never sees the CA's private key, and this is not the
+# paid AWS Private CA service.
+resource "aws_rolesanywhere_trust_anchor" "paperclip" {
+  name    = local.name
+  enabled = true
+
+  source {
+    source_type = "CERTIFICATE_BUNDLE"
+    source_data {
+      x509_certificate_data = file(var.ca_certificate_file)
+    }
+  }
+}
+
+# Only a certificate issued by this trust anchor AND carrying the expected CN
+# can assume the role.
+data "aws_iam_policy_document" "trust" {
+  statement {
+    actions = [
+      "sts:AssumeRole",
+      "sts:SetSourceIdentity",
+      "sts:TagSession",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["rolesanywhere.amazonaws.com"]
+    }
+
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [aws_rolesanywhere_trust_anchor.paperclip.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalTag/x509Subject/CN"
+      values   = [var.client_common_name]
+    }
+  }
+}
+
+resource "aws_iam_role" "paperclip_deploy" {
+  name                 = local.name
+  assume_role_policy   = data.aws_iam_policy_document.trust.json
+  max_session_duration = var.session_duration_seconds
 }
 
 # Content deploy only: `aws s3 sync --delete` plus a cache invalidation. It
@@ -51,8 +95,15 @@ data "aws_iam_policy_document" "deploy" {
   }
 }
 
-resource "aws_iam_user_policy" "paperclip_deploy" {
-  name   = "${var.project_name}-site-${var.environment}-content-deploy"
-  user   = data.aws_iam_user.paperclip.user_name
+resource "aws_iam_role_policy" "paperclip_deploy" {
+  name   = "${local.name}-content"
+  role   = aws_iam_role.paperclip_deploy.id
   policy = data.aws_iam_policy_document.deploy.json
+}
+
+resource "aws_rolesanywhere_profile" "paperclip" {
+  name             = local.name
+  enabled          = true
+  role_arns        = [aws_iam_role.paperclip_deploy.arn]
+  duration_seconds = var.session_duration_seconds
 }
