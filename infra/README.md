@@ -11,6 +11,7 @@ Two stacks, both modelled on `DevRecord/infra/terraform-landing*`:
 | `terraform-site-bootstrap` | Encrypted state bucket, KMS key, GitHub OIDC deploy roles | Local, committed nowhere |
 | `terraform-site` | Site bucket, CloudFront distribution, OAC, directory-index function | The bucket the bootstrap created |
 | `terraform-dns` | The Cloudflare zone's records | The same bucket, under `dns/` |
+| `terraform-paperclip-deploy` | Least-privilege content-deploy policy on the existing `paperclip` IAM user | The same bucket, under `paperclip/` |
 
 ## Why CloudFront and not the S3 website endpoint
 
@@ -88,6 +89,36 @@ aws cloudfront create-invalidation --distribution-id <distribution_id> --paths '
 ```
 
 `terraform output deploy_command` prints this with the values filled in.
+
+## The Paperclip deploy stack
+
+`terraform-paperclip-deploy` attaches a least-privilege inline policy to the
+existing `paperclip` IAM user, so the Paperclip server can publish the site. The
+user is created by hand; this stack only manages its permissions. The policy
+allows exactly what step 3 runs: `s3:PutObject`, `s3:DeleteObject`,
+`s3:ListBucket` and `s3:GetBucketLocation` on the site bucket, and
+`cloudfront:CreateInvalidation` and `cloudfront:GetInvalidation` on the site
+distribution. It cannot change infrastructure, touch IAM or read other buckets.
+
+The bucket name and distribution ID are read from the site stack's state, so run
+step 2 first. Apply with an identity that may write IAM user policies.
+
+```bash
+export AWS_PROFILE=neocom
+terraform -chdir=infra/terraform-paperclip-deploy init   -backend-config="bucket=<state_bucket_name>"   -backend-config="key=paperclip/preview.tfstate"   -backend-config="region=us-east-1"   -backend-config="encrypt=true"   -backend-config="kms_key_id=<state_kms_key_arn>"   -backend-config="use_lockfile=true"
+terraform -chdir=infra/terraform-paperclip-deploy apply   # reads terraform.tfvars
+```
+
+Operational notes:
+
+- No access key is created here, on purpose: a key made by Terraform would sit
+  in the state file. Create it in the console or with
+  `aws iam create-access-key --user-name paperclip`, store it only on the
+  Paperclip host, and rotate it every 60 to 90 days.
+- The user should have no other policy attached and no console password.
+- Keep CloudTrail on, so every deploy is attributable to the `paperclip` user.
+- Moving to short-lived credentials later (IAM Roles Anywhere) only means
+  replacing this user policy with a role; the permission statements stay the same.
 
 ## The DNS stack
 

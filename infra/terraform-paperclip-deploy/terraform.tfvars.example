@@ -1,0 +1,5 @@
+environment       = "preview"
+aws_region        = "us-east-1"
+iam_user_name     = "paperclip"
+state_bucket_name = "neocom-tfstate-431915868573-us-east-1"
+state_kms_key_arn = "arn:aws:kms:us-east-1:431915868573:key/<key-id>"
