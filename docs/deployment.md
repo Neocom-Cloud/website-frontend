@@ -181,9 +181,10 @@ answers has to answer correctly.
 
 #### The record set
 
-`scripts/dns-records.mjs` holds the inventory captured from Hostinger's
-nameservers on 2026-11-17 (SOA serial 2026111201), with the consequence of
-losing each record. `pnpm verify:dns` checks a nameserver against it:
+`scripts/dns-records.mjs` holds the inventory, reconciled against Hostinger's
+own zone export — archived at `docs/dns/hostinger-zone-2026-11-17.txt` — with
+the consequence of losing each record spelled out. `pnpm verify:dns` checks a
+nameserver against it:
 
 ```bash
 pnpm verify:dns                                  # public resolvers
@@ -197,15 +198,22 @@ it, so the whole record set can be proved correct while Hostinger is still
 authoritative and nothing is at risk. The switch then becomes reversible
 bookkeeping rather than a leap.
 
-Public DNS cannot enumerate a zone, so that inventory lists the records we
-knew to ask for. Reconcile it against an export from Hostinger's own DNS Zone
-Editor before trusting it as complete — a second DKIM selector, for instance,
-would be invisible to any external query.
+That reconciliation mattered. External probing had found six records; the
+export carried **eight**. The two it added were
+`_github-pages-challenge-neocom-cloud` and `_gh-neocom-cloud-o`, GitHub's
+verification records for Pages and for the organisation. Their names cannot
+be guessed, so no amount of querying would have turned them up — losing the
+first would drop the custom-domain verification that blocks takeover.
+
+Public DNS still cannot enumerate a zone, so take a fresh export whenever the
+zone changes rather than trusting a query sweep. A test reconciles the
+inventory against the archived copy and fails if a record goes missing.
 
 #### Order of operations
 
-1. Export the full zone from Hostinger's DNS Zone Editor. That list, not this
-   file, is the source of truth.
+1. Export the full zone from Hostinger's DNS Zone Editor if anything has
+   changed since `docs/dns/hostinger-zone-2026-11-17.txt`. That export, not
+   this file, is the source of truth.
 2. Create the zone in Cloudflare and let it scan, but **do not change
    nameservers**. Cloudflare's scan has the same blind spot as any external
    query, so treat it as a draft and reconcile it line by line.

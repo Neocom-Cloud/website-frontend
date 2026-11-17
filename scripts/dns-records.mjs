@@ -1,9 +1,11 @@
 /**
  * The authoritative record set for neocom.cloud.
  *
- * Captured from Hostinger's nameservers (ns1.dns-parking.com, SOA serial
- * 2026111201) on 2026-11-17. This is the contract the zone has to satisfy
- * wherever it is hosted: if a record here stops resolving, something is
+ * Reconciled against Hostinger's own zone export (2026-11-17 03:39 UTC), not
+ * just external queries. That export is what turned up the two GitHub
+ * verification records below: their names cannot be guessed, so no amount of
+ * probing would have found them. This is the contract the zone has to satisfy
+ * wherever it is hosted — if a record here stops resolving, something is
  * broken.
  *
  * The mail records matter most. Changing nameservers makes the new provider
@@ -11,10 +13,8 @@
  * — silently. Lost MX bounces visibly, but lost SPF and DKIM only degrade
  * deliverability, so the failure shows up weeks later as unanswered mail.
  *
- * Public DNS cannot enumerate a zone: these are the records we know to ask
- * for. Reconcile against an export from the registrar's own editor before
- * trusting this as complete — a second DKIM selector, for instance, would be
- * invisible here.
+ * Public DNS still cannot enumerate a zone, so re-reconcile against a fresh
+ * export whenever the zone changes rather than trusting a query sweep.
  */
 
 export const DOMAIN = "neocom.cloud";
@@ -64,6 +64,20 @@ export const EXPECTED_RECORDS = [
     values: ["zoho-verification=zb49767071.zmverify.zoho.com"],
     purpose: "verification",
     why: "Proves domain ownership to Zoho, which rechecks periodically."
+  },
+  {
+    name: `_github-pages-challenge-neocom-cloud.${DOMAIN}`,
+    type: "TXT",
+    values: ["575fa685442268029470e5200acb64"],
+    purpose: "verification",
+    why: "Proves the domain to GitHub Pages. Losing it drops the custom-domain verification that blocks takeover."
+  },
+  {
+    name: `_gh-neocom-cloud-o.${DOMAIN}`,
+    type: "TXT",
+    values: ["813e3476ab"],
+    purpose: "verification",
+    why: "Verifies the domain for the GitHub organisation, independently of Pages."
   },
   {
     name: DOMAIN,

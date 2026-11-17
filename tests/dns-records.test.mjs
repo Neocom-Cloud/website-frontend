@@ -43,6 +43,47 @@ describe("DNS record contract", () => {
   });
 });
 
+describe("reconciliation with the registrar's export", () => {
+  // The zone as Hostinger exported it. Probing could never have found the two
+  // GitHub verification records: their names are not guessable.
+  const zoneFile = readFileSync(
+    resolve(process.cwd(), "docs/dns/hostinger-zone-2026-11-17.txt"),
+    "utf8"
+  );
+
+  it("accounts for every record in the export", () => {
+    // Record lines carry a TTL, a class and a type; everything else is a
+    // comment or a directive.
+    const types = [...zoneFile.matchAll(/^\S*\s+\d+\s+IN\s+(\w+)/gm)].map(([, type]) => type);
+    const covered = new Set(EXPECTED_RECORDS.map((record) => record.type));
+
+    for (const type of new Set(types)) {
+      // SOA and NS belong to whoever hosts the zone and are replaced by the
+      // move rather than carried across.
+      if (type === "SOA" || type === "NS") continue;
+
+      expect(covered.has(type), `${type} appears in the export`).toBe(true);
+    }
+  });
+
+  it("carries both GitHub verification records", () => {
+    for (const name of ["_github-pages-challenge-neocom-cloud", "_gh-neocom-cloud-o"]) {
+      expect(zoneFile).toContain(name);
+      expect(
+        EXPECTED_RECORDS.some((record) => record.name.startsWith(`${name}.`)),
+        name
+      ).toBe(true);
+    }
+  });
+
+  it("uses the same DKIM key the export holds", () => {
+    const dkim = EXPECTED_RECORDS.find((record) => record.name.includes("_domainkey"));
+    const key = dkim.values[0].match(/p=([A-Za-z0-9+/=]+)/)[1];
+
+    expect(zoneFile).toContain(key);
+  });
+});
+
 describe("the Terraform export", () => {
   const onDisk = JSON.parse(
     readFileSync(resolve(process.cwd(), "infra/terraform-dns/records.json"), "utf8")

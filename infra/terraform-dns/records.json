@@ -46,5 +46,21 @@
     "content": "zoho-verification=zb49767071.zmverify.zoho.com",
     "priority": null,
     "comment": "Proves domain ownership to Zoho, which rechecks periodically."
+  },
+  {
+    "key": "txt--github-pages-challenge-neocom-cloud-neocom-cloud-575fa685442268029470e520",
+    "name": "_github-pages-challenge-neocom-cloud.neocom.cloud",
+    "type": "TXT",
+    "content": "575fa685442268029470e5200acb64",
+    "priority": null,
+    "comment": "Proves the domain to GitHub Pages. Losing it drops the custom-domain verification that blocks takeover."
+  },
+  {
+    "key": "txt--gh-neocom-cloud-o-neocom-cloud-813e3476ab",
+    "name": "_gh-neocom-cloud-o.neocom.cloud",
+    "type": "TXT",
+    "content": "813e3476ab",
+    "priority": null,
+    "comment": "Verifies the domain for the GitHub organisation, independently of Pages."
   }
 ]
