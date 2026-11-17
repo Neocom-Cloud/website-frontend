@@ -130,12 +130,10 @@ Production needs, in order:
 2. An ACM certificate in `us-east-1`, validated by a DNS record in Cloudflare,
    covering **both** `neocom.cloud` and `www.neocom.cloud`. `terraform-dns`
    points both hosts at the distribution once `web_target` is `cloudfront`.
-3. `custom_domain` and `acm_certificate_arn` set on this stack — and
-   `www.<custom_domain>` added to the distribution's `aliases`. The site stack
-   sets `aliases = [var.custom_domain]` today, so CloudFront would answer the
-   apex and reject the `www` host. Settle that before the DNS switch, not
-   after: the DNS record is not the place to work around a host the
-   distribution does not accept.
+3. `custom_domain` and `acm_certificate_arn` set on this stack. The
+   distribution takes both `custom_domain` and `www.<custom_domain>` as
+   aliases, matching the pair `terraform-dns` points here, so the certificate
+   in step 2 has to carry both names or the apply fails on the alias.
 4. The web records pointed at the distribution (`web_target = "cloudfront"`),
    grey or proxied as `proxy_web` says. With the proxy on, SSL/TLS must be
    **Full (strict)**.

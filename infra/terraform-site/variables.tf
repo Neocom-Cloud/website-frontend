@@ -46,13 +46,21 @@ variable "custom_domain" {
   description = <<-EOT
     Optional hostname for the distribution, e.g. neocom.cloud. Leave empty to
     serve on the CloudFront domain only, which needs no DNS record and no
-    certificate — that is how the preview runs. Setting it requires an ACM
-    certificate in us-east-1 and a DNS record in Cloudflare.
+    certificate — that is how the preview runs. Setting it serves this host
+    and www.<custom_domain>, the pair terraform-dns points here, and requires
+    an ACM certificate in us-east-1 covering both, plus DNS records in
+    Cloudflare.
   EOT
 }
 
 variable "acm_certificate_arn" {
   type        = string
   default     = ""
-  description = "Certificate for custom_domain. Required when custom_domain is set."
+  description = <<-EOT
+    Certificate for custom_domain, in us-east-1. Required when custom_domain
+    is set, and it must cover www.<custom_domain> as well — that host is an
+    alias of the distribution. Terraform cannot read a certificate's names
+    from its ARN, so a certificate missing the www name fails at apply with
+    CloudFront rejecting the alias.
+  EOT
 }
