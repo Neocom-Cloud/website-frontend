@@ -31,9 +31,12 @@ from the root.
 
 ## Prerequisites
 
-- An AWS profile for account `431915868573`. The working one is named
-  `devrecord` and authenticates as the `kaleb-cli` user; the profile *named*
-  `kaleb-cli` is a separate, currently expired, session.
+- The `neocom` profile, for account `431915868573`, pinned to `us-east-1`.
+  All of this machine's profiles point at that one account — the names are
+  local labels, not separate accounts. `devrecord` carries the same
+  credentials but defaults to `us-east-2`, and the profile *named*
+  `kaleb-cli` is a separate, currently expired, session. The deploy commands
+  below pass `--region` explicitly so none of that matters.
 - `token.actions.githubusercontent.com` is already registered in the account by
   the DevRecord bootstrap, and an account may hold only one provider per URL.
   `create_github_oidc_provider` therefore defaults to **false**.
@@ -44,7 +47,7 @@ Run once per account. It keeps local state, because it creates the bucket the
 other stack's state lives in.
 
 ```bash
-export AWS_PROFILE=devrecord
+export AWS_PROFILE=neocom
 terraform -chdir=infra/terraform-site-bootstrap init
 terraform -chdir=infra/terraform-site-bootstrap apply
 ```
@@ -59,7 +62,7 @@ policy assumes Neocom-Cloud uses the same non-default template DevRecord does.
 ## 2. Site
 
 ```bash
-export AWS_PROFILE=devrecord
+export AWS_PROFILE=neocom
 terraform -chdir=infra/terraform-site init \
   -backend-config="bucket=<state_bucket_name>" \
   -backend-config="key=site/preview.tfstate" \
@@ -79,7 +82,7 @@ migration.
 
 ```bash
 pnpm build
-aws s3 sync dist/ s3://<bucket_name>/ --delete
+aws s3 sync dist/ s3://<bucket_name>/ --delete --region us-east-1
 aws cloudfront create-invalidation --distribution-id <distribution_id> --paths '/*'
 ```
 

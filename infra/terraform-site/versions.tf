@@ -1,6 +1,10 @@
 terraform {
   required_version = ">= 1.10.0"
 
+  # Configured at init time with -backend-config; see infra/README.md.
+  # The bucket and KMS key come from the terraform-site-bootstrap outputs.
+  backend "s3" {}
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"

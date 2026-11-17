@@ -37,6 +37,16 @@ variable "github_repository_id" {
   EOT
 }
 
+variable "github_owner_id" {
+  type        = string
+  default     = "160460141"
+  description = <<-EOT
+    GitHub's numeric organisation ID, read from `GET /orgs/Neocom-Cloud` on
+    2026-11-16. Only used to document the ID-embedded subject-claim format the
+    sub condition has to tolerate.
+  EOT
+}
+
 variable "create_github_oidc_provider" {
   type        = bool
   default     = false

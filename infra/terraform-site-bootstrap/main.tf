@@ -111,8 +111,22 @@ data "aws_iam_policy_document" "github_trust" {
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
-    # repository_id rather than the sub claim; see the github_repository_id
-    # variable for why, and verify against a real token on the first run.
+    # IAM refuses a GitHub OIDC trust policy that does not constrain `sub`
+    # or `job_workflow_ref` — repository_id and environment alone are
+    # rejected with MalformedPolicyDocument. (The DevRecord roles predate that
+    # validation and would not be creatable as written today.)
+    #
+    # The pattern is deliberately loose on the two segments that differ
+    # between subject-claim templates: the default is
+    # repo:OWNER/REPO:environment:NAME and this organisation may use
+    # repo:OWNER@owner_id/REPO@repo_id:environment:NAME. Precision comes from
+    # the repository_id and environment conditions below, which are exact.
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:${var.github_owner}*/${var.github_repository}*:environment:site-${each.key}"]
+    }
+
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:repository_id"

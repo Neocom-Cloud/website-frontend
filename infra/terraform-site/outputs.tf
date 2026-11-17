@@ -18,7 +18,7 @@ output "site_url" {
 output "deploy_command" {
   value = <<-EOT
     pnpm build
-    aws s3 sync dist/ s3://${aws_s3_bucket.site.id}/ --delete
+    aws s3 sync dist/ s3://${aws_s3_bucket.site.id}/ --delete --region ${var.aws_region}
     aws cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.site.id} --paths '/*'
   EOT
 }
