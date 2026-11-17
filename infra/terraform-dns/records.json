@@ -1,0 +1,50 @@
+[
+  {
+    "key": "mx-mx.zoho.com",
+    "name": "neocom.cloud",
+    "type": "MX",
+    "content": "mx.zoho.com",
+    "priority": 10,
+    "comment": "Incoming mail to contato@neocom.cloud. Senders get a hard bounce."
+  },
+  {
+    "key": "mx-mx2.zoho.com",
+    "name": "neocom.cloud",
+    "type": "MX",
+    "content": "mx2.zoho.com",
+    "priority": 20,
+    "comment": "Incoming mail to contato@neocom.cloud. Senders get a hard bounce."
+  },
+  {
+    "key": "mx-mx3.zoho.com",
+    "name": "neocom.cloud",
+    "type": "MX",
+    "content": "mx3.zoho.com",
+    "priority": 50,
+    "comment": "Incoming mail to contato@neocom.cloud. Senders get a hard bounce."
+  },
+  {
+    "key": "txt-neocom-cloud-v-spf1-include-zohomail-",
+    "name": "neocom.cloud",
+    "type": "TXT",
+    "content": "v=spf1 include:zohomail.com ~all",
+    "priority": null,
+    "comment": "Authorises Zoho to send as the domain. Without it outgoing mail is marked spam."
+  },
+  {
+    "key": "txt-zmail--domainkey-neocom-cloud-v-dkim1--k-rsa--p-migfma",
+    "name": "zmail._domainkey.neocom.cloud",
+    "type": "TXT",
+    "content": "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoOOX3/aLrJHYgV1HZscFZZneDsi9k8OYo/VWO3cL0xWycV2E3VB3DANUstHDRg+peZyl7Wjo17bduBWQmi7NIN7rinlEYBH+LuIEH44bMHCrMP7BP+1ilDT91+jrK/C8RBlBjKIqnCSvXUnT7+FMomONEulQ4M22zRAGRnUbvmQIDAQAB",
+    "priority": null,
+    "comment": "Signs outgoing mail. Without it receivers cannot verify the signature."
+  },
+  {
+    "key": "txt-neocom-cloud-zoho-verification-zb4976",
+    "name": "neocom.cloud",
+    "type": "TXT",
+    "content": "zoho-verification=zb49767071.zmverify.zoho.com",
+    "priority": null,
+    "comment": "Proves domain ownership to Zoho, which rechecks periodically."
+  }
+]

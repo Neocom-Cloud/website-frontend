@@ -21,6 +21,7 @@
     "test:visual": "cross-env VISUAL_SNAPSHOTS=1 playwright test visual-snapshots --project=chromium",
     "test:visual:update": "cross-env VISUAL_SNAPSHOTS=1 playwright test visual-snapshots --project=chromium --update-snapshots",
     "verify:promotion": "node scripts/verify-promotion.mjs",
+    "generate:dns": "node scripts/generate-dns-json.mjs",
     "verify:dns": "node scripts/verify-dns.mjs",
     "verify:pages": "node scripts/verify-pages-status.mjs",
     "verify:repository": "node scripts/verify-repository-integrity.mjs"

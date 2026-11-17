@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import {
   DOMAIN,
   EXPECTED_RECORDS,
   SUGGESTED_RECORDS,
   compareRecord
 } from "../scripts/dns-records.mjs";
+import { buildTerraformRecords } from "../scripts/generate-dns-json.mjs";
 
 describe("DNS record contract", () => {
   it("covers every record the mailbox depends on", () => {
@@ -37,6 +40,40 @@ describe("DNS record contract", () => {
     // p=none also cannot reject mail, so adding it is safe but not urgent.
     expect(EXPECTED_RECORDS.some((record) => record.name.startsWith("_dmarc"))).toBe(false);
     expect(SUGGESTED_RECORDS.some((record) => record.values[0].includes("p=none"))).toBe(true);
+  });
+});
+
+describe("the Terraform export", () => {
+  const onDisk = JSON.parse(
+    readFileSync(resolve(process.cwd(), "infra/terraform-dns/records.json"), "utf8")
+  );
+
+  it("matches what the record module produces", () => {
+    // Two sources would be the costly kind of drift: the verifier passing
+    // while the zone Terraform applies is missing a record.
+    expect(onDisk).toEqual(buildTerraformRecords());
+  });
+
+  it("carries every mail and verification record, and no web record", () => {
+    const expected = EXPECTED_RECORDS.filter((record) => record.purpose !== "web");
+    const valueCount = expected.reduce((total, record) => total + record.values.length, 0);
+
+    expect(onDisk).toHaveLength(valueCount);
+    expect(onDisk.some((record) => record.type === "A")).toBe(false);
+    expect(onDisk.filter((record) => record.type === "MX")).toHaveLength(3);
+  });
+
+  it("splits MX priority out of the value, which Cloudflare takes separately", () => {
+    for (const record of onDisk.filter((entry) => entry.type === "MX")) {
+      expect(record.priority).toBeTypeOf("number");
+      expect(record.content).not.toMatch(/^\d/);
+    }
+  });
+
+  it("gives every record a unique key, so for_each cannot collide", () => {
+    const keys = onDisk.map((record) => record.key);
+
+    expect(new Set(keys).size).toBe(keys.length);
   });
 });
 
