@@ -58,6 +58,7 @@ export const enSiteCopy = {
           "Automated recycling collection for universities with blockchain-verified reward points.",
         cardCta: "Explore project",
         artAlt: "NeoRecicla icon",
+        badge: "Concept",
         detailEyebrow: "Traceable sustainability",
         detailIntro:
           "NeoRecicla connects automated collection, reward incentives, and an auditable record of recycling activity in a simple flow for university campuses.",
@@ -97,6 +98,7 @@ export const enSiteCopy = {
           "An immutable source of truth for developer production history, independent from centralized hosting platforms.",
         cardCta: "View concept",
         artAlt: "DevRecord icon",
+        badge: "Concept",
         detailEyebrow: "Verifiable technical identity",
         detailIntro:
           "DevRecord is a proposal for consolidating production history, authorship, and technical reputation without depending entirely on a single code-hosting platform.",
@@ -128,17 +130,17 @@ export const enSiteCopy = {
         status: "Current stage: concept work, early architecture, and product scoping.",
         cta: "Talk to us about DevRecord"
       },
-      "neo-health": {
-        name: "Neo Health",
+      "apollo": {
+        name: "Apollo",
         category: "Personal Health / Tracking",
         summary:
           "A personal health information tracker that centralizes history, metrics, and important records under user control.",
         cardCta: "Open overview",
-        artAlt: "Neo Health icon",
+        artAlt: "Apollo icon",
         badge: "Concept",
         detailEyebrow: "User control over sensitive data",
         detailIntro:
-          "Neo Health explores a delicate space: how to unify health history, records, and metrics with more clarity for the user, without giving up privacy and control.",
+          "Apollo explores a delicate space: how to unify health history, records, and metrics with more clarity for the user, without giving up privacy and control.",
         highlights: [
           "A consolidated view of scattered information",
           "Sensitive data handled with user control first",
@@ -154,7 +156,7 @@ export const enSiteCopy = {
           {
             title: "Product direction",
             paragraphs: [
-              "Neo Health starts from a simple foundation: gather what matters, organize the timeline, and reduce friction when reviewing or tracking personal health context. Governance matters more than feature count."
+              "Apollo starts from a simple foundation: gather what matters, organize the timeline, and reduce friction when reviewing or tracking personal health context. Governance matters more than feature count."
             ]
           },
           {
@@ -166,7 +168,7 @@ export const enSiteCopy = {
         ],
         status:
           "Current stage: concept work and scope definition for an initial validation cut.",
-        cta: "Talk to us about Neo Health"
+        cta: "Talk to us about Apollo"
       }
     }
   },
@@ -198,7 +200,7 @@ export const enSiteCopy = {
     landing: {
       title: "NeoCom | Innovation in communications",
       description:
-        "NeoCom company landing page focused on privacy, sustainability, digital trust, and projects such as NeoRecicla, DevRecord, and Neo Health.",
+        "NeoCom company landing page focused on privacy, sustainability, digital trust, and projects such as NeoRecicla, DevRecord, and Apollo.",
       ogDescription:
         "Technology with purpose, connection with responsibility, and privacy as a foundation.",
       twitterDescription: "Explore NeoCom projects and mission."
@@ -218,9 +220,9 @@ export const enSiteCopy = {
         twitterDescription:
           "Explore NeoCom's concept for verifiable contribution trails."
       },
-      "neo-health": {
+      "apollo": {
         description:
-          "Neo Health is NeoCom's concept for organizing personal health history and data under user control.",
+          "Apollo is NeoCom's concept for organizing personal health history and data under user control.",
         ogDescription: "Sensitive data with personal governance and clear context.",
         twitterDescription:
           "See NeoCom's approach to personal health history and control."

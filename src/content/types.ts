@@ -34,7 +34,8 @@ export interface ProjectCopy {
   summary: string;
   cardCta: string;
   artAlt: string;
-  badge?: string;
+  /** Delivery phase, shown on the card and the project page. */
+  badge: string;
   detailEyebrow: string;
   detailIntro: string;
   highlights: string[];
@@ -123,7 +124,10 @@ export interface SiteCopy {
 
 export interface ProjectDefinition {
   accent: Accent;
+  /** Artwork for the dark theme, and the only one when artLightSrc is absent. */
   artSrc: string;
+  /** Light-theme artwork, where the brand ships a second variant. */
+  artLightSrc?: string;
   socialImageSrc?: string;
   template: ProjectTemplate;
 }

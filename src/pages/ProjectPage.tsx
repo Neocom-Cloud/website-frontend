@@ -1,18 +1,21 @@
 import { Icon } from "../components/icons";
 import { ButtonLink } from "../components/ui";
 import { getProjectMailto, projectRegistry, siteContent } from "../content/site.js";
-import { Locale, ProjectSlug, getLandingPath } from "../lib/routes";
+import { Locale, ProjectSlug, Theme, getLandingPath } from "../lib/routes";
+import { getProjectArt } from "../lib/project-art";
 
 interface ProjectPageProps {
   locale: Locale;
   projectSlug: ProjectSlug;
+  theme: Theme;
 }
 
-export function ProjectPage({ locale, projectSlug }: ProjectPageProps) {
+export function ProjectPage({ locale, projectSlug, theme }: ProjectPageProps) {
   const copy = siteContent[locale];
   const project = copy.projects.items[projectSlug];
   const visual = projectRegistry[projectSlug];
   const mailto = getProjectMailto(locale, project.name);
+  const art = getProjectArt(visual, theme);
 
   return (
     <>
@@ -25,7 +28,7 @@ export function ProjectPage({ locale, projectSlug }: ProjectPageProps) {
           alt=""
           aria-hidden="true"
           className="pointer-events-none absolute bottom-[-150px] left-1/2 h-auto w-[520px] object-contain opacity-[0.16] select-none"
-          src={visual.artSrc}
+          src={art}
         />
 
         <a
@@ -50,11 +53,9 @@ export function ProjectPage({ locale, projectSlug }: ProjectPageProps) {
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-[18px]">
               <ButtonLink href={mailto}>{project.cta}</ButtonLink>
-              {project.badge ? (
-                <span className="rounded-full bg-surface px-3.5 py-2 font-mono text-[11px] tracking-[0.14em] text-ink-2 uppercase">
-                  {project.badge}
-                </span>
-              ) : null}
+              <span className="rounded-full bg-surface px-3.5 py-2 font-mono text-[11px] tracking-[0.14em] text-ink-2 uppercase">
+                {project.badge}
+              </span>
             </div>
           </div>
 
@@ -63,7 +64,7 @@ export function ProjectPage({ locale, projectSlug }: ProjectPageProps) {
               <img
                 alt={project.artAlt}
                 className="max-h-[136px] w-[112px] object-contain"
-                src={visual.artSrc}
+                src={art}
               />
             </div>
             <div className="p-[26px]">

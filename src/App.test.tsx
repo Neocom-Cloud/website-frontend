@@ -61,9 +61,13 @@ describe("App integration", () => {
     expect(cards.map((card) => card.getAttribute("href"))).toEqual([
       "/en/projects/neorecicla/",
       "/en/projects/devrecord/",
-      "/en/projects/neo-health/"
+      "/en/projects/apollo/"
     ]);
-    expect(within(cards[2]).getByText("Concept")).toBeInTheDocument();
+    // Every project is at concept stage, so the badge describes the whole
+    // portfolio rather than singling one out.
+    for (const card of cards) {
+      expect(within(card).getByText("Concept")).toBeInTheDocument();
+    }
     expect(within(cards[0]).getByText("01")).toBeInTheDocument();
   });
 
@@ -106,15 +110,16 @@ describe("App integration", () => {
   });
 
   it("renders the project detail blocks from the localized catalog", () => {
-    render(<App locale="pt-br" pageKind="project" projectSlug="neo-health" />);
+    render(<App locale="pt-br" pageKind="project" projectSlug="apollo" />);
 
     expect(screen.getByText("Visão geral")).toBeInTheDocument();
     expect(screen.getByText("Pontos-chave")).toBeInTheDocument();
     expect(screen.getByText("Status atual")).toBeInTheDocument();
     expect(screen.getAllByRole("article")).toHaveLength(3);
     expect(screen.getByText("Conceito")).toBeInTheDocument();
+    expect(screen.getByTestId("project-hero")).toHaveTextContent("Conceito");
 
-    for (const link of screen.getAllByRole("link", { name: "Quero conversar sobre o Neo Health" })) {
+    for (const link of screen.getAllByRole("link", { name: "Quero conversar sobre o Apollo" })) {
       expect(link.getAttribute("href")).toContain("mailto:contato@neocom.cloud?subject=");
     }
   });

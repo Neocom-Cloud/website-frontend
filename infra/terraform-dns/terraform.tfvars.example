@@ -1,0 +1,9 @@
+cloudflare_zone_id = "replace-me"
+web_target         = "github-pages"
+
+# Never commit the token. Export it instead:
+#   export TF_VAR_cloudflare_api_token=...
+#
+# After the site moves:
+# web_target        = "cloudfront"
+# cloudfront_domain = "d2ogykvptv4dgl.cloudfront.net"

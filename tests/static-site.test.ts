@@ -27,7 +27,7 @@ describe("static site generation", () => {
       resolve(rootDir, "pt-br/projects/neorecicla/index.html"),
     );
     expect(inputValues).toContain(
-      resolve(rootDir, "en/projects/neo-health/index.html"),
+      resolve(rootDir, "en/projects/apollo/index.html"),
     );
   });
 
@@ -53,7 +53,7 @@ describe("static site generation", () => {
     expect(page.querySelector("meta[charset]")?.getAttribute("charset")).toBe("UTF-8");
     expect(page.title).toBe("NeoCom | Inovação em comunicações");
     expect(page.querySelector('meta[name="description"]')?.getAttribute("content")).toBe(
-      "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health."
+      "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Apollo."
     );
     expect(page.querySelector('meta[property="og:title"]')?.getAttribute("content")).toBe(
       "NeoCom | Inovação em comunicações"
@@ -81,9 +81,9 @@ describe("static site generation", () => {
         twitterDescription:
           "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
       },
-      "neo-health": {
+      "apollo": {
         description:
-          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+          "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
         ogDescription:
           "Dados sensíveis com governança pessoal e contexto claro.",
         twitterDescription:
@@ -184,7 +184,7 @@ describe("static site generation", () => {
       "<loc>https://neocom.cloud/en/projects/devrecord/</loc>",
     );
     expect(xml).toContain(
-      "<loc>https://neocom.cloud/pt-br/projects/neo-health/</loc>",
+      "<loc>https://neocom.cloud/pt-br/projects/apollo/</loc>",
     );
   });
 });

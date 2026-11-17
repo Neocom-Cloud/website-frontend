@@ -22,8 +22,8 @@ describe("routes helpers", () => {
     expect(getLandingPath("pt-br")).toBe("/pt-br/");
     expect(getLandingPath("en")).toBe("/en/");
     expect(getProjectPath("en", "devrecord")).toBe("/en/projects/devrecord/");
-    expect(getPagePath("pt-br", "project", "neo-health")).toBe(
-      "/pt-br/projects/neo-health/",
+    expect(getPagePath("pt-br", "project", "apollo")).toBe(
+      "/pt-br/projects/apollo/",
     );
     expect(getPagePath("en", "landing")).toBe("/en/");
   });

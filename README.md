@@ -81,14 +81,15 @@ This keeps one shared landing template, one shared standard project template, an
   node scripts/rasterize-social-image.mjs public/assets/devrecord-icon.svg public/assets/social-devrecord.jpg "#120d05"
   ```
 
-- Temporary exception:
-  - Neo Health has no source SVG yet. The delivered PNG carried a baked-in black frame around its rounded tile, which read as a black square on light surfaces. `scripts/crop-icon-frame.mjs` strips that frame and writes the two published derivatives — a WebP for the page and a JPEG for `og:image`. The 1.2 MB original stays in `assets/` as the source and is no longer published:
+- Apollo ships final artwork in two theme variants rather than an SVG. Both are cropped and re-encoded from the delivered PNGs by `scripts/crop-icon-frame.mjs`; the page loads a WebP per theme and `og:image` a JPEG, because some link-preview crawlers reject WebP:
 
-    ```bash
-    node scripts/crop-icon-frame.mjs assets/Icon_NeoHealth_Concept.png public/assets/Icon_NeoHealth_Concept
-    ```
+  ```bash
+  node scripts/crop-icon-frame.mjs assets/Icon_NeoHealth_Concept.png public/assets/Icon_NeoHealth_Concept
+  node scripts/crop-icon-frame.mjs assets/Icon_NeoHealth_Concept_Light.png public/assets/Icon_NeoHealth_Concept_Light
+  ```
 
-    Replace all of it with an SVG once one exists. The light-theme variant the design model expects was never delivered, so the dark tile is used in both themes.
+  The asset filenames still read `Icon_NeoHealth_Concept`. They are internal
+  paths, never shown, and renaming them buys nothing but churn.
 
 ## Locale behavior
 

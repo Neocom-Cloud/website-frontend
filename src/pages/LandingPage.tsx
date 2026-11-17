@@ -4,9 +4,9 @@ import { ProjectCard } from "../components/ProjectCard";
 import { TypewriterWord } from "../components/TypewriterWord";
 import { ButtonLink, SectionHeader, SectionLabel } from "../components/ui";
 import { siteContent } from "../content/site.js";
-import { CONTACT_EMAIL, Locale, ProjectSlug } from "../lib/routes";
+import { CONTACT_EMAIL, Locale, ProjectSlug, Theme } from "../lib/routes";
 
-export function LandingPage({ locale }: { locale: Locale }) {
+export function LandingPage({ locale, theme }: { locale: Locale; theme: Theme }) {
   const copy = siteContent[locale];
   const projectSlugs = Object.keys(copy.projects.items) as ProjectSlug[];
 
@@ -76,7 +76,13 @@ export function LandingPage({ locale }: { locale: Locale }) {
         />
         <div className="grid gap-[18px] md:grid-cols-2 lg:grid-cols-3">
           {projectSlugs.map((slug, position) => (
-            <ProjectCard key={slug} locale={locale} position={position} projectSlug={slug} />
+            <ProjectCard
+              key={slug}
+              locale={locale}
+              position={position}
+              projectSlug={slug}
+              theme={theme}
+            />
           ))}
         </div>
       </section>

@@ -1,0 +1,8 @@
+environment      = "preview"
+aws_region       = "us-east-1"
+site_bucket_name = "neocom-site-preview"
+
+# Leave custom_domain empty for the preview: it then serves on the CloudFront
+# domain, which needs no DNS record and no certificate.
+# custom_domain       = "neocom.cloud"
+# acm_certificate_arn = "arn:aws:acm:us-east-1:...:certificate/..."
