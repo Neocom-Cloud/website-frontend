@@ -64,6 +64,7 @@ Recommended repository rules:
 1. Add a branch ruleset for `develop`, `Q.A`, `main`, `Q.A.E2E`, and `deploy` that requires pull requests, requires branches to be up to date, blocks force pushes and deletions, and does not allow bypasses.
 2. Require these checks before merging, with no human approval requirement:
    - `Validate GitHub Actions workflows`
+   - `Validate Terraform stacks`
    - `Validate promotion path`
    - `Test and build (Node 24)`
    - `Test and build (Node latest)`
