@@ -236,10 +236,15 @@ inventory against the archived copy and fails if a record goes missing.
    ```
 
    To keep a scanned record instead, import it so Terraform manages what is
-   already there (provider 5.x takes `<zone_id>/<dns_record_id>`):
+   already there (provider 5.x takes `<zone_id>/<dns_record_id>`). The address
+   depends on which resource owns the record: `preserved` holds only the mail
+   and verification set from `records.json`, and each web record is its own
+   resource, keyed by count or by the address itself.
 
    ```bash
    terraform -chdir=infra/terraform-dns import 'cloudflare_dns_record.preserved["<key from records.json>"]' '<zone_id>/<dns_record_id>'
+   terraform -chdir=infra/terraform-dns import 'cloudflare_dns_record.www_github_pages[0]' '<zone_id>/<dns_record_id>'
+   terraform -chdir=infra/terraform-dns import 'cloudflare_dns_record.apex_github_pages["185.199.108.153"]' '<zone_id>/<dns_record_id>'
    ```
 
 4. Apply the stack, then run `terraform -chdir=infra/terraform-dns plan` again
