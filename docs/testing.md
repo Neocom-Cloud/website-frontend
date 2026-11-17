@@ -79,6 +79,14 @@ BASE_REF=Q.A.E2E HEAD_REF=main pnpm verify:promotion
 BASE_REF=deploy HEAD_REF=Q.A.E2E pnpm verify:promotion
 ```
 
+To check a nameserver against the record set the mailbox and the site depend on:
+
+```bash
+pnpm verify:dns --server ns1.dns-parking.com
+```
+
+Run it against a new provider before changing nameservers; see [docs/deployment.md](./deployment.md).
+
 To diagnose GitHub Pages readiness with a GitHub token that can read Pages settings:
 
 ```bash
