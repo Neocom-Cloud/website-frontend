@@ -3,3 +3,11 @@ dist
 playwright-report
 test-results
 .DS_Store
+
+# Terraform: local working dirs, state and plans. The .terraform.lock.hcl
+# files are committed on purpose so provider versions stay pinned.
+infra/*/.terraform
+infra/*/terraform.tfstate
+infra/*/terraform.tfstate.backup
+infra/*/*.tfplan
+infra/*/terraform.tfvars

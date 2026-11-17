@@ -1,0 +1,102 @@
+# NeoCom site infrastructure
+
+Hosts the static site on **S3 behind CloudFront with Origin Access Control**, in
+AWS account `431915868573` (`us-east-1`). DNS stays in Cloudflare; this project
+uses no Route 53 hosted zone, which also avoids its per-zone monthly charge.
+
+Two stacks, both modelled on `DevRecord/infra/terraform-landing*`:
+
+| Stack | What it owns | State |
+| --- | --- | --- |
+| `terraform-site-bootstrap` | Encrypted state bucket, KMS key, GitHub OIDC deploy roles | Local, committed nowhere |
+| `terraform-site` | Site bucket, CloudFront distribution, OAC, directory-index function | The bucket the bootstrap created |
+
+## Why CloudFront and not the S3 website endpoint
+
+DevRecord's landing serves the S3 *website* endpoint through Cloudflare. That
+endpoint is HTTP-only, so it forces the Cloudflare zone into **Flexible** SSL —
+the Cloudflare-to-origin leg travels unencrypted — and it needs a Cloud
+Connector to rewrite the `Host` header, because a plain proxied CNAME makes S3
+answer `NoSuchBucket`.
+
+This site's own copy promises privacy as a foundation, so it keeps the bucket
+private and puts CloudFront in front: the origin leg is HTTPS, the zone can run
+**Full (strict)**, and the Cloud Connector workaround disappears.
+
+The cost is one extra moving part, `directory-index.js`. S3's website endpoint
+resolves `/pt-br/` to `/pt-br/index.html` by itself; the REST endpoint does not,
+and `default_root_object` only covers `/`. Every localized route here is a
+directory, so without that CloudFront Function the whole site would 404 apart
+from the root.
+
+## Prerequisites
+
+- An AWS profile for account `431915868573`. The working one is named
+  `devrecord` and authenticates as the `kaleb-cli` user; the profile *named*
+  `kaleb-cli` is a separate, currently expired, session.
+- `token.actions.githubusercontent.com` is already registered in the account by
+  the DevRecord bootstrap, and an account may hold only one provider per URL.
+  `create_github_oidc_provider` therefore defaults to **false**.
+
+## 1. Bootstrap
+
+Run once per account. It keeps local state, because it creates the bucket the
+other stack's state lives in.
+
+```bash
+export AWS_PROFILE=devrecord
+terraform -chdir=infra/terraform-site-bootstrap init
+terraform -chdir=infra/terraform-site-bootstrap apply
+```
+
+Record `state_bucket_name` and `state_kms_key_arn` from the outputs.
+
+Before relying on the deploy roles, decode the `sub` and `repository_id` claims
+from the first workflow run's OIDC token and confirm they match the trust
+policy. The subject-claim template is an organisation setting, and this trust
+policy assumes Neocom-Cloud uses the same non-default template DevRecord does.
+
+## 2. Site
+
+```bash
+export AWS_PROFILE=devrecord
+terraform -chdir=infra/terraform-site init \
+  -backend-config="bucket=<state_bucket_name>" \
+  -backend-config="key=site/preview.tfstate" \
+  -backend-config="region=us-east-1" \
+  -backend-config="encrypt=true" \
+  -backend-config="kms_key_id=<state_kms_key_arn>" \
+  -backend-config="use_lockfile=true"
+terraform -chdir=infra/terraform-site apply -var="environment=preview"
+```
+
+The preview leaves `custom_domain` empty and serves on the CloudFront domain,
+which already carries a valid certificate. **No DNS record, no ACM request and
+no nameserver change** — the preview is fully decoupled from the domain
+migration.
+
+## 3. Publish
+
+```bash
+pnpm build
+aws s3 sync dist/ s3://<bucket_name>/ --delete
+aws cloudfront create-invalidation --distribution-id <distribution_id> --paths '/*'
+```
+
+`terraform output deploy_command` prints this with the values filled in.
+
+## Attaching neocom.cloud later
+
+Production needs, in order:
+
+1. The Cloudflare zone for `neocom.cloud`, with **every** record from the
+   Hostinger zone recreated first — the Zoho MX, SPF, DKIM (`zmail` selector)
+   and the `zoho-verification` TXT especially. A record that exists at
+   Hostinger and not at Cloudflare stops existing the moment the nameservers
+   change, and broken outgoing mail fails silently.
+2. An ACM certificate in `us-east-1`, validated by a DNS record in Cloudflare.
+3. `custom_domain` and `acm_certificate_arn` set on this stack.
+4. A proxied CNAME in Cloudflare pointing at the distribution domain, with
+   SSL/TLS set to **Full (strict)**.
+
+See `docs/deployment.md` for the DNS runbook and the full record inventory.
