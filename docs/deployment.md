@@ -11,6 +11,51 @@ This project deploys a static site to GitHub Pages and serves it on `neocom.clou
 - Alternate host: `https://www.neocom.cloud`
 - GitHub Pages owner domain: `neocom-cloud.github.io`
 
+## Direction: moving to AWS
+
+Decided on 2026-11-17: the site leaves GitHub Pages and is hosted on AWS, as a
+private S3 bucket behind CloudFront (see `infra/README.md`). GitHub Pages stays
+the production host until the cut-over, and `neocom.cloud` is not touched by
+anything below.
+
+Migration order:
+
+1. **Preview publishing** (this section): `deploy-aws.yml` publishes `develop`
+   to the preview distribution.
+2. Production stack (`environment=production`), an ACM certificate and the
+   custom domain.
+3. Cloudflare DNS with every record recreated first (Zoho mail especially), then
+   the cut-over to CloudFront, then retire GitHub Pages.
+
+### AWS preview publishing
+
+`.github/workflows/deploy-aws.yml` runs on every push to `develop` and on manual
+dispatch from `develop`. It runs the same gates as the Pages workflow, then:
+
+1. assumes `neocom-site-preview-github` through GitHub OIDC. No access key is
+   stored anywhere. The IAM trust policy accepts only tokens issued for the
+   `site-preview` environment, which GitHub creates on the first run;
+2. uploads the Vite-fingerprinted files (`assets/*.js`, `*.css`, `*.woff*`) with
+   a one-year immutable cache, the other files for an hour, and HTML so that it
+   always revalidates;
+3. removes files that no longer exist, last, so a failed upload never leaves
+   the site missing files;
+4. invalidates `/*` in CloudFront, waits for it, and smoke-tests `/`,
+   `/pt-br/`, `/en/` and a real 404.
+
+The preview is served at `https://d2ogykvptv4dgl.cloudfront.net`. The bucket,
+distribution ID and role are not secrets and are written in the workflow; they
+come from the `terraform output` of `infra/terraform-site` and
+`infra/terraform-site-bootstrap`.
+
+Known limits, on purpose:
+
+- The OIDC role is the Terraform deploy role of the bootstrap stack, which is
+  broader than a content publish needs (`s3:*` on the site bucket and the whole
+  CloudFront surface). A narrower content-only role is a follow-up.
+- `public/CNAME` is a GitHub Pages file; it is uploaded to the bucket and
+  ignored by CloudFront. It goes away with Pages.
+
 ## Locale routing model
 
 The current production model is fully static:
