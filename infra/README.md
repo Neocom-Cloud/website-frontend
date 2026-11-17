@@ -127,9 +127,21 @@ Production needs, in order:
    and the `zoho-verification` TXT especially. A record that exists at
    Hostinger and not at Cloudflare stops existing the moment the nameservers
    change, and broken outgoing mail fails silently.
-2. An ACM certificate in `us-east-1`, validated by a DNS record in Cloudflare.
-3. `custom_domain` and `acm_certificate_arn` set on this stack.
-4. A proxied CNAME in Cloudflare pointing at the distribution domain, with
-   SSL/TLS set to **Full (strict)**.
+2. An ACM certificate in `us-east-1`, validated by a DNS record in Cloudflare,
+   covering **both** `neocom.cloud` and `www.neocom.cloud`. `terraform-dns`
+   points both hosts at the distribution once `web_target` is `cloudfront`.
+3. `custom_domain` and `acm_certificate_arn` set on this stack — and
+   `www.<custom_domain>` added to the distribution's `aliases`. The site stack
+   sets `aliases = [var.custom_domain]` today, so CloudFront would answer the
+   apex and reject the `www` host. Settle that before the DNS switch, not
+   after: the DNS record is not the place to work around a host the
+   distribution does not accept.
+4. The web records pointed at the distribution (`web_target = "cloudfront"`),
+   grey or proxied as `proxy_web` says. With the proxy on, SSL/TLS must be
+   **Full (strict)**.
+
+Flipping `web_target` is not seamless: Terraform destroys the four apex A
+records and creates the CNAMEs in their place, so plan it for a quiet window
+and keep the TTLs low going in.
 
 See `docs/deployment.md` for the DNS runbook and the full record inventory.

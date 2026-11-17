@@ -218,17 +218,44 @@ inventory against the archived copy and fails if a record goes missing.
 2. Create the zone in Cloudflare and let it scan, but **do not change
    nameservers**. Cloudflare's scan has the same blind spot as any external
    query, so treat it as a draft and reconcile it line by line.
-3. Check the proxy status. The orange cloud only handles HTTP/HTTPS. MX cannot
-   be proxied, but any A or CNAME tied to mail must stay **grey / DNS only**;
-   the importer sometimes marks them orange.
-4. `pnpm verify:dns --server <cloudflare nameserver>`. Do not proceed until it
+3. Reconcile the scan with `infra/terraform-dns` before the first apply. The
+   scan leaves records Terraform does not know about — the `www` CNAME and the
+   apex addresses among them — and the apply would try to create them a second
+   time, which Cloudflare rejects. List what is there:
+
+   ```bash
+   curl -sS -H "Authorization: Bearer $TF_VAR_cloudflare_api_token" "https://api.cloudflare.com/client/v4/zones/<zone_id>/dns_records?per_page=100" | jq -r '.result[] | [.id, .type, .name, .content] | @tsv'
+   ```
+
+   The zone is not authoritative yet, so nothing is at risk: deleting every
+   record the scan created and letting the apply own the whole set is the
+   simplest path, and the one that leaves no record outside the stack.
+
+   ```bash
+   curl -sS -X DELETE -H "Authorization: Bearer $TF_VAR_cloudflare_api_token" "https://api.cloudflare.com/client/v4/zones/<zone_id>/dns_records/<dns_record_id>"
+   ```
+
+   To keep a scanned record instead, import it so Terraform manages what is
+   already there (provider 5.x takes `<zone_id>/<dns_record_id>`):
+
+   ```bash
+   terraform -chdir=infra/terraform-dns import 'cloudflare_dns_record.preserved["<key from records.json>"]' '<zone_id>/<dns_record_id>'
+   ```
+
+4. Apply the stack, then run `terraform -chdir=infra/terraform-dns plan` again
+   and read it: a clean plan means the zone and the stack agree. The stack sets
+   the proxy itself — mail records are never proxied and the web records follow
+   `proxy_web` — so there is no orange cloud left to check by hand.
+5. `pnpm verify:dns --server <cloudflare nameserver>`. Do not proceed until it
    passes.
-5. Lower the TTL on the mail records to 300s, so a mistake costs five minutes.
-6. Change the nameservers at Hostinger, and **keep the Hostinger zone** — it is
+6. The mail records already carry a 300s TTL from `mail_ttl`, so a mistake
+   costs five minutes. Confirm it in the plan output rather than in the
+   dashboard.
+7. Change the nameservers at Hostinger, and **keep the Hostinger zone** — it is
    the rollback. Reverting means pointing the nameservers back.
-7. `pnpm verify:dns` against public resolvers, then send and receive a real
+8. `pnpm verify:dns` against public resolvers, then send and receive a real
    test message in both directions.
-8. Only then move the web records.
+9. Only then move the web records.
 
 There is no DMARC record today. Adding one is worthwhile but separate:
 `pnpm verify:dns --include-suggested` checks the `p=none` form, which is
@@ -303,9 +330,9 @@ for the domain yet is what produces `526`.
 
 If you want Cloudflare in front of the site:
 
-1. Set `proxy_web = true` and apply `infra/terraform-dns`, which flips the web records from grey to proxied. Do not toggle the cloud in the dashboard; the next apply would revert it.
-2. In Cloudflare, open `SSL/TLS -> Overview`.
-3. Set encryption mode to `Full (strict)`.
+1. In Cloudflare, open `SSL/TLS -> Overview`.
+2. Set encryption mode to `Full (strict)`, **before** the proxy goes on. On `Flexible`, Cloudflare fetches the origin over HTTP, GitHub Pages redirects that straight back to HTTPS because section 2.5 enabled `Enforce HTTPS`, and the two bounce in a redirect loop until the mode is corrected.
+3. Set `proxy_web = true` and apply `infra/terraform-dns`, which flips the web records from grey to proxied. Do not toggle the cloud in the dashboard; the next apply would revert it.
 4. Confirm that:
    - `https://neocom.cloud`
    - `https://www.neocom.cloud`
