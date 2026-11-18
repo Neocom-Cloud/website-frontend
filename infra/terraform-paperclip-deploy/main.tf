@@ -25,10 +25,12 @@ locals {
 # stack as ca.pem. AWS never sees the CA's private key, and this is not the
 # paid AWS Private CA service.
 #
-# To revoke all Paperclip credentials immediately (not just block new ones),
-# set enabled = false here. Existing in-flight sessions from the profile remain
-# valid until they expire naturally; disabling the profile alone blocks only
-# new credential creation.
+# Revoking access: setting enabled = false here (or on the profile) stops new
+# credentials from being issued. It does NOT cancel sessions already issued,
+# which stay valid until they expire (session_duration_seconds, one hour by
+# default). To cut those off at once, attach an inline deny on the role with
+# aws:TokenIssueTime earlier than now. Keeping the session short is what bounds
+# the exposure, which is why max_session_duration is not raised above it.
 resource "aws_rolesanywhere_trust_anchor" "paperclip" {
   name    = local.name
   enabled = true
@@ -73,7 +75,7 @@ data "aws_iam_policy_document" "trust" {
 resource "aws_iam_role" "paperclip_deploy" {
   name                 = local.name
   assume_role_policy   = data.aws_iam_policy_document.trust.json
-  max_session_duration = var.role_max_session_duration_seconds
+  max_session_duration = var.session_duration_seconds
 }
 
 # Content deploy only: `aws s3 sync --delete` plus a cache invalidation. It

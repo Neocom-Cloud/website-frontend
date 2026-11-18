@@ -4,8 +4,8 @@ output "certificate_arn" {
 }
 
 output "validated" {
-  value       = var.wait_for_validation
-  description = "True only after the second apply, which waits for ACM to issue the certificate."
+  value       = length(aws_acm_certificate_validation.site) > 0
+  description = "True only when ACM has issued the certificate: derived from the validation resource, which completes only after issuance, never from the operator's intent."
 }
 
 output "validation_records" {

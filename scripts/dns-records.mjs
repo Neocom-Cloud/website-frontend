@@ -80,7 +80,7 @@ export const EXPECTED_RECORDS = [
     type: "CNAME",
     values: [PRODUCTION_DISTRIBUTION_DOMAIN],
     purpose: "web",
-    why: "Alternate host, served by the production CloudFront distribution. The apex has no entry here: Cloudflare flattens a CNAME at the apex into A records that change, which a literal comparison cannot match."
+    why: "Alternate host, served by the production CloudFront distribution. The apex has no entry here: Cloudflare flattens a CNAME at the apex into A records that change, which a literal comparison cannot match. The same flattening applies to www once proxy_web is true, so verify:dns is meant for the DNS-only phase."
   }
 ];
 

@@ -149,119 +149,45 @@ resource "aws_iam_role" "github_site" {
   assume_role_policy = data.aws_iam_policy_document.github_trust[each.key].json
 }
 
+# What the publish workflow runs, and nothing else: `aws s3 sync` against one
+# bucket, then `aws cloudfront create-invalidation` and its wait. Terraform is
+# applied by the owner from a workstation, so these roles hold no Terraform
+# state, KMS, ACM or distribution-management permission. A run on `develop`
+# therefore cannot touch production, whatever its code does.
 data "aws_iam_policy_document" "github_site" {
   for_each = local.environments
 
   statement {
-    sid = "TerraformStateBucket"
+    sid = "SiteBucketList"
     actions = [
       "s3:GetBucketLocation",
-      "s3:ListBucket"
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads"
     ]
-    resources = [aws_s3_bucket.terraform_state.arn]
+    resources = ["arn:${local.partition}:s3:::${var.site_bucket_prefix}-${each.key}"]
   }
 
+  # No s3:GetObject: sync compares the listing, it does not read objects.
   statement {
-    sid = "TerraformStateObjects"
+    sid = "SiteBucketObjects"
     actions = [
+      "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:PutObject"
     ]
-    resources = ["${aws_s3_bucket.terraform_state.arn}/site/${each.key}.tfstate*"]
+    resources = ["arn:${local.partition}:s3:::${var.site_bucket_prefix}-${each.key}/*"]
   }
 
+  # Invalidating is the only CloudFront call, and it is scoped to this
+  # environment's distribution by ARN. The bucket name above follows
+  # terraform-site (local.name); distribution_ids follows its output.
   statement {
-    sid = "TerraformStateEncryption"
+    sid = "SiteInvalidate"
     actions = [
-      "kms:Decrypt",
-      "kms:DescribeKey",
-      "kms:Encrypt",
-      "kms:GenerateDataKey"
-    ]
-    resources = [aws_kms_key.terraform_state.arn]
-  }
-
-  # The AWS provider reads every bucket sub-resource on refresh, so an action
-  # allowlist is brittle. This bucket is dedicated to the site, so scope by ARN
-  # and allow the service, as the DevRecord stack does.
-  #
-  # The bucket name must match the naming convention used in terraform-site:
-  # local.name = "${var.project_name}-site-${var.environment}",
-  # which defaults to "neocom-site-<environment>", matching site_bucket_prefix
-  # here. If terraform-site's project_name or naming changes, these ARNs must
-  # be updated to stay in sync.
-  statement {
-    sid     = "SiteS3"
-    actions = ["s3:*"]
-    resources = [
-      "arn:${local.partition}:s3:::${var.site_bucket_prefix}-${each.key}",
-      "arn:${local.partition}:s3:::${var.site_bucket_prefix}-${each.key}/*"
-    ]
-  }
-
-  # CloudFront distribution IDs are allocated on creation, so they cannot be
-  # fully named ahead of time. However, we restrict mutations (DeleteDistribution,
-  # UpdateDistribution) to distributions tagged with the environment they manage.
-  # Read-only actions and creates remain account-wide since the API does not
-  # support resource-level conditions on all operations.
-  #
-  # The site stack tags distributions with Environment=preview or Environment=production;
-  # mutations on the wrong environment are blocked by the tag condition.
-  statement {
-    sid = "SiteCloudFrontReadAndCreate"
-    actions = [
-      "cloudfront:CreateDistribution",
-      "cloudfront:CreateFunction",
       "cloudfront:CreateInvalidation",
-      "cloudfront:CreateOriginAccessControl",
-      "cloudfront:DescribeFunction",
-      "cloudfront:GetDistribution",
-      "cloudfront:GetDistributionConfig",
-      "cloudfront:GetFunction",
-      "cloudfront:GetInvalidation",
-      "cloudfront:GetOriginAccessControl",
-      "cloudfront:ListDistributions",
-      "cloudfront:ListFunctions",
-      "cloudfront:ListOriginAccessControls",
-      "cloudfront:ListTagsForResource",
-      "cloudfront:PublishFunction",
-      "cloudfront:TagResource"
+      "cloudfront:GetInvalidation"
     ]
-    resources = ["*"]
-  }
-
-  statement {
-    sid = "SiteCloudFrontMutate"
-    actions = [
-      "cloudfront:DeleteDistribution",
-      "cloudfront:DeleteFunction",
-      "cloudfront:DeleteOriginAccessControl",
-      "cloudfront:UntagResource",
-      "cloudfront:UpdateDistribution",
-      "cloudfront:UpdateFunction",
-      "cloudfront:UpdateOriginAccessControl"
-    ]
-    resources = ["*"]
-    condition {
-      test     = "StringEquals"
-      variable = "aws:ResourceTag/Environment"
-      values   = [each.key]
-    }
-  }
-
-  # Only needed once the distribution carries a custom domain. Certificate
-  # ARNs are allocated on request, so these cannot be resource-scoped either.
-  statement {
-    sid = "SiteCertificates"
-    actions = [
-      "acm:DeleteCertificate",
-      "acm:DescribeCertificate",
-      "acm:ListCertificates",
-      "acm:ListTagsForCertificate",
-      "acm:RequestCertificate"
-    ]
-    resources = ["*"]
+    resources = ["arn:${local.partition}:cloudfront::${local.account_id}:distribution/${var.distribution_ids[each.key]}"]
   }
 }
 

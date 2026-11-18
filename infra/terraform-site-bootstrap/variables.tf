@@ -69,3 +69,21 @@ variable "site_bucket_prefix" {
   default     = "neocom-site"
   description = "Bucket and role name prefix; each environment appends its own name."
 }
+
+variable "distribution_ids" {
+  type = map(string)
+  default = {
+    preview    = "E3MC3T7OTOQKZ5"
+    production = "EDTRWBXZ0WVRY"
+  }
+  description = <<-EOT
+    CloudFront distribution ID per environment, the distribution_id output of
+    terraform-site. IDs are allocated on creation, so they are inputs here.
+    The publish roles may invalidate these distributions and no others.
+  EOT
+
+  validation {
+    condition     = alltrue([for env in ["preview", "production"] : contains(keys(var.distribution_ids), env)])
+    error_message = "distribution_ids needs both preview and production."
+  }
+}
