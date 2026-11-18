@@ -23,7 +23,7 @@
     "verify:promotion": "node scripts/verify-promotion.mjs",
     "generate:dns": "node scripts/generate-dns-json.mjs",
     "verify:dns": "node scripts/verify-dns.mjs",
-    "verify:pages": "node scripts/verify-pages-status.mjs",
+    "verify:site": "node scripts/verify-site-status.mjs",
     "verify:repository": "node scripts/verify-repository-integrity.mjs"
   },
   "dependencies": {

@@ -56,7 +56,7 @@ pnpm test:visual:update   # re-record after an intentional design change
 Deployment smoke tests inspect the finished `dist` output in a Node environment. They verify:
 
 - every localized landing and project page exists
-- GitHub Pages public files and configured project assets are present
+- public files and configured project assets are present
 - localized HTML points to Vite-built JavaScript and CSS instead of source modules
 - canonical metadata remains in the production output
 
@@ -87,17 +87,12 @@ pnpm verify:dns --server ns1.dns-parking.com
 
 Run it against a new provider before changing nameservers; see [docs/deployment.md](./deployment.md).
 
-To diagnose GitHub Pages readiness with a GitHub token that can read Pages settings:
+To check that the published site answers on its public routes (no credentials needed):
 
 ```bash
-(
-  trap 'unset GITHUB_TOKEN' EXIT
-  read -rsp "GitHub token: " GITHUB_TOKEN
-  printf '\n'
-  export GITHUB_TOKEN
-  export GITHUB_REPOSITORY=Neocom-Cloud/website-frontend
-  pnpm verify:pages
-)
+pnpm verify:site
+# or against the real domain, after the DNS cut-over:
+SITE_ORIGIN=https://neocom.cloud pnpm verify:site
 ```
 
 Run the following separately when interactive test watching is needed:
@@ -133,7 +128,7 @@ pnpm build
 pnpm test:build-output
 ```
 
-- `Deploy status` for pull requests into `Q.A.E2E`; it validates GitHub Pages readiness, then validates the live HTTPS site after a production deployment exists
+- `Deploy status` for pull requests into `Q.A.E2E`; it probes the published production site over HTTPS (root, both localized landing pages, `robots.txt`, `sitemap.xml`)
 - browser end-to-end validation on Playwright's Chromium, Firefox, WebKit, and Chromium mobile projects for pull requests into `Q.A.E2E`
 - `Pre-deploy test` for pull requests into `deploy`; it downloads the Node 24-validated `dist` artifact and runs the same Playwright matrix against that exact artifact
 
@@ -141,12 +136,12 @@ The policy resolver is unit-tested independently from the workflow syntax: only 
 
 Every pull request uploads the Node 24-validated `dist` directory as a 14-day GitHub Actions artifact named `neocom-site-<commit-sha>`; push-triggered uploads are limited to `Q.A` and `Q.A.E2E`. Pull requests into `Q.A.E2E` retain Playwright reports and failure traces as `neocom-e2e-<commit-sha>`, while pull requests into `deploy` retain artifact-based pre-deploy evidence as `neocom-pre-deploy-<commit-sha>`. Download the artifacts from the workflow run to inspect the exact static site without creating a public QA deployment.
 
-`Deploy status` accepts the first release in bootstrap mode when GitHub Pages has no published deployment yet. It still requires workflow-based Pages, `neocom.cloud`, verified domain protection, and an approved certificate. Once Pages has published a release, the check also requires `Enforce HTTPS` and successful HTTPS probes for the root, both localized landing pages, `robots.txt`, and `sitemap.xml`.
+`Deploy status` probes the production CloudFront distribution by default, so it reflects what was published and cannot be failed by a DNS problem. Set `SITE_ORIGIN=https://neocom.cloud` to probe the real domain once the cut-over is done. Each route is retried and has a timeout.
 
 This keeps deployment and test enforcement separate:
 
 - `ci.yml` is the quality gate
-- `deploy-pages.yml` reruns repository integrity, typechecking, tests, the production build, and build-output checks before publishing the production artifact
+- `deploy-aws.yml` reruns repository integrity, typechecking, tests, the production build, and build-output checks before publishing the production artifact
 
 ## Current gaps
 

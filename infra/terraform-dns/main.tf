@@ -24,54 +24,16 @@ resource "cloudflare_dns_record" "preserved" {
   comment  = each.value.comment
 }
 
-# Web records, declared separately because they follow whichever host serves
-# the site and will change; the set above must not.
-# They start grey: proxy_web defaults to false, which is Phase 1 of the
-# runbook in docs/deployment.md. A proxied record in front of an origin
-# that carries no certificate for this domain yet answers 526.
-locals {
-  github_pages_ips = [
-    "185.199.108.153",
-    "185.199.109.153",
-    "185.199.110.153",
-    "185.199.111.153"
-  ]
-
-  apex_a_records = var.web_target == "github-pages" ? toset(local.github_pages_ips) : toset([])
-}
-
-resource "cloudflare_dns_record" "apex_github_pages" {
-  for_each = local.apex_a_records
-
-  zone_id = var.cloudflare_zone_id
-  name    = var.domain
-  type    = "A"
-  content = each.value
-  ttl     = 1
-  proxied = var.proxy_web
-  comment = "GitHub Pages apex"
-}
-
-resource "cloudflare_dns_record" "www_github_pages" {
-  count = var.web_target == "github-pages" ? 1 : 0
-
-  zone_id = var.cloudflare_zone_id
-  name    = "www.${var.domain}"
-  type    = "CNAME"
-  content = "neocom-cloud.github.io"
-  ttl     = 1
-  proxied = var.proxy_web
-  comment = "GitHub Pages alternate host"
-}
-
-# CloudFront already presents a valid certificate, so the zone can run
-# SSL/TLS in Full (strict) — unlike the S3 website endpoint, which is
-# HTTP-only and would force Flexible.
-# That distinction only bites once proxy_web is true; a grey record reaches
-# the distribution directly, on its own certificate.
-resource "cloudflare_dns_record" "apex_cloudfront" {
-  count = var.web_target == "cloudfront" ? 1 : 0
-
+# Web records. The site is served by CloudFront and nothing else, so the apex
+# and www point straight at the production distribution. They are declared
+# apart from the preserved set above because they follow the host and may move
+# with it; the preserved records must not.
+#
+# They start grey (proxy_web defaults to false), which is Phase 1 of the
+# runbook in docs/deployment.md: a grey record reaches the distribution
+# directly, on its own certificate, so the zone can run SSL/TLS in Full
+# (strict) once the proxy is raised.
+resource "cloudflare_dns_record" "apex" {
   zone_id = var.cloudflare_zone_id
   name    = var.domain
   type    = "CNAME"
@@ -79,18 +41,9 @@ resource "cloudflare_dns_record" "apex_cloudfront" {
   ttl     = 1
   proxied = var.proxy_web
   comment = "CloudFront distribution (apex, flattened by Cloudflare)"
-
-  lifecycle {
-    precondition {
-      condition     = var.cloudfront_domain != ""
-      error_message = "cloudfront_domain is required when web_target is cloudfront."
-    }
-  }
 }
 
-resource "cloudflare_dns_record" "www_cloudfront" {
-  count = var.web_target == "cloudfront" ? 1 : 0
-
+resource "cloudflare_dns_record" "www" {
   zone_id = var.cloudflare_zone_id
   name    = "www.${var.domain}"
   type    = "CNAME"

@@ -4,7 +4,7 @@ locals {
   name        = "${var.project_name}-site-${var.environment}"
   bucket_name = var.site_bucket_name != "" ? var.site_bucket_name : local.name
   # Both hosts, because terraform-dns points the apex and www at this
-  # distribution once web_target is cloudfront. CloudFront rejects a host that
+  # distribution. CloudFront rejects a host that
   # is not an alias, so www would 403 on the certificate name otherwise. The
   # certificate in acm_certificate_arn has to cover both names.
   aliases = var.custom_domain != "" ? [var.custom_domain, "www.${var.custom_domain}"] : []

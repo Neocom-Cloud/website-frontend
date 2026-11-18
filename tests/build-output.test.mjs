@@ -80,7 +80,6 @@ describe("production build output", () => {
     const requiredFiles = [
       "index.html",
       "404.html",
-      "CNAME",
       "favicon.svg",
       "robots.txt",
       "site.webmanifest",

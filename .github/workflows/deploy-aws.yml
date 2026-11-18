@@ -1,14 +1,17 @@
-name: Deploy AWS preview
+name: Deploy to AWS
 
-# Publishes the built site to the preview S3 bucket behind CloudFront. The
-# distribution serves only its own CloudFront domain; neocom.cloud is not
-# involved, and GitHub Pages is untouched. Production gets its own job once its
-# stack exists.
+# The site is hosted on AWS only: a private S3 bucket behind CloudFront.
+#   develop -> preview    (served on its own CloudFront domain)
+#   deploy  -> production (neocom.cloud)
+# Each target has its own bucket, distribution, GitHub environment and IAM
+# role, and the role's trust policy accepts only tokens issued for that
+# environment. No access key is stored anywhere.
 
 on:
   push:
     branches:
       - develop
+      - deploy
   workflow_dispatch:
 
 permissions:
@@ -16,22 +19,25 @@ permissions:
 
 concurrency:
   # Never cancel a sync half way: a partial upload would leave a mixed site.
-  group: aws-site-preview
+  group: aws-site-${{ github.ref_name }}
   cancel-in-progress: false
 
 env:
   AWS_REGION: us-east-1
   # None of these are secrets. They come from `terraform output` of the
   # terraform-site and terraform-site-bootstrap stacks (see infra/README.md).
-  AWS_ROLE_ARN: arn:aws:iam::431915868573:role/neocom-site-preview-github
-  SITE_BUCKET: neocom-site-preview
-  DISTRIBUTION_ID: E3MC3T7OTOQKZ5
-  SITE_URL: https://d2ogykvptv4dgl.cloudfront.net
+  AWS_ROLE_ARN: ${{ github.ref == 'refs/heads/deploy' && 'arn:aws:iam::431915868573:role/neocom-site-production-github' || 'arn:aws:iam::431915868573:role/neocom-site-preview-github' }}
+  SITE_BUCKET: ${{ github.ref == 'refs/heads/deploy' && 'neocom-site-production' || 'neocom-site-preview' }}
+  DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/deploy' && 'EDTRWBXZ0WVRY' || 'E3MC3T7OTOQKZ5' }}
+  # The smoke test always goes through the CloudFront domain, which works
+  # whatever the DNS says, so a DNS problem cannot fail a healthy publish.
+  SMOKE_URL: ${{ github.ref == 'refs/heads/deploy' && 'https://d2bmtl9y1doakb.cloudfront.net' || 'https://d2ogykvptv4dgl.cloudfront.net' }}
+  SITE_URL: ${{ github.ref == 'refs/heads/deploy' && 'https://neocom.cloud' || 'https://d2ogykvptv4dgl.cloudfront.net' }}
 
 jobs:
   build:
     name: Build and verify
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/deploy'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -79,8 +85,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     # The IAM trust policy only accepts tokens issued for this environment.
+    # Add required reviewers to site-production in the repository settings if
+    # production should wait for an approval.
     environment:
-      name: site-preview
+      name: ${{ github.ref == 'refs/heads/deploy' && 'site-production' || 'site-preview' }}
       url: ${{ env.SITE_URL }}
     permissions:
       contents: read
@@ -102,12 +110,22 @@ jobs:
       # Everything else under assets/ keeps its name and must revalidate sooner.
       - name: Upload fingerprinted assets
         run: |
-          aws s3 sync dist/ "s3://${SITE_BUCKET}/"             --exclude "*"             --include "assets/*.js" --include "assets/*.css"             --include "assets/*.woff" --include "assets/*.woff2"             --cache-control "public,max-age=31536000,immutable"
+          aws s3 sync dist/ "s3://${SITE_BUCKET}/" \
+            --exclude "*" \
+            --include "assets/*.js" --include "assets/*.css" \
+            --include "assets/*.woff" --include "assets/*.woff2" \
+            --cache-control "public,max-age=31536000,immutable"
 
       - name: Upload pages and other files
         run: |
-          aws s3 sync dist/ "s3://${SITE_BUCKET}/"             --exclude "assets/*.js" --exclude "assets/*.css"             --exclude "assets/*.woff" --exclude "assets/*.woff2"             --exclude "*.html"             --cache-control "public,max-age=3600"
-          aws s3 sync dist/ "s3://${SITE_BUCKET}/"             --exclude "*" --include "*.html"             --cache-control "public,max-age=0,must-revalidate"
+          aws s3 sync dist/ "s3://${SITE_BUCKET}/" \
+            --exclude "assets/*.js" --exclude "assets/*.css" \
+            --exclude "assets/*.woff" --exclude "assets/*.woff2" \
+            --exclude "*.html" \
+            --cache-control "public,max-age=3600"
+          aws s3 sync dist/ "s3://${SITE_BUCKET}/" \
+            --exclude "*" --include "*.html" \
+            --cache-control "public,max-age=0,must-revalidate"
 
       # Last, so a failed upload never leaves the site missing files. Objects
       # just uploaded are newer than the local copies and are not re-sent.
@@ -117,18 +135,21 @@ jobs:
       - name: Invalidate CloudFront
         id: invalidate
         run: |
-          id=$(aws cloudfront create-invalidation             --distribution-id "${DISTRIBUTION_ID}" --paths '/*'             --query Invalidation.Id --output text)
+          id=$(aws cloudfront create-invalidation \
+            --distribution-id "${DISTRIBUTION_ID}" --paths '/*' \
+            --query Invalidation.Id --output text)
           echo "id=${id}" >> "$GITHUB_OUTPUT"
 
       - name: Wait for the invalidation
         run: |
-          aws cloudfront wait invalidation-completed             --distribution-id "${DISTRIBUTION_ID}" --id "${{ steps.invalidate.outputs.id }}"
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "${DISTRIBUTION_ID}" --id "${{ steps.invalidate.outputs.id }}"
 
       - name: Smoke test
         run: |
           set -eu
           check() {
-            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${SITE_URL}$1")
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${SMOKE_URL}$1")
             echo "$1 -> ${code} (expected $2)"
             [ "${code}" = "$2" ]
           }

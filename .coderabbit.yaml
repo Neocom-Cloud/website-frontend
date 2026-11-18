@@ -38,10 +38,10 @@ reviews:
         Treat workflow changes as production changes. Preserve Node 24+ support, the Node 24
         deployment baseline, latest-Node CI coverage, pnpm, least-privilege permissions, the
         develop -> Q.A -> main -> Q.A.E2E -> deploy promotion path, and the rule that only deploy
-        publishes GitHub Pages.
+        publishes the production site to AWS.
     - path: 'docs/**'
       instructions: >-
-        Check operational accuracy. DNS, GitHub Pages, Cloudflare, and branch-policy
+        Check operational accuracy. DNS, AWS hosting, Cloudflare, and branch-policy
         instructions must be actionable and must not contradict the active workflows.
   tools:
     github-checks:

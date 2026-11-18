@@ -10,7 +10,7 @@ develop -> Q.A -> main -> Q.A.E2E -> deploy
 
 `Q.A` is the valid Git branch name for the QA stage. `Q.A.` is not valid because Git branch names cannot end with a period.
 
-Only `deploy` publishes GitHub Pages. CodeRabbit is advisory: CI and GitHub rulesets remain the merge gate.
+Only `deploy` publishes the production site. CodeRabbit is advisory: CI and GitHub rulesets remain the merge gate.
 
 ## Pull Requests
 
@@ -37,7 +37,7 @@ Do not enable automatic approval or make CodeRabbit a required GitHub check unti
 In the CodeRabbit organization dashboard:
 
 1. Grant the GitHub App access to this repository only unless organization-wide access is intentional and approved.
-2. Keep repository-specific behavior in `.coderabbit.yaml`; do not place branch names, Pages rules, or DNS instructions in Organization Settings.
+2. Keep repository-specific behavior in `.coderabbit.yaml`; do not place branch names, hosting rules, or DNS instructions in Organization Settings.
 3. Enable configuration inheritance only if the organization adopts a shared baseline. Without a shared baseline, leave it disabled to avoid unexpected inherited settings.
 4. Do not use Global Overrides for this repository's review profile or path instructions. Overrides take precedence over `.coderabbit.yaml`, so reserve them for non-negotiable organization-wide security or compliance policy and verify the resolved configuration with `@coderabbitai configuration`.
 5. Keep automatic reviewer assignment and automatic approval disabled. CodeRabbit should review and report, not replace accountable human ownership.
