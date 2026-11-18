@@ -5,6 +5,8 @@ const useExistingBuild = process.env.E2E_USE_EXISTING_BUILD === "1";
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  // Pixel baselines are recorded per browser project only (no OS suffix); see visual-snapshots.spec.ts.
+  snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/{arg}{ext}",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,

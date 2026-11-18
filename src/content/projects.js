@@ -1,24 +1,26 @@
-export const projectSlugs = ["neorecicla", "devrecord", "neo-health"];
+export const projectSlugs = ["neorecicla", "devrecord", "apollo"];
 
 export const projectRegistry = {
   neorecicla: {
     accent: "green",
     artSrc: "/assets/NeoRecicla_Icon.svg",
-    socialImageSrc: "/assets/NeoRecicla_Icon.svg",
+    socialImageSrc: "/assets/social-neorecicla.jpg",
     template: "standard"
   },
   devrecord: {
-    accent: "cyan",
-    artSrc: "/assets/NeoCom_Icon_App.svg",
-    socialImageSrc: "/assets/NeoCom_Icon_App.svg",
-    artClassName: "square",
+    accent: "ember",
+    artSrc: "/assets/devrecord-icon.svg",
+    socialImageSrc: "/assets/social-devrecord.jpg",
     template: "standard"
   },
-  "neo-health": {
+  apollo: {
     accent: "amber",
-    artSrc: "/assets/Icon_NeoHealth_Concept.png",
-    socialImageSrc: "/assets/Icon_NeoHealth_Concept.png",
-    artClassName: "square",
+    // Both variants are final brand artwork, cropped and re-encoded by
+    // scripts/crop-icon-frame.mjs. The social image is a JPEG because some
+    // link-preview crawlers reject WebP and render transparency as black.
+    artSrc: "/assets/Icon_Apollo_Concept.webp",
+    artLightSrc: "/assets/Icon_Apollo_Concept_Light.webp",
+    socialImageSrc: "/assets/Icon_Apollo_Concept.jpg",
     template: "standard"
   }
 };

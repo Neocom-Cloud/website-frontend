@@ -1,0 +1,20 @@
+cloudflare_zone_id = "replace-me"
+
+# The production distribution, from the terraform-site output
+# (environment=production). Not the preview distribution.
+cloudfront_domain = "d2bmtl9y1doakb.cloudfront.net"
+
+# Grey records. Raise this only after the zone is live and SSL/TLS is on Full
+# (strict), which is Phase 2 in docs/deployment.md; earlier, Cloudflare can
+# answer 526.
+proxy_web = false
+
+# The validation_records output of terraform-site-certificate, as a map. They
+# must stay in the zone for good: ACM re-checks them to renew the certificate.
+# acm_validation_records = {
+#   "neocom.cloud"     = { name = "_...neocom.cloud",     type = "CNAME", value = "_....acm-validations.aws" }
+#   "www.neocom.cloud" = { name = "_...www.neocom.cloud", type = "CNAME", value = "_....acm-validations.aws" }
+# }
+
+# Never commit the token. Export it instead:
+#   export TF_VAR_cloudflare_api_token=...

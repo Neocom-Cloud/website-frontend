@@ -25,6 +25,37 @@ jobs:
       - name: Lint workflow definitions
         uses: docker://rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 # v1.7.12
 
+  terraform-validate:
+    name: Validate Terraform stacks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_version: 1.16.4
+          terraform_wrapper: false
+
+      - name: Check formatting
+        run: terraform fmt -check -diff -recursive infra
+
+      # -backend=false keeps this off the state bucket. The stacks declare an S3
+      # backend that is configured at init time, and validation needs neither
+      # that bucket nor any cloud credential.
+      - name: Initialize and validate every stack
+        run: |
+          for stack in infra/terraform-dns infra/terraform-site infra/terraform-site-bootstrap infra/terraform-site-certificate infra/terraform-paperclip-deploy; do
+            echo "== $stack =="
+            terraform -chdir="$stack" init -backend=false -input=false
+            terraform -chdir="$stack" validate
+          done
+
   promotion-policy:
     name: Validate promotion path
     if: github.event_name == 'pull_request'
@@ -134,10 +165,9 @@ jobs:
     if: needs.deployment-gate-policy.outputs.deploy-status == 'true'
     needs: deployment-gate-policy
     runs-on: ubuntu-latest
-    # The readiness check only reads repository files and GitHub Pages configuration.
+    # The readiness check only requests public HTTPS pages of the production site.
     permissions:
       contents: read
-      pages: read
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -149,10 +179,13 @@ jobs:
         with:
           node-version: 24
 
-      - name: Verify GitHub Pages readiness
+      # Empty until the DNS cut-over, which keeps the probe on the CloudFront
+      # distribution. Set the repository variable SITE_ORIGIN to
+      # https://neocom.cloud afterwards.
+      - name: Verify production site readiness
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/verify-pages-status.mjs
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
+        run: node scripts/verify-site-status.mjs
 
   browser-e2e:
     name: Browser end-to-end

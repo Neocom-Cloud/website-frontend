@@ -1,6 +1,6 @@
 # NeoCom Website Frontend
 
-Static multi-page marketing site for `neocom.cloud`, built with Vite and React and deployed to GitHub Pages.
+Static multi-page marketing site for `neocom.cloud`, built with Vite and React and hosted on AWS (S3 behind CloudFront).
 
 This repository is `pnpm`-first. Use `pnpm` for install, development, testing, and build commands.
 
@@ -10,8 +10,10 @@ Node.js 24 or later is supported. With `nvm`, run `nvm use` to select the Node 2
 
 - Vite
 - React
+- Tailwind CSS v4 (`@tailwindcss/vite`)
 - TypeScript
 - Vitest + Testing Library
+- Playwright (browser and visual tests)
 - GitHub Actions
 
 ## Local development
@@ -43,9 +45,17 @@ pnpm test:watch
 
 `pnpm generate:pages` regenerates the localized HTML entry points and `public/sitemap.xml` from the centralized content catalog.
 
+## Design model
+
+The site follows the **NeoCom 3A** model (light/dark, per-project accent colours). The design sources live in [`New_Claude_Designs/`](./New_Claude_Designs) (`NeoCom 3A.dc.html`, `NeoCom Social X.dc.html` and the `support.js` runtime that renders them) and are kept only as reference.
+
+- Design tokens (palette, radii, fonts) are CSS variables in `src/styles/global.css`, switched by `html[data-theme]` and, on project pages, by `data-accent`. Components use semantic Tailwind utilities such as `bg-surface`, `text-ink-2`, `text-accent` and `bg-project-field`.
+- Typefaces (Familjen Grotesk, IBM Plex Mono) are self-hosted through Fontsource, so visitors make no request to a font CDN.
+- The X / Twitter profile kits for NeoCom and DevRecord (banner, avatars, posts) live in `src/social/` and render at `/social/` **under `pnpm dev` only**. They are reference surfaces for exporting the artwork at its exact pixel sizes, so the page is deliberately left out of `getViteInputMap` and never reaches production.
+
 ## Architecture
 
-- Shared React page models live in `src/App.tsx`.
+- The page shell lives in `src/App.tsx`; pages are in `src/pages/` and building blocks in `src/components/`.
 - Localized copy and SEO strings live in:
   - `src/content/locales/pt-br.js`
   - `src/content/locales/en.js`
@@ -63,8 +73,20 @@ This keeps one shared landing template, one shared standard project template, an
   - NeoCom brand: SVG
   - DevRecord: SVG
   - NeoRecicla: SVG
-- Temporary exception:
-  - Neo Health still uses PNG because there is no source SVG in the repository yet
+- Social preview images are raster, not SVG. Open Graph and Twitter cards accept JPEG, GIF and PNG only, so a crawler handed an SVG `og:image` may render no preview at all. The vectors stay authoritative on the page; `scripts/rasterize-social-image.mjs` derives the copies the crawlers consume:
+
+  ```bash
+  node scripts/rasterize-social-image.mjs public/assets/NeoCom_Icon_Final_v2.svg public/assets/social-neocom.jpg
+  node scripts/rasterize-social-image.mjs public/assets/NeoRecicla_Icon.svg public/assets/social-neorecicla.jpg
+  node scripts/rasterize-social-image.mjs public/assets/devrecord-icon.svg public/assets/social-devrecord.jpg "#120d05"
+  ```
+
+- Apollo ships final artwork in two theme variants rather than an SVG. Both are cropped and re-encoded from the delivered PNGs by `scripts/crop-icon-frame.mjs`; the page loads a WebP per theme and `og:image` a JPEG, because some link-preview crawlers reject WebP:
+
+  ```bash
+  node scripts/crop-icon-frame.mjs assets/Icon_Apollo_Concept.png public/assets/Icon_Apollo_Concept
+  node scripts/crop-icon-frame.mjs assets/Icon_Apollo_Concept_Light.png public/assets/Icon_Apollo_Concept_Light
+  ```
 
 ## Locale behavior
 
@@ -78,19 +100,20 @@ This keeps one shared landing template, one shared standard project template, an
   - `/en/`
   - `/pt-br/projects/:slug/`
   - `/en/projects/:slug/`
-- GitHub Pages cannot do true server-side locale detection from request headers. If you later need `Accept-Language` or geo-based edge routing, add that at Cloudflare or AWS.
+- The static files cannot do true server-side locale detection from request headers. If you later need `Accept-Language` or geo-based edge routing, add that at CloudFront or Cloudflare.
 
 ## Deployment and DNS
 
-- Deployment workflow: [deploy-pages.yml](./.github/workflows/deploy-pages.yml)
+- Deployment workflow: [deploy-aws.yml](./.github/workflows/deploy-aws.yml)
 - DNS and custom-domain runbook: [docs/deployment.md](./docs/deployment.md)
-- Configure records in the authoritative DNS provider's zone before GitHub Pages can validate `neocom.cloud`. Hostinger and providers without apex CNAME flattening require GitHub Pages' four apex A records; Cloudflare can use its supported apex CNAME-flattening mechanism. In every case, configure `www -> neocom-cloud.github.io` and follow the provider's supported apex-record method.
+- The site is served by CloudFront from a private S3 bucket. DNS lives in Cloudflare, managed by `infra/terraform-dns`: `neocom.cloud` and `www` are CNAMEs to the production distribution, and the Zoho mail records are preserved untouched.
 - Production publishes only from the `deploy` branch after `develop -> Q.A -> main -> Q.A.E2E -> deploy`; `main` remains the default branch.
 
 ## Testing
 
 - Test guide: [docs/testing.md](./docs/testing.md)
 - Code review guide: [docs/code-review.md](./docs/code-review.md)
+- Rules for AI agents: [AGENTS.md](./AGENTS.md) and [docs/paperclip-agent-rules.md](./docs/paperclip-agent-rules.md)
 - Delivery playbook: [docs/development-playbook.md](./docs/development-playbook.md)
 - Generic delivery playbook template: [docs/generic-development-playbook.md](./docs/generic-development-playbook.md)
 - CI workflow: [ci.yml](./.github/workflows/ci.yml)
@@ -98,5 +121,5 @@ This keeps one shared landing template, one shared standard project template, an
 ## Notes
 
 - The public domain is `neocom.cloud`.
-- The GitHub Pages owner domain used for DNS targets is `neocom-cloud.github.io`.
+- The production CloudFront distribution is `d2bmtl9y1doakb.cloudfront.net`.
 - The site ships `pt-BR` and `en` locales.

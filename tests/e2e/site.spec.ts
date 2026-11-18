@@ -2,17 +2,17 @@ import { expect, test } from "@playwright/test";
 import { E2E_BASE_URL } from "./constants";
 
 const locales = ["pt-br", "en"] as const;
-const projectSlugs = ["neorecicla", "devrecord", "neo-health"] as const;
+const projectSlugs = ["neorecicla", "devrecord", "apollo"] as const;
 const projectNames = {
   "pt-br": {
     neorecicla: "NeoRecicla",
     devrecord: "DevRecord",
-    "neo-health": "Neo Health"
+    "apollo": "Apollo"
   },
   en: {
     neorecicla: "NeoRecicla",
     devrecord: "DevRecord",
-    "neo-health": "Neo Health"
+    "apollo": "Apollo"
   }
 } as const;
 const localeLinkNames = { "pt-br": "PT", en: "EN" } as const;
@@ -120,6 +120,26 @@ test.describe("published static site", () => {
     } finally {
       await browserOnlyContext.close();
     }
+  });
+
+  test("applies a stored dark theme before the app boots", async ({ page }) => {
+    await page.addInitScript(() => window.localStorage.setItem("neocom-theme", "dark"));
+    await page.goto("/pt-br/", { waitUntil: "commit" });
+
+    // Read at DOMContentLoaded, before the module bundle has hydrated: the
+    // inline bootstrap must already have swapped the document off the light
+    // default, otherwise the visitor sees a flash.
+    const theme = await page.evaluate(async () => {
+      if (document.readyState === "loading") {
+        await new Promise((resolve) =>
+          document.addEventListener("DOMContentLoaded", resolve, { once: true })
+        );
+      }
+
+      return document.documentElement.dataset.theme;
+    });
+
+    expect(theme).toBe("dark");
   });
 
   test("persists the selected theme after reload", async ({ page }) => {

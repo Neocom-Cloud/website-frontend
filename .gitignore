@@ -3,3 +3,20 @@ dist
 playwright-report
 test-results
 .DS_Store
+
+# Terraform: local working dirs, state and plans. The .terraform.lock.hcl
+# files are committed on purpose so provider versions stay pinned.
+infra/*/.terraform
+infra/*/terraform.tfstate
+infra/*/terraform.tfstate.backup
+infra/*/*.tfplan
+infra/*/terraform.tfvars
+
+# Private keys never belong in this repository. The Paperclip CA's PUBLIC
+# certificate (ca.pem) is committed on purpose; its key stays offline.
+*.key
+infra/**/*.key
+
+# Local agent settings (Claude Code / Paperclip); machine-specific, never committed.
+.claude/settings.local.json
+.claude/

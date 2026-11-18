@@ -22,16 +22,26 @@
       content="Identidade técnica verificável, além de plataformas únicas."
     />
     <meta property="og:url" content="https://neocom.cloud/pt-br/projects/devrecord/" />
-    <meta property="og:image" content="https://neocom.cloud/assets/NeoCom_Icon_App.svg" />
+    <meta property="og:image" content="https://neocom.cloud/assets/social-devrecord.jpg" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="DevRecord | NeoCom" />
     <meta
       name="twitter:description"
       content="Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
     />
-    <meta name="twitter:image" content="https://neocom.cloud/assets/NeoCom_Icon_App.svg" />
+    <meta name="twitter:image" content="https://neocom.cloud/assets/social-devrecord.jpg" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
+    <script>
+      try {
+        var stored = localStorage.getItem("neocom-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (error) {
+        // Storage denied; the document already carries the light default.
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

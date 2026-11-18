@@ -30,7 +30,7 @@ describe("project mailto helper", () => {
     });
     expect(copy.projects.items.neorecicla.summary).toContain("resíduos");
     expect(copy.projects.items.devrecord.summary).toContain("histórico de produção");
-    expect(copy.projects.items["neo-health"].summary).toContain("informações de saúde");
+    expect(copy.projects.items["apollo"].summary).toContain("informações de saúde");
     expect(copy.seo.landing.title).toBe("NeoCom | Inovação em comunicações");
     expect(copy.seo.landing.description).toContain("confiança digital");
   });

@@ -24,8 +24,8 @@ const staticPageContract = [
   {
     locale: "pt-br",
     htmlLang: "pt-BR",
-    outputPath: "pt-br/projects/neo-health/index.html",
-    pathname: "/pt-br/projects/neo-health/"
+    outputPath: "pt-br/projects/apollo/index.html",
+    pathname: "/pt-br/projects/apollo/"
   },
   {
     locale: "en",
@@ -42,8 +42,8 @@ const staticPageContract = [
   {
     locale: "en",
     htmlLang: "en",
-    outputPath: "en/projects/neo-health/index.html",
-    pathname: "/en/projects/neo-health/"
+    outputPath: "en/projects/apollo/index.html",
+    pathname: "/en/projects/apollo/"
   }
 ];
 const canonicalOrigin = "https://neocom.cloud";
@@ -80,7 +80,6 @@ describe("production build output", () => {
     const requiredFiles = [
       "index.html",
       "404.html",
-      "CNAME",
       "favicon.svg",
       "robots.txt",
       "site.webmanifest",
@@ -91,6 +90,11 @@ describe("production build output", () => {
     for (const relativePath of requiredFiles) {
       expect(existsSync(resolve(distDir, relativePath)), relativePath).toBe(true);
     }
+  });
+
+  it("leaves the development-only X/Twitter kit out of the build", () => {
+    expect(existsSync(resolve(distDir, "social/index.html"))).toBe(false);
+    expect(readDistFile("robots.txt")).not.toContain("social");
   });
 
   it("publishes every configured project asset", () => {
@@ -128,7 +132,7 @@ describe("production build output", () => {
         outputPath: "pt-br/index.html",
         title: "NeoCom | Inovação em comunicações",
         description:
-          "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health.",
+          "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Apollo.",
         ogDescription:
           "Tecnologia com propósito, conexão com responsabilidade e privacidade como fundamento.",
         twitterDescription: "Explore os projetos e a missão da NeoCom."
@@ -152,10 +156,10 @@ describe("production build output", () => {
           "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
       },
       {
-        outputPath: "pt-br/projects/neo-health/index.html",
-        title: "Neo Health | NeoCom",
+        outputPath: "pt-br/projects/apollo/index.html",
+        title: "Apollo | NeoCom",
         description:
-          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+          "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
         ogDescription: "Dados sensíveis com governança pessoal e contexto claro.",
         twitterDescription:
           "Conheça a visão da NeoCom para histórico pessoal de saúde."

@@ -8,9 +8,12 @@ export const ptBrSiteCopy = {
   },
   themeToggle: {
     toDark: "Modo escuro",
-    toLight: "Modo claro"
+    toLight: "Modo claro",
+    toDarkShort: "Escuro",
+    toLightShort: "Claro"
   },
   nav: {
+    label: "Principal",
     projects: "Projetos",
     mission: "Missão",
     contact: "Contato"
@@ -28,7 +31,8 @@ export const ptBrSiteCopy = {
     ],
     subtitle:
       "Tecnologia com propósito. Conexão com responsabilidade. Privacidade como fundamento.",
-    cta: "Conheça nossos projetos"
+    cta: "Conheça nossos projetos",
+    secondaryCta: "Falar com a NeoCom"
   },
   values: {
     eyebrow: "Nossos valores",
@@ -54,6 +58,7 @@ export const ptBrSiteCopy = {
           "Coleta automatizada de resíduos em universidades com pontos de reciclagem verificados em blockchain.",
         cardCta: "Explorar projeto",
         artAlt: "Ícone do NeoRecicla",
+        badge: "Conceito",
         detailEyebrow: "Sustentabilidade rastreável",
         detailIntro:
           "NeoRecicla conecta coleta automatizada, incentivo ao descarte correto e trilha auditável de recompensas em um fluxo simples para campus universitários.",
@@ -91,7 +96,8 @@ export const ptBrSiteCopy = {
         summary:
           "Um ponto de verdade imutável para o histórico de produção de desenvolvedores, livre de plataformas centralizadas.",
         cardCta: "Ver conceito",
-        artAlt: "Ícone temporário do DevRecord",
+        artAlt: "Ícone do DevRecord",
+        badge: "Conceito",
         detailEyebrow: "Identidade técnica verificável",
         detailIntro:
           "DevRecord é uma proposta para consolidar histórico de produção, autoria e reputação técnica sem depender inteiramente de uma única plataforma de hospedagem de código.",
@@ -124,17 +130,17 @@ export const ptBrSiteCopy = {
           "Fase atual: conceito, arquitetura inicial e definição de recorte de produto.",
         cta: "Quero conversar sobre o DevRecord"
       },
-      "neo-health": {
-        name: "Neo Health",
+      "apollo": {
+        name: "Apollo",
         category: "Saúde Pessoal / Rastreamento",
         summary:
           "Rastreador pessoal de informações de saúde para centralizar histórico, métricas e dados importantes sob controle do usuário.",
         cardCta: "Abrir visão geral",
-        artAlt: "Ícone do Neo Health",
+        artAlt: "Ícone do Apollo",
         badge: "Conceito",
         detailEyebrow: "Controle pessoal de dados sensíveis",
         detailIntro:
-          "Neo Health explora um espaço delicado: como reunir histórico, registros e métricas de saúde com mais clareza para o usuário, sem abrir mão de controle e privacidade.",
+          "Apollo explora um espaço delicado: como reunir histórico, registros e métricas de saúde com mais clareza para o usuário, sem abrir mão de controle e privacidade.",
         highlights: [
           "Visão consolidada de informações dispersas",
           "Prioridade para dados sensíveis sob controle do usuário",
@@ -150,7 +156,7 @@ export const ptBrSiteCopy = {
           {
             title: "Direção do produto",
             paragraphs: [
-              "Neo Health parte de uma base simples: agregar o que importa, organizar linha do tempo e reduzir atrito para consulta e acompanhamento. A camada crítica é governança de acesso, não volume de features."
+              "Apollo parte de uma base simples: agregar o que importa, organizar linha do tempo e reduzir atrito para consulta e acompanhamento. A camada crítica é governança de acesso, não volume de features."
             ]
           },
           {
@@ -161,7 +167,7 @@ export const ptBrSiteCopy = {
           }
         ],
         status: "Fase atual: conceito e definição de recorte para validação inicial.",
-        cta: "Quero conversar sobre o Neo Health"
+        cta: "Quero conversar sobre o Apollo"
       }
     }
   },
@@ -193,7 +199,7 @@ export const ptBrSiteCopy = {
     landing: {
       title: "NeoCom | Inovação em comunicações",
       description:
-        "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Neo Health.",
+        "Landing page da NeoCom focada em privacidade, sustentabilidade, confiança digital e projetos como NeoRecicla, DevRecord e Apollo.",
       ogDescription:
         "Tecnologia com propósito, conexão com responsabilidade e privacidade como fundamento.",
       twitterDescription: "Explore os projetos e a missão da NeoCom."
@@ -213,13 +219,76 @@ export const ptBrSiteCopy = {
         twitterDescription:
           "Explore o conceito da NeoCom para trilhas de contribuição verificáveis."
       },
-      "neo-health": {
+      "apollo": {
         description:
-          "Neo Health é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
+          "Apollo é o conceito da NeoCom para organizar histórico e dados pessoais de saúde sob controle do usuário.",
         ogDescription: "Dados sensíveis com governança pessoal e contexto claro.",
         twitterDescription:
           "Conheça a visão da NeoCom para histórico pessoal de saúde."
       }
+    }
+  },
+  social: {
+    pageTitle: "Kits de perfil e posts para X",
+    sectionTitle: "Kit de perfil e posts",
+    kits: { neocom: "NeoCom · X / Twitter", devrecord: "DevRecord · X / Twitter" },
+    assetLabels: {
+      banner: "Banner",
+      "avatar-dark": "Avatar escuro",
+      "avatar-light": "Avatar claro",
+      "post-manifesto": "Post · manifesto",
+      "post-portfolio": "Post · portfólio de projetos",
+      "devrecord-banner": "Banner",
+      "devrecord-avatar": "Avatar",
+      "devrecord-avatar-light": "Avatar em campo claro",
+      "devrecord-post-thesis": "Post · tese",
+      "devrecord-post-what": "Post · o que é"
+    },
+    neocom: {
+      bannerLine: "Tecnologia que melhora processos cotidianos e deixa rastro",
+      bannerHighlight: "verificável",
+      manifesto: "Inovação só vale quando dá para comprovar.",
+      values: ["Privacidade", "Segurança", "Confiabilidade", "Comprovabilidade", "Comunidade"],
+      portfolioTitle: "Três projetos em construção",
+      portfolio: [
+        {
+          name: "NeoRecicla",
+          summary: "Coleta verificada em blockchain para campus universitários.",
+          icon: "/assets/NeoRecicla_Icon.svg",
+          background: "#151a1e",
+          watermarkOpacity: 0.18
+        },
+        {
+          name: "DevRecord",
+          summary: "Histórico de produção portável e comprovável.",
+          icon: "/assets/devrecord-icon.svg",
+          background: "#191309",
+          watermarkOpacity: 0.35
+        },
+        {
+          name: "Apollo",
+          summary: "Saúde conectada com dado sob controle da pessoa.",
+          icon: "/assets/Icon_Apollo_Concept.webp",
+          background: "#17140c",
+          watermarkOpacity: 0.3
+        }
+      ]
+    },
+    devrecord: {
+      bannerLead: "Um ponto de verdade",
+      bannerHighlight: "imutável",
+      bannerTail: "para o histórico de produção de desenvolvedores.",
+      bannerFooter: "Um projeto NeoCom · neocom.cloud",
+      thesis: "Seu histórico técnico não deveria pertencer a uma plataforma.",
+      pills: ["Portável", "Comprovável", "Sem plataforma central"],
+      whatTitle: "Identidade técnica verificável",
+      whatBadge: "Conceito",
+      whatPoints: [
+        "Histórico portável entre plataformas",
+        "Registro orientado a comprovabilidade e reputação",
+        "Modelo pensado para profissionais e organizações"
+      ],
+      whatFooter: "neocom.cloud / devrecord"
     }
   },
   footer:

@@ -66,7 +66,7 @@ Cycles through: *comunicações, privacidade, sustentabilidade, comunidade, tecn
 
 ## Current Delivery Decisions
 - Vite + React multi-page static build
-- GitHub Pages for hosting with custom domain on neocom.cloud
+- AWS (S3 + CloudFront) for hosting, with Cloudflare DNS, on neocom.cloud
 - pt-BR and en locales at launch
 - Root route auto-redirect based on browser locale with manual override
 - Dedicated contact surface via contato@neocom.cloud
