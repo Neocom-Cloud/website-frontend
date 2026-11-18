@@ -185,6 +185,12 @@ data "aws_iam_policy_document" "github_site" {
   # The AWS provider reads every bucket sub-resource on refresh, so an action
   # allowlist is brittle. This bucket is dedicated to the site, so scope by ARN
   # and allow the service, as the DevRecord stack does.
+  #
+  # The bucket name must match the naming convention used in terraform-site:
+  # local.name = "${var.project_name}-site-${var.environment}",
+  # which defaults to "neocom-site-<environment>", matching site_bucket_prefix
+  # here. If terraform-site's project_name or naming changes, these ARNs must
+  # be updated to stay in sync.
   statement {
     sid     = "SiteS3"
     actions = ["s3:*"]
@@ -195,19 +201,20 @@ data "aws_iam_policy_document" "github_site" {
   }
 
   # CloudFront distribution IDs are allocated on creation, so they cannot be
-  # named here; scope to this account's CloudFront resources instead. The
-  # read-only and create calls below do not support resource-level conditions
-  # at all, which is why they sit in their own statement.
+  # fully named ahead of time. However, we restrict mutations (DeleteDistribution,
+  # UpdateDistribution) to distributions tagged with the environment they manage.
+  # Read-only actions and creates remain account-wide since the API does not
+  # support resource-level conditions on all operations.
+  #
+  # The site stack tags distributions with Environment=preview or Environment=production;
+  # mutations on the wrong environment are blocked by the tag condition.
   statement {
-    sid = "SiteCloudFront"
+    sid = "SiteCloudFrontReadAndCreate"
     actions = [
       "cloudfront:CreateDistribution",
       "cloudfront:CreateFunction",
       "cloudfront:CreateInvalidation",
       "cloudfront:CreateOriginAccessControl",
-      "cloudfront:DeleteDistribution",
-      "cloudfront:DeleteFunction",
-      "cloudfront:DeleteOriginAccessControl",
       "cloudfront:DescribeFunction",
       "cloudfront:GetDistribution",
       "cloudfront:GetDistributionConfig",
@@ -219,13 +226,28 @@ data "aws_iam_policy_document" "github_site" {
       "cloudfront:ListOriginAccessControls",
       "cloudfront:ListTagsForResource",
       "cloudfront:PublishFunction",
-      "cloudfront:TagResource",
+      "cloudfront:TagResource"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "SiteCloudFrontMutate"
+    actions = [
+      "cloudfront:DeleteDistribution",
+      "cloudfront:DeleteFunction",
+      "cloudfront:DeleteOriginAccessControl",
       "cloudfront:UntagResource",
       "cloudfront:UpdateDistribution",
       "cloudfront:UpdateFunction",
       "cloudfront:UpdateOriginAccessControl"
     ]
     resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/Environment"
+      values   = [each.key]
+    }
   }
 
   # Only needed once the distribution carries a custom domain. Certificate

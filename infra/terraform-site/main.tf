@@ -77,6 +77,10 @@ resource "aws_cloudfront_distribution" "site" {
   price_class         = var.price_class
   aliases             = local.aliases
 
+  tags = {
+    Environment = var.environment
+  }
+
   origin {
     origin_id                = "s3-${local.bucket_name}"
     domain_name              = aws_s3_bucket.site.bucket_regional_domain_name

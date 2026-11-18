@@ -23,11 +23,6 @@ output "aws_config_profile" {
   value       = <<-EOT
     [profile paperclip]
     region = ${var.aws_region}
-    credential_process = /usr/local/bin/aws_signing_helper credential-process \
-      --certificate /etc/paperclip/paperclip.pem \
-      --private-key /etc/paperclip/paperclip.key \
-      --trust-anchor-arn ${aws_rolesanywhere_trust_anchor.paperclip.arn} \
-      --profile-arn ${aws_rolesanywhere_profile.paperclip.arn} \
-      --role-arn ${aws_iam_role.paperclip_deploy.arn}
+    credential_process = /usr/local/bin/aws_signing_helper credential-process --certificate /etc/paperclip/paperclip.pem --private-key /etc/paperclip/paperclip.key --trust-anchor-arn ${aws_rolesanywhere_trust_anchor.paperclip.arn} --profile-arn ${aws_rolesanywhere_profile.paperclip.arn} --role-arn ${aws_iam_role.paperclip_deploy.arn}
   EOT
 }

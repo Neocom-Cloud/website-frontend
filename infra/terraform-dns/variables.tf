@@ -75,7 +75,7 @@ variable "acm_validation_records" {
 variable "create_dmarc" {
   type        = bool
   default     = true
-  description = "The zone has no DMARC record today; this adds one in monitoring mode."
+  description = "Create a DMARC record in monitoring mode (p=none) on the first apply. Set to false only if the zone already has a DMARC record and you want to manage it outside Terraform."
 }
 
 variable "dmarc_report_address" {
