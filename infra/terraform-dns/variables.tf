@@ -63,6 +63,26 @@ variable "proxy_web" {
   EOT
 }
 
+variable "acm_validation_records" {
+  type = map(object({
+    name  = string
+    type  = string
+    value = string
+  }))
+  default     = {}
+  description = <<-EOT
+    The validation_records output of terraform-site-certificate. They must stay
+    in the zone for good: ACM re-checks them to renew the certificate, and a
+    zone that loses them fails the renewal about a year later, silently. They
+    are never proxied.
+  EOT
+
+  validation {
+    condition     = alltrue([for record in values(var.acm_validation_records) : record.type == "CNAME"])
+    error_message = "ACM DNS validation records are CNAMEs."
+  }
+}
+
 variable "create_dmarc" {
   type        = bool
   default     = true

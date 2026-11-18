@@ -11,6 +11,7 @@ Two stacks, both modelled on `DevRecord/infra/terraform-landing*`:
 | `terraform-site-bootstrap` | Encrypted state bucket, KMS key, GitHub OIDC deploy roles | Local, committed nowhere |
 | `terraform-site` | Site bucket, CloudFront distribution, OAC, directory-index function | The bucket the bootstrap created |
 | `terraform-dns` | The Cloudflare zone's records | The same bucket, under `dns/` |
+| `terraform-site-certificate` | The ACM certificate for `neocom.cloud` and `www.neocom.cloud`, in `us-east-1` | The same bucket, under `certificate/` |
 | `terraform-paperclip-deploy` | IAM Roles Anywhere trust anchor, profile and a content-deploy role for Paperclip | The same bucket, under `paperclip/` |
 
 ## Why CloudFront and not the S3 website endpoint
@@ -111,7 +112,13 @@ create IAM roles and Roles Anywhere resources.
 
 ```bash
 export AWS_PROFILE=neocom
-terraform -chdir=infra/terraform-paperclip-deploy init   -backend-config="bucket=<state_bucket_name>"   -backend-config="key=paperclip/preview.tfstate"   -backend-config="region=us-east-1"   -backend-config="encrypt=true"   -backend-config="kms_key_id=<state_kms_key_arn>"   -backend-config="use_lockfile=true"
+terraform -chdir=infra/terraform-paperclip-deploy init \
+  -backend-config="bucket=<state_bucket_name>" \
+  -backend-config="key=paperclip/preview.tfstate" \
+  -backend-config="region=us-east-1" \
+  -backend-config="encrypt=true" \
+  -backend-config="kms_key_id=<state_kms_key_arn>" \
+  -backend-config="use_lockfile=true"
 terraform -chdir=infra/terraform-paperclip-deploy apply   # reads terraform.tfvars
 terraform -chdir=infra/terraform-paperclip-deploy output -raw aws_config_profile
 ```
@@ -158,28 +165,66 @@ Apply this **before** pointing the registrar at Cloudflare, then prove it with
 on its own nameservers as soon as it exists, so the whole record set can be
 checked while Hostinger is still authoritative and nothing is at risk.
 
-## Attaching neocom.cloud later
+## Attaching neocom.cloud (production)
 
-Production needs, in order:
+Production reuses `terraform-site` with `environment=production`, which gives it
+its own bucket (`neocom-site-production`) and distribution. Nothing below
+changes what `neocom.cloud` serves until step 8: while the DNS still points at
+GitHub Pages, the new distribution receives no traffic.
 
-1. The Cloudflare zone for `neocom.cloud`, with **every** record from the
-   Hostinger zone recreated first — the Zoho MX, SPF, DKIM (`zmail` selector)
-   and the `zoho-verification` TXT especially. A record that exists at
-   Hostinger and not at Cloudflare stops existing the moment the nameservers
-   change, and broken outgoing mail fails silently.
-2. An ACM certificate in `us-east-1`, validated by a DNS record in Cloudflare,
-   covering **both** `neocom.cloud` and `www.neocom.cloud`. `terraform-dns`
-   points both hosts at the distribution once `web_target` is `cloudfront`.
-3. `custom_domain` and `acm_certificate_arn` set on this stack. The
-   distribution takes both `custom_domain` and `www.<custom_domain>` as
-   aliases, matching the pair `terraform-dns` points here, so the certificate
-   in step 2 has to carry both names or the apply fails on the alias.
-4. The web records pointed at the distribution (`web_target = "cloudfront"`),
-   grey or proxied as `proxy_web` says. With the proxy on, SSL/TLS must be
-   **Full (strict)**.
+Order matters, and each step is reversible until the nameservers move:
 
-Flipping `web_target` is not seamless: Terraform destroys the four apex A
-records and creates the CNAMEs in their place, so plan it for a quiet window
-and keep the TTLs low going in.
+1. **Certificate, first apply.** Requests the certificate for `neocom.cloud` and
+   `www.neocom.cloud` and prints the DNS records that prove control.
+
+   ```bash
+   export AWS_PROFILE=neocom
+   terraform -chdir=infra/terraform-site-certificate init \
+     -backend-config="bucket=<state_bucket_name>" \
+     -backend-config="key=certificate/production.tfstate" \
+     -backend-config="region=us-east-1" \
+     -backend-config="encrypt=true" \
+     -backend-config="kms_key_id=<state_kms_key_arn>" \
+     -backend-config="use_lockfile=true"
+   terraform -chdir=infra/terraform-site-certificate apply
+   terraform -chdir=infra/terraform-site-certificate output -json validation_records
+   ```
+
+2. **Create those CNAMEs at Hostinger.** They are additive, so nothing that
+   exists is touched and mail is not affected. Hostinger is still authoritative,
+   which is why the validation has to happen there and not in Cloudflare.
+3. **Certificate, second apply** with `-var="wait_for_validation=true"`. It
+   waits (up to 45 minutes) until ACM issues the certificate.
+4. **Production site stack**, with the certificate ARN:
+
+   ```bash
+   terraform -chdir=infra/terraform-site init -reconfigure \
+     -backend-config="bucket=<state_bucket_name>" \
+     -backend-config="key=site/production.tfstate" \
+     -backend-config="region=us-east-1" \
+     -backend-config="encrypt=true" \
+     -backend-config="kms_key_id=<state_kms_key_arn>" \
+     -backend-config="use_lockfile=true"
+   terraform -chdir=infra/terraform-site apply -var="environment=production" \
+     -var="custom_domain=neocom.cloud" -var="acm_certificate_arn=<certificate_arn>"
+   ```
+
+5. **Publish once** to the production bucket and check it on the distribution's
+   own `*.cloudfront.net` domain, still with no DNS change.
+6. **Cloudflare zone**: apply `terraform-dns` with the certificate's records in
+   `acm_validation_records` (the `validation_records` output of step 1) and
+   `web_target = "github-pages"`, then prove the whole record set with
+   `pnpm verify:dns --server <a Cloudflare nameserver>`. The **Zoho** MX, SPF,
+   DKIM (`zmail` selector) and `zoho-verification` TXT must all be there: a
+   record that exists at Hostinger and not at Cloudflare stops existing the
+   moment the nameservers change, and broken outgoing mail fails silently.
+   The ACM records have to stay in the zone for good, because ACM re-checks
+   them to renew the certificate.
+7. **Change the nameservers** at the registrar.
+8. **Cut over**: set `web_target = "cloudfront"` and `cloudfront_domain`, with
+   low TTLs going in. Terraform destroys the four apex A records and creates the
+   CNAMEs in their place, so choose a quiet window. Keep `proxy_web = false`
+   first; raise it only with SSL/TLS on **Full (strict)**.
+9. After a period of observation, retire GitHub Pages.
 
 See `docs/deployment.md` for the DNS runbook and the full record inventory.

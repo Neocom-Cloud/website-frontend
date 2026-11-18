@@ -50,7 +50,7 @@ jobs:
       # that bucket nor any cloud credential.
       - name: Initialize and validate every stack
         run: |
-          for stack in infra/terraform-dns infra/terraform-site infra/terraform-site-bootstrap; do
+          for stack in infra/terraform-dns infra/terraform-site infra/terraform-site-bootstrap infra/terraform-site-certificate infra/terraform-paperclip-deploy; do
             echo "== $stack =="
             terraform -chdir="$stack" init -backend=false -input=false
             terraform -chdir="$stack" validate
