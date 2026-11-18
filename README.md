@@ -84,12 +84,9 @@ This keeps one shared landing template, one shared standard project template, an
 - Apollo ships final artwork in two theme variants rather than an SVG. Both are cropped and re-encoded from the delivered PNGs by `scripts/crop-icon-frame.mjs`; the page loads a WebP per theme and `og:image` a JPEG, because some link-preview crawlers reject WebP:
 
   ```bash
-  node scripts/crop-icon-frame.mjs assets/Icon_NeoHealth_Concept.png public/assets/Icon_NeoHealth_Concept
-  node scripts/crop-icon-frame.mjs assets/Icon_NeoHealth_Concept_Light.png public/assets/Icon_NeoHealth_Concept_Light
+  node scripts/crop-icon-frame.mjs assets/Icon_Apollo_Concept.png public/assets/Icon_Apollo_Concept
+  node scripts/crop-icon-frame.mjs assets/Icon_Apollo_Concept_Light.png public/assets/Icon_Apollo_Concept_Light
   ```
-
-  The asset filenames still read `Icon_NeoHealth_Concept`. They are internal
-  paths, never shown, and renaming them buys nothing but churn.
 
 ## Locale behavior
 
