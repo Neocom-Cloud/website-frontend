@@ -44,7 +44,7 @@ workflow; they come from `terraform output` of `infra/terraform-site` and
 
 Known limits, on purpose:
 
-- The OIDC roles are the Terraform deploy roles of the bootstrap stack, which are broader than a content publish needs (`s3:*` on the site bucket and the whole CloudFront surface). A narrower content-only role is a follow-up.
+- The OIDC roles are content-only: write to their own bucket and invalidate their own distribution (scoped by ARN, `distribution_ids` in `infra/terraform-site-bootstrap`). They hold no Terraform state, KMS, ACM or distribution-management permission, so a run on `develop` cannot touch production. Terraform is applied by the owner from a workstation.
 - Paperclip's own role (`neocom-site-preview-paperclip-deploy`) reaches the preview only. Production is published through this workflow, never by hand.
 
 ### 1.1 Branch promotion
@@ -254,6 +254,8 @@ If you want Cloudflare in front of CloudFront:
 2. Set encryption mode to `Full (strict)`, **before** the proxy goes on. CloudFront serves a valid certificate for both names, so strict mode validates.
 3. Set `proxy_web = true` and apply `infra/terraform-dns`, which flips the web records from grey to proxied. Do not toggle the cloud in the dashboard; the next apply would revert it.
 4. Confirm that `https://neocom.cloud` and `https://www.neocom.cloud` both load correctly.
+
+`pnpm verify:dns` expects the `www` CNAME as written, so run it in the DNS-only phase: a proxied record answers with Cloudflare addresses instead.
 
 Cloudflare would then add its own caching on top of CloudFront's, which also
 means a publish has to be invalidated at both layers. That is the reason to

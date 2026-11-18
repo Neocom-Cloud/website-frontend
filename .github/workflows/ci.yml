@@ -179,7 +179,12 @@ jobs:
         with:
           node-version: 24
 
+      # Empty until the DNS cut-over, which keeps the probe on the CloudFront
+      # distribution. Set the repository variable SITE_ORIGIN to
+      # https://neocom.cloud afterwards.
       - name: Verify production site readiness
+        env:
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
         run: node scripts/verify-site-status.mjs
 
   browser-e2e:

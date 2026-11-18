@@ -55,21 +55,10 @@ variable "client_common_name" {
 variable "session_duration_seconds" {
   type        = number
   default     = 3600
-  description = "Lifetime of the temporary credentials issued by the profile (900 to 43200)."
+  description = "Lifetime of the temporary credentials (900 to 43200). Also the role's maximum, so no session can outlive it."
 
   validation {
     condition     = var.session_duration_seconds >= 900 && var.session_duration_seconds <= 43200
     error_message = "session_duration_seconds must be between 900 and 43200."
-  }
-}
-
-variable "role_max_session_duration_seconds" {
-  type        = number
-  default     = 43200
-  description = "Maximum session duration the role allows (minimum 3600, must be >= session_duration_seconds)."
-
-  validation {
-    condition     = var.role_max_session_duration_seconds >= 3600 && var.role_max_session_duration_seconds <= 43200
-    error_message = "role_max_session_duration_seconds must be between 3600 and 43200."
   }
 }
