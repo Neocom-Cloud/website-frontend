@@ -268,7 +268,7 @@ export const ptBrSiteCopy = {
         {
           name: "Apollo",
           summary: "Saúde conectada com dado sob controle da pessoa.",
-          icon: "/assets/Icon_NeoHealth_Concept.webp",
+          icon: "/assets/Icon_Apollo_Concept.webp",
           background: "#17140c",
           watermarkOpacity: 0.3
         }

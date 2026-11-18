@@ -18,9 +18,9 @@ export const projectRegistry = {
     // Both variants are final brand artwork, cropped and re-encoded by
     // scripts/crop-icon-frame.mjs. The social image is a JPEG because some
     // link-preview crawlers reject WebP and render transparency as black.
-    artSrc: "/assets/Icon_NeoHealth_Concept.webp",
-    artLightSrc: "/assets/Icon_NeoHealth_Concept_Light.webp",
-    socialImageSrc: "/assets/Icon_NeoHealth_Concept.jpg",
+    artSrc: "/assets/Icon_Apollo_Concept.webp",
+    artLightSrc: "/assets/Icon_Apollo_Concept_Light.webp",
+    socialImageSrc: "/assets/Icon_Apollo_Concept.jpg",
     template: "standard"
   }
 };
