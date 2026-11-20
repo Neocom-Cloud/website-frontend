@@ -9,6 +9,9 @@ on:
       - Q.A.E2E
       - deploy
   pull_request:
+    # edited e labeled/unlabeled reexecutam a política quando o corpo, a base ou os
+    # labels do PR mudam (por exemplo, agent:* aplicado depois da primeira validação).
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
 
 jobs:
   workflow-lint:
@@ -117,9 +120,12 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - name: Checkout
+      # O verificador vem da base do PR, não do PR: um agente não pode desligar a
+      # própria checagem editando o script. Mudanças no verificador valem depois do merge.
+      - name: Checkout trusted base revision
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
+          ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
 
       - name: Setup Node.js
@@ -137,7 +143,13 @@ jobs:
           REPO: ${{ github.repository }}
           AGENT_ACCOUNTS: NeoCom-Agents
         run: |
-          CHANGED_FILES="$(gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --jq '.[].filename')"
+          # Bootstrap: enquanto a base não tem o verificador (só o PR que o introduz), não há o que rodar.
+          if [ ! -f scripts/verify-agent-pr.mjs ]; then
+            echo "::notice::A base ainda não tem scripts/verify-agent-pr.mjs; política de agente adiada até este PR ser mesclado."
+            exit 0
+          fi
+          # filename é o destino de uma renomeação; previous_filename é a origem e também conta.
+          CHANGED_FILES="$(gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --jq '.[] | .filename, (.previous_filename // empty)')"
           export CHANGED_FILES
           node scripts/verify-agent-pr.mjs
 

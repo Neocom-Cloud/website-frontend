@@ -2,6 +2,8 @@
 
 Estado: **v1, em uso a partir do repositório modelo `Neocom-Cloud/project-template`** (fonte local em `project-template/`). Valores marcados **(decisão tomada)** seguiram a prática que o dono já usa no `website-frontend`; o resto é proposta que ele pode mudar.
 
+> **Estado neste repositório (piloto):** o `CI gate` já existe e roda em todo PR, mas **ainda não é check obrigatório**: os rulesets seguem exigindo os checks atuais (`Validate promotion path`, `Test and build (Node 24)` etc.). Onde este texto diz que o `CI gate` barra o merge, vale para o modelo; aqui só passa a valer quando o dono trocar os checks obrigatórios dos quatro rulesets. Até lá, quem barra é o conjunto atual.
+
 ## 1. Cadeia de promoção (decisão tomada)
 
 ```
@@ -24,9 +26,12 @@ Regras comuns: PR obrigatório, sem force push, sem apagar a branch, sem bypass,
 
 Um único check obrigatório (`CI gate`) que só passa se todos os jobs do `ci.yml` passarem:
 
+**Job pulado conta como sucesso.** O `CI gate` reprova só `failure` e `cancelled`; um job que não rodou (por exemplo `Agent PR policy`, que só roda em PR) não o derruba. Gate verde significa "nenhum job falhou", não "todos rodaram". O gate roda de novo quando o corpo, a base ou os labels do PR mudam (`edited`, `labeled`, `unlabeled`).
+
+
 1. **Promoção** (`verify-promotion.mjs`): o PR para `Q.A`, `main`, `Q.A.E2E` ou `deploy` precisa vir da origem certa.
 2. **Metadados do agente** (`verify-agent-pr.mjs`): PR aberto por conta de agente (`NeoCom-Agents`) ou com label `agent:*` precisa ter o bloco `Identidade do agente` preenchido, o item `O que não foi verificado` e `Risco e reversão`. Sem isso o PR não passa.
-3. **Guardas protegidas**: PR de conta de agente que altere `.github/`, `rulesets/`, `scripts/verify-*`, `AGENTS.md` ou `CODEOWNERS` **falha**. Só o dono altera as guardas.
+3. **Guardas protegidas**: PR de conta de agente que altere `.github/`, `rulesets/`, `scripts/verify-*`, `AGENTS.md` ou `CODEOWNERS` **falha**, inclusive quando o caminho protegido é só a origem de uma renomeação. Só o dono altera as guardas. O verificador roda a partir da **base** do PR, não do código do PR, para o agente não desligar a própria checagem; mudanças nele valem depois do merge.
 4. **Testes** do projeto (no modelo: `node --test`; cada projeto troca pelo seu `test`/`build`).
 
 Fora do modelo v1, para cada projeto decidir: E2E em navegador, staging emulado (LocalStack) e o **gate de deploy "mesmo SHA saudável na staging"** do Vintex (v1.1).
@@ -64,7 +69,7 @@ O arquivo `.github/pull_request_template.md` do modelo tem: `Resumo`, `Identidad
 1. No GitHub, **Use this template** em `Neocom-Cloud/project-template` (privado).
 2. Criar as branches `develop`, `Q.A`, `main`, `Q.A.E2E`, `deploy` a partir da `main`.
 3. Ajustar `package.json` (`test`, `build`) e o `ci.yml` ao projeto, mantendo o job `CI gate`.
-4. O dono roda `scripts/apply-rulesets.sh <owner/repo>` e cria o ambiente `production` com ele como revisor.
+4. O dono roda `scripts/apply-rulesets.sh <owner/repo>` e cria o ambiente `production` com ele como revisor. Em repositório privado do plano Free a API recusa (403): siga só por convenção + `CI gate` e aplique os rulesets quando o plano ou a visibilidade mudar (seção 7).
 5. Dar à conta `NeoCom-Agents` o acesso de colaborador e liberar o repositório nas instruções dos agentes.
 
 ## 9. Decisões que continuam abertas

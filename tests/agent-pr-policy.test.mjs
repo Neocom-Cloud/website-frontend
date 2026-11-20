@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isAgentPr, validateAgentPr } from "../scripts/verify-agent-pr.mjs";
+import { TEMPLATE_PROMPTS, isAgentPr, validateAgentPr } from "../scripts/verify-agent-pr.mjs";
 
 const GOOD = `## Resumo
 Corrige o link.
@@ -54,6 +54,32 @@ describe("agent pull request policy", () => {
     const result = validateAgentPr({ author: "NeoCom-Agents", body, changedFiles: [] });
     expect(result.valid).toBe(false);
     expect(result.problems.some((p) => p.includes("Execução"))).toBe(true);
+  });
+
+  it("rejects an empty identity field even when the next line has a value", () => {
+    const body = GOOD.replace("- Assento: Codex\n", "- Assento:\n");
+    const result = validateAgentPr({ author: "NeoCom-Agents", body, changedFiles: [] });
+    expect(result.valid).toBe(false);
+    expect(result.problems.some((p) => p.includes("Assento"))).toBe(true);
+  });
+
+  it("rejects sections that still carry the template prompt", () => {
+    const body = GOOD.replace("Texto escrito pelo agente e revisado só por testes.", TEMPLATE_PROMPTS[0])
+      .replace("Nada além dos testes automáticos.", TEMPLATE_PROMPTS[1])
+      .replace("Baixo; reverter o PR.", TEMPLATE_PROMPTS[2]);
+    const result = validateAgentPr({ author: "NeoCom-Agents", body, changedFiles: [] });
+    expect(result.valid).toBe(false);
+    expect(result.problems.filter((p) => p.includes("texto-guia"))).toHaveLength(3);
+  });
+
+  it("flags a protected path that appears only as the source of a rename", () => {
+    // O workflow envia filename e previous_filename; a origem protegida basta para reprovar.
+    const result = validateAgentPr({
+      author: "NeoCom-Agents",
+      body: GOOD,
+      changedFiles: ["docs/pull_request_template.md", ".github/pull_request_template.md"]
+    });
+    expect(result.valid).toBe(false);
   });
 
   it("keeps agents out of the guard files", () => {

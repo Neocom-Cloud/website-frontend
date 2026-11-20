@@ -16,6 +16,12 @@ export const PROTECTED_PATHS = [
 ];
 export const IDENTITY_FIELDS = ["Agente", "Camada", "Assento", "Modelo e esforço", "Issue", "Execução"];
 const SECTIONS = ["Identidade do agente", "Uso de IA", "O que não foi verificado", "Risco e reversão"];
+// Textos-guia do template de PR. Se sobrarem intactos, a seção não foi respondida.
+export const TEMPLATE_PROMPTS = [
+  "Que parte foi escrita pela IA e que parte foi revisada por pessoa ou por teste?",
+  'Diga o que não foi testado ou confirmado. "Nada" só vale se for verdade.',
+  "Qual o risco e como reverter (normalmente: reverter este PR)."
+];
 
 export function isAgentPr({ author, labels = [], accounts = DEFAULT_AGENT_ACCOUNTS }) {
   const byAccount = accounts.some((a) => a.toLowerCase() === String(author ?? "").toLowerCase());
@@ -38,10 +44,12 @@ export function validateAgentPr({ author, labels = [], body = "", changedFiles =
     const text = section(body, title);
     if (text === null) problems.push(`Falta a seção "## ${title}".`);
     else if (text === "" || /<[^>\n]+>/.test(text)) problems.push(`A seção "${title}" está vazia ou ainda tem placeholder <...>.`);
+    else if (TEMPLATE_PROMPTS.some((prompt) => text.includes(prompt))) problems.push(`A seção "${title}" ainda tem o texto-guia do template; responda no lugar dele.`);
   }
   const identity = section(body, "Identidade do agente") ?? "";
   for (const field of IDENTITY_FIELDS) {
-    const m = new RegExp(`^[-*]?\\s*\\*{0,2}${field}\\*{0,2}\\s*:\\s*(.+)$`, "mi").exec(identity);
+    // Só espaço e tab: \s atravessaria a quebra de linha e leria o campo seguinte como valor deste.
+    const m = new RegExp(`^[ \\t]*[-*]?[ \\t]*\\*{0,2}${field}\\*{0,2}[ \\t]*:[ \\t]*(\\S[^\\n]*)$`, "mi").exec(identity);
     if (!m || !m[1].trim() || /^<.*>$/.test(m[1].trim())) problems.push(`Identidade do agente: o campo "${field}" não foi preenchido.`);
   }
   const touched = changedFiles.filter((f) => PROTECTED_PATHS.some((re) => re.test(f)));
