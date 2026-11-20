@@ -114,6 +114,7 @@ This keeps one shared landing template, one shared standard project template, an
 - Test guide: [docs/testing.md](./docs/testing.md)
 - Code review guide: [docs/code-review.md](./docs/code-review.md)
 - Rules for AI agents: [AGENTS.md](./AGENTS.md) and [docs/paperclip-agent-rules.md](./docs/paperclip-agent-rules.md)
+- NeoCom delivery standard (v1): [docs/padrao-neocom.md](./docs/padrao-neocom.md)
 - Delivery playbook: [docs/development-playbook.md](./docs/development-playbook.md)
 - Generic delivery playbook template: [docs/generic-development-playbook.md](./docs/generic-development-playbook.md)
 - CI workflow: [ci.yml](./.github/workflows/ci.yml)

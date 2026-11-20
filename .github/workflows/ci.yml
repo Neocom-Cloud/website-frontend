@@ -109,6 +109,38 @@ jobs:
           HEAD_REF: ${{ github.head_ref }}
         run: node scripts/resolve-deployment-gates.mjs
 
+  agent-pr-policy:
+    name: Agent PR policy
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+
+      - name: Check agent metadata and protected paths
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          AGENT_ACCOUNTS: NeoCom-Agents
+        run: |
+          CHANGED_FILES="$(gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --jq '.[].filename')"
+          export CHANGED_FILES
+          node scripts/verify-agent-pr.mjs
+
   test-and-build:
     name: Test and build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
@@ -283,3 +315,32 @@ jobs:
             test-results
           if-no-files-found: ignore
           retention-days: 14
+
+  # Padrão NeoCom v1: um único check que só passa se todos os jobs acima passarem.
+  # Jobs pulados (os que só rodam em certos destinos) não reprovam. Ainda não é check
+  # obrigatório: os rulesets seguem exigindo os checks atuais até o dono trocá-los.
+  ci-gate:
+    name: CI gate
+    if: always()
+    needs:
+      - workflow-lint
+      - terraform-validate
+      - promotion-policy
+      - deployment-gate-policy
+      - agent-pr-policy
+      - test-and-build
+      - deploy-status
+      - browser-e2e
+      - pre-deploy-test
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Require every job to succeed
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS"
+          if echo "$RESULTS" | grep -Eq '"result": "(failure|cancelled)"'; then
+            echo "Algum job falhou ou foi cancelado." >&2
+            exit 1
+          fi

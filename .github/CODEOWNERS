@@ -1,0 +1,4 @@
+# As guardas só mudam com o dono. O job "Agent PR policy" também recusa PR de agente nesses caminhos.
+/.github/ @v-Kaefer
+/scripts/verify-* @v-Kaefer
+/AGENTS.md @v-Kaefer

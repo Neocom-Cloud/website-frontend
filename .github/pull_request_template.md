@@ -23,3 +23,26 @@
 ## Rollback
 
 - State the rollback procedure, or explain why this change is safely reversible.
+
+## Identidade do agente
+
+<!-- Obrigatório para PR de agente (conta NeoCom-Agents ou label agent:*). Pessoa: apague as quatro seções abaixo. -->
+
+- Agente: <nome do agente no Paperclip>
+- Camada: <departamento ou líder>
+- Assento: <Codex ou Claude>
+- Modelo e esforço: <modelo / esforço usados>
+- Issue: <HOM-n>
+- Execução: <ID da execução>
+
+## Uso de IA
+
+- Que parte foi escrita pela IA e que parte foi revisada por pessoa ou por teste?
+
+## O que não foi verificado
+
+- Diga o que não foi testado ou confirmado. "Nada" só vale se for verdade.
+
+## Risco e reversão
+
+- Qual o risco e como reverter (normalmente: reverter este PR).
