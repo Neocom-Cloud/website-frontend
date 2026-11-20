@@ -1,0 +1,161 @@
+name: Staging (LocalStack)
+
+# Staging for `main`: the same static build that production publishes, sent to an
+# emulated S3 bucket by LocalStack, then checked object by object. It proves the
+# publish commands, the cache headers and the file set before a change moves on
+# to Q.A.E2E. It touches no real AWS account and holds no AWS credential.
+#
+#   develop -> Q.A -> main (this workflow) -> Q.A.E2E -> deploy (production, owner approval)
+#
+# CloudFront is not emulated: the free LocalStack tier does not include it, so the
+# distribution, the certificate and DNS are covered by the preview and production
+# smoke tests in deploy-aws.yml.
+#
+# LocalStack needs an account token since release 2026.03. Add it as the repository
+# secret LOCALSTACK_AUTH_TOKEN. Without it this workflow fails with a clear message.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-localstack-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  # Pinned by digest, like the actions. Update tag and digest together.
+  LOCALSTACK_IMAGE: localstack/localstack:2026.10.8@sha256:be800da7b2f20deeebb1a4fef113ff4fc7fa28871cac4de5036a1ac69e22b6dc
+  # The AWS CLI sends every call to the emulator. These credentials are dummies.
+  AWS_ENDPOINT_URL: http://localhost:4566
+  AWS_ACCESS_KEY_ID: test
+  AWS_SECRET_ACCESS_KEY: test
+  AWS_DEFAULT_REGION: us-east-1
+  STAGING_BUCKET: neocom-site-staging
+
+jobs:
+  staging:
+    name: Publish to LocalStack and verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Require the LocalStack auth token
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+        run: |
+          if [ -z "${LOCALSTACK_AUTH_TOKEN}" ]; then
+            echo "::error title=LocalStack token missing::Add the repository secret LOCALSTACK_AUTH_TOKEN (LocalStack requires an account token since 2026.03)."
+            exit 1
+          fi
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Verify deployment output
+        run: pnpm test:build-output
+
+      - name: Start LocalStack
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+        run: |
+          docker run --detach --name localstack \
+            --publish 4566:4566 \
+            --env SERVICES=s3 \
+            --env LOCALSTACK_AUTH_TOKEN \
+            "${LOCALSTACK_IMAGE}"
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://localhost:4566/_localstack/health > /dev/null; then
+              echo "LocalStack is ready after ${attempt} check(s)."
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs localstack
+          echo "::error::LocalStack did not become ready."
+          exit 1
+
+      - name: Create the staging bucket
+        run: aws s3 mb "s3://${STAGING_BUCKET}"
+
+      # Same three steps as production (deploy-aws.yml), so a mistake in them shows up here first.
+      - name: Upload fingerprinted assets
+        run: |
+          aws s3 sync dist/ "s3://${STAGING_BUCKET}/" \
+            --exclude "*" \
+            --include "assets/*.js" --include "assets/*.css" \
+            --include "assets/*.woff" --include "assets/*.woff2" \
+            --cache-control "public,max-age=31536000,immutable"
+
+      - name: Upload pages and other files
+        run: |
+          aws s3 sync dist/ "s3://${STAGING_BUCKET}/" \
+            --exclude "assets/*.js" --exclude "assets/*.css" \
+            --exclude "assets/*.woff" --exclude "assets/*.woff2" \
+            --exclude "*.html" \
+            --cache-control "public,max-age=3600"
+          aws s3 sync dist/ "s3://${STAGING_BUCKET}/" \
+            --exclude "*" --include "*.html" \
+            --cache-control "public,max-age=0,must-revalidate"
+
+      - name: Remove files that no longer exist
+        run: aws s3 sync dist/ "s3://${STAGING_BUCKET}/" --delete
+
+      - name: Verify the published site
+        run: |
+          set -eu
+
+          # 1. The bucket holds exactly the files that were built.
+          expected=$(cd dist && find . -type f | sed 's|^\./||' | LC_ALL=C sort)
+          actual=$(aws s3api list-objects-v2 --bucket "${STAGING_BUCKET}" \
+            --query 'Contents[].Key' --output text | tr '\t' '\n' | LC_ALL=C sort)
+          if [ "${expected}" != "${actual}" ]; then
+            echo "::error::The bucket does not match dist/."
+            diff <(echo "${expected}") <(echo "${actual}") || true
+            exit 1
+          fi
+          echo "Object set matches dist/ ($(echo "${expected}" | wc -l) files)."
+
+          # 2. The pages every visitor can reach exist.
+          for key in index.html pt-br/index.html en/index.html 404.html; do
+            aws s3api head-object --bucket "${STAGING_BUCKET}" --key "${key}" > /dev/null \
+              || { echo "::error::Missing ${key}"; exit 1; }
+          done
+
+          # 3. Cache headers: HTML always revalidates, fingerprinted assets are immutable.
+          html_cache=$(aws s3api head-object --bucket "${STAGING_BUCKET}" --key index.html --query CacheControl --output text)
+          if [ "${html_cache}" != "public,max-age=0,must-revalidate" ]; then
+            echo "::error::index.html Cache-Control is '${html_cache}'."
+            exit 1
+          fi
+          asset=$(cd dist && find assets -type f -name '*.js' | LC_ALL=C sort | head -n 1)
+          asset_cache=$(aws s3api head-object --bucket "${STAGING_BUCKET}" --key "${asset}" --query CacheControl --output text)
+          if [ "${asset_cache}" != "public,max-age=31536000,immutable" ]; then
+            echo "::error::${asset} Cache-Control is '${asset_cache}'."
+            exit 1
+          fi
+          echo "Cache headers are correct."
+
+      - name: LocalStack logs on failure
+        if: failure()
+        run: docker logs localstack || true
