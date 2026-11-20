@@ -74,6 +74,20 @@ Recommended repository rules:
 4. Require `Pre-deploy test` for `deploy` promotion PRs. It runs Playwright on Chromium, Firefox, WebKit, and Chromium mobile against the Node 24-validated artifact that would be published.
 5. Restrict the source branch for staged promotions through the CI policy. GitHub branch rules do not enforce a pull request's source branch by themselves.
 
+Applied on 2026-11-20 as four rulesets: `protect-develop`, `protect-Q.A-and-main`, `protect-Q.A.E2E` and `protect-deploy-production`. One difference from the list above: "up to date" is required on `develop` only. Promotions are merge commits, so the destination branch is always one commit ahead of its source, and requiring it on `Q.A`, `main`, `Q.A.E2E` and `deploy` would block every promotion.
+
+Production waits for the owner. The `site-production` environment has a required reviewer and accepts deployments from the `deploy` branch only, so a push to `deploy` pauses before the AWS role is assumed.
+
+### Staging on `main` (LocalStack)
+
+`.github/workflows/staging-localstack.yml` runs on every push to `main`. It builds the site, publishes `dist/` to an S3 bucket emulated by LocalStack with the same three upload commands as production, and then checks that the bucket holds exactly the built files, that `index.html`, `pt-br/`, `en/` and `404.html` exist, and that HTML revalidates while fingerprinted assets are immutable. It uses no AWS account and no AWS credential.
+
+Limits, on purpose:
+
+- CloudFront, ACM and DNS are not emulated. The preview and production smoke tests in `deploy-aws.yml` cover them.
+- LocalStack requires an account token since release 2026.03. Add it as the repository secret `LOCALSTACK_AUTH_TOKEN`; without it the workflow fails and says so. Check the LocalStack terms for commercial use before relying on it.
+- The image is pinned by tag and digest. Update both together.
+
 ## Locale routing model
 
 The production model is fully static:
