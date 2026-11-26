@@ -230,5 +230,5 @@ export const enSiteCopy = {
     }
   },
   footer:
-    "NeoCom does not run authenticated areas, tracking cookies, or analytics collection in this initial version."
+    "NeoCom does not have a login area, use tracking cookies, or collect personal analytics data."
 };
