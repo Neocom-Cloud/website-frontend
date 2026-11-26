@@ -292,5 +292,5 @@ export const ptBrSiteCopy = {
     }
   },
   footer:
-    "NeoCom não possui área logada, não usa cookies de rastreamento nem coleta dados analíticos nesta versão inicial."
+    "NeoCom não possui área logada, não usa cookies de rastreamento nem coleta dados analíticos pessoais."
 };
